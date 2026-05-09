@@ -23,9 +23,12 @@ export interface IUser extends Document {
     licenseNumber?: string;
     tradingRegions?: string[];
   };
+  emailVerified?: Date;
+  verificationToken?: string;
   createdAt: Date;
   updatedAt: Date;
 }
+
 
 const UserSchema: Schema<IUser> = new Schema(
   {
@@ -66,9 +69,12 @@ const UserSchema: Schema<IUser> = new Schema(
       licenseNumber: String,
       tradingRegions: [String],
     },
+    emailVerified: { type: Date },
+    verificationToken: { type: String },
   },
   { timestamps: true }
 );
+
 
 export const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>("User", UserSchema);

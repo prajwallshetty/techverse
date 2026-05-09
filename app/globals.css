@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -6,11 +7,13 @@
   --surface: #ffffff;
   --surface-muted: #eef5ea;
   --border: #d9e5d3;
-  --primary: #245d3b;
+  --primary: #1e7b4b;
   --primary-foreground: #f7fff8;
-  --accent: #d8a337;
+  --secondary: #1a3a6c;
+  --secondary-foreground: #ffffff;
+  --accent: #e89b1f;
   --accent-foreground: #241a05;
-  --muted: #617160;
+  --muted: #737873;
   --danger: #b13d2b;
 }
 
@@ -22,11 +25,14 @@
   --color-border: var(--border);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-muted: var(--muted);
   --color-danger: var(--danger);
-  --font-sans: Arial, Helvetica, sans-serif;
+  --font-sans: 'Inter', Arial, Helvetica, sans-serif;
+  --font-display: 'Montserrat', sans-serif;
   --font-mono: "Courier New", Courier, monospace;
 }
 

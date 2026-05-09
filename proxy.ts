@@ -6,7 +6,8 @@ import { NextResponse } from "next/server";
 import type { UserRole } from "@/types/domain";
 import { ROLE_DASHBOARD } from "@/types/domain";
 
-const publicPaths = ["/", "/signin", "/api/auth", "/api/health"];
+const publicPaths = ["/", "/signin", "/signup", "/verify", "/api/auth", "/api/health"];
+
 
 const roleToDashboard: Record<string, UserRole> = {
   "/dashboard/farmer": "farmer",

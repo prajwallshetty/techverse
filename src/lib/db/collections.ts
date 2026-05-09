@@ -1,4 +1,5 @@
-import type { FarmHolding, User, OtpDocument } from "@/types/domain";
+import type { FarmHolding, User } from "@/types/domain";
+
 import { getDb } from "@/lib/db/mongodb";
 
 export async function farmsCollection() {
@@ -11,7 +12,4 @@ export async function usersCollection() {
   return db.collection<User>("users");
 }
 
-export async function otpsCollection() {
-  const db = await getDb();
-  return db.collection<OtpDocument>("otps");
-}
+

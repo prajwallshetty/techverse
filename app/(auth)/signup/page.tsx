@@ -1,12 +1,12 @@
-import { SignInForm } from "@/features/auth/signin-form";
+import { SignUpForm } from "@/features/auth/signup-form";
 import { AuthCard } from "@/components/auth/auth-card";
 
 export const metadata = {
-  title: "Sign In | Krishi Hub",
-  description: "Sign in to Krishi Hub — Your agricultural intelligence partner",
+  title: "Sign Up | Krishi Hub",
+  description: "Join Krishi Hub — Your agricultural intelligence partner",
 };
 
-export default function SignInPage() {
+export default function SignUpPage() {
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-5 py-10">
       {/* Dynamic Background */}
@@ -17,10 +17,10 @@ export default function SignInPage() {
       </div>
 
       <AuthCard 
-        title="Welcome Back" 
-        subtitle="Log in to manage your agricultural operations"
+        title="Create Account" 
+        subtitle="Join our community of farmers and traders"
       >
-        <SignInForm />
+        <SignUpForm />
       </AuthCard>
     </main>
   );
