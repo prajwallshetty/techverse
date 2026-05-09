@@ -26,9 +26,11 @@ export async function POST(request: Request) {
     // Multilingual welcome using standard Twilio voice (Hindi/English combined for now)
     // Tulu/Kannada native voices would require pre-recorded MP3s via <Play>.
     
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://techverse-mu-five.vercel.app";
+
     const gather = twiml.gather({
       numDigits: 1,
-      action: "/api/twilio/ivr/process",
+      action: `${baseUrl}/api/twilio/handle-input`,
       method: "POST",
       timeout: 10,
     });
@@ -36,15 +38,14 @@ export async function POST(request: Request) {
     gather.say(
       { language: "en-IN", voice: "Polly.Aditi" },
       "Welcome to AgriHold A I. " +
-      "Press 1 to search nearest warehouse. " +
-      "Press 2 to check storage availability. " +
-      "Press 3 to hear current crop prices. " +
-      "Press 4 to book storage slots. " +
-      "Press 5 to check booking status."
+      "Press 1 for warehouse details. " +
+      "Press 2 to hear crop prices. " +
+      "Press 3 to book storage slots. " +
+      "Press 4 to check booking status."
     );
 
     // If no input, redirect back to menu
-    twiml.redirect("/api/twilio/ivr");
+    twiml.redirect(`${baseUrl}/api/twilio/ivr`);
 
     return new NextResponse(twiml.toString(), {
       headers: {

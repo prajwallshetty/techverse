@@ -8,51 +8,36 @@ import { IvrCall } from "@/models/IvrCall";
 import { pusherServer } from "@/lib/pusher/server";
 
 export async function POST(request: Request) {
+  const twiml = new VoiceResponse();
   try {
     const formData = await request.formData();
     const digits = formData.get("Digits") as string;
     const callSid = formData.get("CallSid") as string;
-    const from = formData.get("From") as string; // Usually +91...
+    const from = formData.get("From") as string;
 
     await dbConnect();
-    const twiml = new VoiceResponse();
 
     // Try to find farmer by phone
     const farmer = await User.findOne({ phone: from, role: "farmer" });
 
     switch (digits) {
       case "1": {
-        // Nearest Warehouse Search
+        // Warehouse details
         await IvrCall.updateOne({ callSid }, { actionTaken: "search_warehouse" });
         const warehouse = await Warehouse.findOne({ isActive: true });
         
         if (warehouse) {
           twiml.say(
             { language: "en-IN", voice: "Polly.Aditi" },
-            `The nearest warehouse is ${warehouse.name} in ${warehouse.location}. It currently has ${warehouse.capacityTons - warehouse.currentStockTons} tons of available capacity.`
+            `The nearest warehouse is ${warehouse.name} in ${warehouse.location}. It currently has ${warehouse.capacityTons - warehouse.currentStockTons} tons of available capacity. Cold storage slots are available.`
           );
         } else {
           twiml.say("Sorry, no active warehouses found in your region.");
         }
         break;
       }
-      
-      case "2": {
-        // Check Storage Availability
-        await IvrCall.updateOne({ callSid }, { actionTaken: "search_warehouse" });
-        const warehouse = await Warehouse.findOne({ isActive: true });
-        if (warehouse) {
-          twiml.say(
-            { language: "en-IN", voice: "Polly.Aditi" },
-            `The cold storage zone at ${warehouse.name} has available slots. Dry storage is currently full.`
-          );
-        } else {
-          twiml.say("No storage availability data is currently accessible.");
-        }
-        break;
-      }
 
-      case "3": {
+      case "2": {
         // Hear crop prices
         await IvrCall.updateOne({ callSid }, { actionTaken: "price_check" });
         twiml.say(
@@ -62,8 +47,8 @@ export async function POST(request: Request) {
         break;
       }
 
-      case "4": {
-        // Book storage slot (Simplified 1-step booking for MVP)
+      case "3": {
+        // Book storage slot
         await IvrCall.updateOne({ callSid }, { actionTaken: "booking_created" });
         const warehouse = await Warehouse.findOne({ isActive: true });
         
@@ -108,7 +93,7 @@ export async function POST(request: Request) {
         break;
       }
 
-      case "5": {
+      case "4": {
         // Booking status
         await IvrCall.updateOne({ callSid }, { actionTaken: "status_check" });
         if (!farmer) {
@@ -126,7 +111,7 @@ export async function POST(request: Request) {
       }
 
       default:
-        twiml.say("Invalid input.");
+        twiml.say("Invalid input. Please call back and try again.");
         break;
     }
 
@@ -139,8 +124,9 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("IVR Process Error:", error);
-    const twiml = new VoiceResponse();
-    twiml.say("An error occurred processing your request.");
-    return new NextResponse(twiml.toString(), { headers: { "Content-Type": "text/xml" } });
+    twiml.say("Sorry, something went wrong. We are experiencing technical difficulties. Please try again later.");
+    return new NextResponse(twiml.toString(), { 
+      headers: { "Content-Type": "text/xml" } 
+    });
   }
 }
