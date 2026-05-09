@@ -8,6 +8,7 @@ export interface IBooking extends Document {
   totalPrice: number;
   status: "pending" | "confirmed" | "expired" | "cancelled" | "completed";
   qrCodeDataUrl?: string;
+  marketplaceStatus: "none" | "listed" | "sold";
   expiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -27,6 +28,12 @@ const BookingSchema: Schema<IBooking> = new Schema(
       index: true,
     },
     qrCodeDataUrl: { type: String },
+    marketplaceStatus: {
+      type: String,
+      enum: ["none", "listed", "sold"],
+      default: "listed", // Default to listed for demo purposes
+      index: true,
+    },
     expiresAt: { type: Date },
   },
   { timestamps: true }
