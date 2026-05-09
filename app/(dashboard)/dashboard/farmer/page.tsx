@@ -18,27 +18,15 @@ import {
 import { Badge } from "@/components/antigravity/badge";
 import { Button } from "@/components/antigravity/button";
 import { PriceChart } from "@/features/dashboard/price-chart";
+import { generatePrediction } from "@/lib/ai/predict";
 
 export const metadata = {
   title: "Farmer Dashboard | AgriHold AI",
 };
 
-// Mock data
-const chartData = [
-  { date: "May 1", historicalPrice: 3100 },
-  { date: "May 5", historicalPrice: 3150 },
-  { date: "May 10", historicalPrice: 3080 },
-  { date: "May 15", historicalPrice: 3200 },
-  { date: "May 20", historicalPrice: 3350, predictedPrice: 3350 }, // Present
-  { date: "May 25", predictedPrice: 3420 },
-  { date: "May 30", predictedPrice: 3580 }, // Peak
-  { date: "Jun 4", predictedPrice: 3450 },
-  { date: "Jun 9", predictedPrice: 3300 },
-];
-
 const storedCrops = [
-  { id: "1", name: "Sugarcane", quantity: "45 MT", quality: "high", grade: "Grade A", date: "12 Days ago" },
-  { id: "2", name: "Paddy (Rice)", quantity: "18 MT", quality: "medium", grade: "Grade B", date: "30 Days ago" },
+  { id: "1", name: "Sugarcane", quantity: 45, quality: "high", grade: "Grade A", date: "12 Days ago" },
+  { id: "2", name: "Paddy (Rice)", quantity: 18, quality: "medium", grade: "Grade B", date: "30 Days ago" },
 ];
 
 const liveBids = [
@@ -46,8 +34,22 @@ const liveBids = [
   { id: "B2", trader: "Metro Agri", crop: "Paddy (Rice)", amount: "₹2,100/qt", expires: "14 hrs", type: "Standard" },
 ];
 
+// Base mandi price for Sugarcane per quintal
+const BASE_SUGARCANE_PRICE = 3350;
+
 export default async function FarmerDashboardPage() {
   const session = await auth();
+
+  // Dynamically generate AI prediction for the primary stored crop
+  const primaryCrop = storedCrops[0];
+  const prediction = generatePrediction({
+    crop: primaryCrop.name,
+    currentPrice: BASE_SUGARCANE_PRICE,
+    quantityTons: primaryCrop.quantity, // Note: price is per quintal, but we are keeping units abstract for the demo math
+  });
+
+  // Calculate percentage increase
+  const percentIncrease = ((prediction.predictedValue - prediction.currentValue) / prediction.currentValue) * 100;
 
   return (
     <div className="space-y-8 px-5 py-8 lg:px-8 max-w-7xl mx-auto">
@@ -75,7 +77,7 @@ export default async function FarmerDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-2">
-              <p className="text-3xl font-black">₹3,350</p>
+              <p className="text-3xl font-black">₹{BASE_SUGARCANE_PRICE.toLocaleString()}</p>
               <span className="text-xs font-semibold text-emerald-600">/ qt</span>
             </div>
             <p className="mt-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
@@ -92,10 +94,12 @@ export default async function FarmerDashboardPage() {
           </CardHeader>
           <CardContent className="relative z-10">
             <div className="flex items-baseline gap-2">
-              <p className="text-3xl font-black text-primary">₹3,580</p>
+              <p className="text-3xl font-black text-primary">₹{(BASE_SUGARCANE_PRICE + Math.round(prediction.expectedProfit / primaryCrop.quantity)).toLocaleString()}</p>
               <span className="text-xs font-semibold text-muted">/ qt</span>
             </div>
-            <p className="mt-1 text-xs font-medium text-muted">Expected in <span className="font-bold text-foreground">10 days</span></p>
+            <p className="mt-1 text-xs font-medium text-muted">
+              Expected in <span className="font-bold text-foreground">{prediction.peakDays} days</span>
+            </p>
           </CardContent>
         </Card>
 
@@ -105,8 +109,8 @@ export default async function FarmerDashboardPage() {
             <TrendingUp className="size-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-black text-accent">+₹10,350</p>
-            <p className="mt-1 text-xs font-medium text-muted">By waiting to sell Sugarcane</p>
+            <p className="text-3xl font-black text-accent">+{percentIncrease > 0 ? '₹' : '-₹'}{Math.abs(prediction.expectedProfit).toLocaleString()}</p>
+            <p className="mt-1 text-xs font-medium text-muted">By waiting to sell {primaryCrop.name}</p>
           </CardContent>
         </Card>
 
@@ -132,14 +136,14 @@ export default async function FarmerDashboardPage() {
           <CardHeader className="pb-0">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-black tracking-tight">Market Trajectory: Sugarcane</h3>
+                <h3 className="text-lg font-black tracking-tight">Market Trajectory: {prediction.crop}</h3>
                 <p className="text-xs font-medium text-muted mt-1">AI-powered 30-day price forecast</p>
               </div>
               <Badge className="bg-primary/10 text-primary border-primary/20">94% Accuracy</Badge>
             </div>
           </CardHeader>
           <CardContent>
-            <PriceChart data={chartData} />
+            <PriceChart data={prediction.trajectory} />
           </CardContent>
         </Card>
 
@@ -151,21 +155,29 @@ export default async function FarmerDashboardPage() {
             </h3>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="rounded-xl bg-primary text-primary-foreground p-5 shadow-lg shadow-primary/20">
+            <div className={`rounded-xl p-5 shadow-lg ${
+              prediction.recommendation === "HOLD INVENTORY" 
+                ? "bg-primary text-primary-foreground shadow-primary/20" 
+                : "bg-danger text-white shadow-danger/20"
+            }`}>
               <p className="text-xs font-bold uppercase tracking-wider opacity-80 mb-1">Recommendation</p>
-              <p className="text-2xl font-black">HOLD INVENTORY</p>
+              <p className="text-2xl font-black">{prediction.recommendation}</p>
               <p className="text-sm mt-2 opacity-90 leading-relaxed">
-                Market deficit predicted due to late monsoons. Prices will surge by ~6.8% next week.
+                {prediction.reason}
               </p>
-              <div className="mt-5 flex items-center gap-2 bg-black/10 rounded-lg p-3">
-                <CalendarClock className="size-4" />
-                <span className="text-sm font-semibold">Target Sell: May 30</span>
-              </div>
+              {prediction.recommendation === "HOLD INVENTORY" && (
+                <div className="mt-5 flex items-center gap-2 bg-black/10 rounded-lg p-3">
+                  <CalendarClock className="size-4" />
+                  <span className="text-sm font-semibold">
+                    Target Sell: In {prediction.peakDays} days
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="space-y-3">
               <Button className="w-full justify-between group">
-                Enable Auto-Sell at Peak
+                {prediction.recommendation === "HOLD INVENTORY" ? "Enable Auto-Sell at Peak" : "Sell Inventory Now"}
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button variant="secondary" className="w-full">
@@ -198,7 +210,7 @@ export default async function FarmerDashboardPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-mono font-bold">{crop.quantity}</p>
+                    <p className="font-mono font-bold">{crop.quantity} MT</p>
                     <Badge intent={crop.quality as any} className="mt-1 text-[10px]">{crop.grade}</Badge>
                   </div>
                 </div>
