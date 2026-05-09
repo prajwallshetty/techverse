@@ -31,6 +31,7 @@ const navByRole: Record<
   ],
   admin: [
     { label: 'Dashboard',     icon: 'home',          href: '/dashboard/admin' },
+    { label: 'IVR Analytics', icon: 'phone_in_talk', href: '/dashboard/admin/ivr' },
     { label: 'Users',         icon: 'group',         href: '/dashboard/admin?tab=users' },
     { label: 'Analytics',     icon: 'bar_chart',     href: '/dashboard/admin?tab=analytics' },
     { label: 'Settings',      icon: 'settings',      href: '/dashboard/admin?tab=settings' },

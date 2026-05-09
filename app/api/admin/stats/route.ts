@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db/mongoose";
 import { User } from "@/models/User";
 import { Booking } from "@/models/Booking";
-import { Loan } from "@/models/Loan";
 import { Warehouse } from "@/models/Warehouse";
 import { Bid } from "@/models/Bid";
 import { auth } from "@/lib/auth";
@@ -17,14 +16,11 @@ export async function GET() {
     await dbConnect();
 
     // 1. Aggregated Platform KPIs
-    const [userCount, warehouseCount, bookingStats, loanStats, bidCount] = await Promise.all([
+    const [userCount, warehouseCount, bookingStats, bidCount] = await Promise.all([
       User.countDocuments(),
       Warehouse.countDocuments(),
       Booking.aggregate([
         { $group: { _id: null, totalTonnage: { $sum: "$quantityTons" }, totalRevenue: { $sum: "$totalPrice" } } }
-      ]),
-      Loan.aggregate([
-        { $group: { _id: null, totalExposure: { $sum: "$eligibleAmount" } } }
       ]),
       Bid.countDocuments()
     ]);
@@ -34,7 +30,6 @@ export async function GET() {
       totalWarehouses: warehouseCount,
       totalTonnage: bookingStats[0]?.totalTonnage || 0,
       totalVolume: bookingStats[0]?.totalRevenue || 0,
-      loanExposure: loanStats[0]?.totalExposure || 0,
       totalBids: bidCount,
     };
 
