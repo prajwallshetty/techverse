@@ -39,10 +39,6 @@ export function WarehouseOwnerClient() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
     try {
       const [statsRes, bookingsRes] = await Promise.all([
@@ -61,6 +57,10 @@ export function WarehouseOwnerClient() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleUpdateStatus = async (bookingId: string, status: string) => {
     try {

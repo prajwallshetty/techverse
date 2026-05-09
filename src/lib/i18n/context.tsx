@@ -18,7 +18,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const savedLang = localStorage.getItem("agrihold_lang") as Language;
-    if (savedLang) setLanguageState(savedLang);
+    if (savedLang) {
+      setTimeout(() => setLanguageState(savedLang), 0);
+    }
   }, []);
 
   useEffect(() => {

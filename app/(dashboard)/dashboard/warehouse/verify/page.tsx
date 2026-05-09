@@ -43,7 +43,7 @@ export default function WarehouseVerificationPage() {
         </div>
         <h1 className="text-3xl font-black tracking-tight mb-2">Verify Drop-off</h1>
         <p className="text-muted text-sm mb-8">
-          Scan the farmer's Digital Storage Receipt QR code to authenticate their booking and accept inventory.
+          Scan the farmer&apos;s Digital Storage Receipt QR code to authenticate their booking and accept inventory.
         </p>
 
         <Card className="border-border/60 shadow-xl overflow-hidden relative">

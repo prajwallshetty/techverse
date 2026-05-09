@@ -52,10 +52,6 @@ export function LoanDashboardClient({ initialBookings }: { initialBookings: Book
   // Filter for confirmed bookings that don't have a loan yet (in a real system we'd track this more strictly)
   const availableBookings = initialBookings.filter(b => b.status === "confirmed");
 
-  useEffect(() => {
-    fetchLoans();
-  }, []);
-
   const fetchLoans = async () => {
     try {
       const res = await fetch("/api/loans");
@@ -67,6 +63,10 @@ export function LoanDashboardClient({ initialBookings }: { initialBookings: Book
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchLoans();
+  }, []);
 
   const handleCheckEligibility = () => {
     const booking = availableBookings.find(b => b._id === selectedBooking);
