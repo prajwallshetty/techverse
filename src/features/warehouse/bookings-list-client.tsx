@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/antigravity/card";
 import { Badge } from "@/components/antigravity/badge";
 import { Button } from "@/components/antigravity/button";
 import { ReceiptModal } from "./receipt-modal";
+import { AutoSellSettings } from "@/features/marketplace/auto-sell-settings";
 
 export function BookingsListClient({ initialBookings }: { initialBookings: any[] }) {
   const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
@@ -78,12 +79,32 @@ export function BookingsListClient({ initialBookings }: { initialBookings: any[]
                   </div>
                 </div>
 
-                {booking.status === "confirmed" && (
+                {booking.status === "confirmed" && booking.marketplaceStatus === "listed" && (
                   <div className="mt-4 flex items-start gap-2 rounded-lg bg-accent/10 p-3 text-sm text-accent">
                     <Clock className="size-4 shrink-0 mt-0.5" />
                     <p className="font-medium">
                       Your space is reserved! Please present your Digital Receipt at the warehouse within 48 hours.
                     </p>
+                  </div>
+                )}
+
+                {booking.status === "confirmed" && booking.marketplaceStatus === "listed" && (
+                  <AutoSellSettings 
+                    bookingId={booking._id} 
+                    initialEnabled={booking.isAutoSellEnabled}
+                    initialTarget={booking.autoSellTargetPrice}
+                  />
+                )}
+                
+                {booking.marketplaceStatus === "sold" && (
+                  <div className="mt-4 flex items-center gap-3 rounded-xl bg-emerald-500/10 p-4 border border-emerald-500/20 animate-in fade-in zoom-in">
+                    <div className="size-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20">
+                      <CheckCircle2 className="size-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black text-emerald-600">Successfully Sold via Auto-Sell!</p>
+                      <p className="text-xs text-emerald-600/70 font-medium">Funds are being processed for your {booking.cropName} storage.</p>
+                    </div>
                   </div>
                 )}
               </CardContent>

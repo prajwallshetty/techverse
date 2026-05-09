@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import dbConnect from "@/lib/db/mongoose";
-import { Bid } from "@/models/Bid";
 import { auth } from "@/lib/auth";
 import { pusherServer } from "@/lib/pusher/server";
 import { User } from "@/models/User";
+import { Booking } from "@/models/Booking";
+import { Bid } from "@/models/Bid";
+import dbConnect from "@/lib/db/mongoose";
+import mongoose from "mongoose";
 
 const bidSchema = z.object({
   bookingId: z.string().min(1),
@@ -28,45 +30,70 @@ export async function POST(request: Request) {
     const { bookingId, amount } = parsed.data;
 
     await dbConnect();
+    const session_mongo = await mongoose.startSession();
+    session_mongo.startTransaction();
 
-    // 1. Check if bid is higher than current highest
-    const highestBid = await Bid.findOne({ bookingId }).sort({ amount: -1 });
-    if (highestBid && amount <= highestBid.amount) {
-      return NextResponse.json({ 
-        error: "Bid must be higher than current highest: ₹" + highestBid.amount 
-      }, { status: 400 });
+    try {
+      // 1. Check if bid is higher than current highest
+      const highestBid = await Bid.findOne({ bookingId }).sort({ amount: -1 }).session(session_mongo);
+      if (highestBid && amount <= highestBid.amount) {
+        throw new Error("Bid must be higher than current highest: ₹" + highestBid.amount);
+      }
+
+      // 2. Create the new bid
+      const bid = new Bid({
+        bookingId,
+        traderId: session.user.id,
+        amount,
+        status: "pending",
+      });
+      await bid.save({ session: session_mongo });
+
+      // 3. AUTO-SELL LOGIC
+      const booking = await Booking.findById(bookingId).session(session_mongo);
+      let autoSold = false;
+
+      if (booking && booking.isAutoSellEnabled && booking.autoSellTargetPrice && amount >= booking.autoSellTargetPrice) {
+        // EXECUTE AUTOMATIC SALE
+        booking.marketplaceStatus = "sold";
+        bid.status = "accepted";
+        await booking.save({ session: session_mongo });
+        await bid.save({ session: session_mongo });
+        autoSold = true;
+      }
+
+      await session_mongo.commitTransaction();
+
+      // 4. Trigger Real-time Event via Pusher
+      const trader = await User.findById(session.user.id).select("name");
+      
+      await pusherServer.trigger(`marketplace-${bookingId}`, "new-bid", {
+        _id: bid._id,
+        amount,
+        status: bid.status,
+        traderId: {
+          _id: session.user.id,
+          name: trader?.name || "A Trader",
+        },
+        createdAt: bid.createdAt,
+      });
+
+      if (autoSold) {
+        await pusherServer.trigger(`marketplace-${bookingId}`, "auto-sold", {
+          amount,
+          traderName: trader?.name,
+        });
+      }
+
+      await pusherServer.trigger("marketplace-global", "bid-count-update", { bookingId });
+
+      return NextResponse.json({ success: true, bid, autoSold }, { status: 201 });
+    } catch (error: any) {
+      await session_mongo.abortTransaction();
+      return NextResponse.json({ error: error.message || "Failed to place bid" }, { status: 400 });
+    } finally {
+      session_mongo.endSession();
     }
-
-    // 2. Create the new bid
-    const bid = new Bid({
-      bookingId,
-      traderId: session.user.id,
-      amount,
-      status: "pending",
-    });
-
-    await bid.save();
-
-    // 3. Trigger Real-time Event via Pusher
-    // Fetch trader name for the real-time notification
-    const trader = await User.findById(session.user.id).select("name");
-    
-    await pusherServer.trigger(`marketplace-${bookingId}`, "new-bid", {
-      _id: bid._id,
-      amount,
-      traderId: {
-        _id: session.user.id,
-        name: trader?.name || "A Trader",
-      },
-      createdAt: bid.createdAt,
-    });
-
-    // Also trigger global update for bid counts
-    await pusherServer.trigger("marketplace-global", "bid-count-update", {
-      bookingId,
-    });
-
-    return NextResponse.json({ success: true, bid }, { status: 201 });
 
   } catch (error) {
     console.error("Bidding Error:", error);

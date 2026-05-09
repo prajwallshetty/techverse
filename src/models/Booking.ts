@@ -9,6 +9,8 @@ export interface IBooking extends Document {
   status: "pending" | "confirmed" | "expired" | "cancelled" | "completed";
   qrCodeDataUrl?: string;
   marketplaceStatus: "none" | "listed" | "sold";
+  autoSellTargetPrice?: number;
+  isAutoSellEnabled: boolean;
   expiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -34,6 +36,8 @@ const BookingSchema: Schema<IBooking> = new Schema(
       default: "listed", // Default to listed for demo purposes
       index: true,
     },
+    autoSellTargetPrice: { type: Number },
+    isAutoSellEnabled: { type: Boolean, default: false },
     expiresAt: { type: Date },
   },
   { timestamps: true }
