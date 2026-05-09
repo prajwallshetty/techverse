@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { signUpAction } from "@/lib/auth/actions";
 import { signIn } from "next-auth/react";
-import { signInWithCredentials } from "@/lib/auth/actions";
-import { Mail, Lock, Loader2, Globe } from "lucide-react";
+import { Mail, Lock, User, Phone, Loader2, Globe } from "lucide-react";
 import Link from "next/link";
 
-export function SignInForm() {
+export function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -16,14 +16,12 @@ export function SignInForm() {
     setError(null);
 
     const formData = new FormData(event.currentTarget);
-    const result = await signInWithCredentials(formData);
+    const result = await signUpAction(formData);
 
     if (result?.error) {
       setError(result.error);
       setIsLoading(false);
     }
-    // On success the server action calls redirect() which throws NEXT_REDIRECT
-    // so we never reach here on success — no need to reset isLoading
   }
 
   return (
@@ -34,8 +32,21 @@ export function SignInForm() {
         </div>
       )}
 
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-4">
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
+            <input
+              name="name"
+              type="text"
+              placeholder="Full Name"
+              required
+              minLength={2}
+              className="w-full rounded-xl border border-border bg-surface px-10 py-3 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+            />
+          </div>
+
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
             <input
@@ -48,15 +59,42 @@ export function SignInForm() {
           </div>
 
           <div className="relative">
+            <Phone className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
+            <input
+              name="phone"
+              type="tel"
+              placeholder="Phone number"
+              required
+              minLength={10}
+              pattern="[0-9]{10,15}"
+              title="Enter a valid phone number (10-15 digits)"
+              className="w-full rounded-xl border border-border bg-surface px-10 py-3 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+            />
+          </div>
+
+          <div className="relative">
             <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" />
             <input
               name="password"
               type="password"
-              placeholder="Password"
+              placeholder="Create password (min 8 chars)"
               required
               minLength={8}
               className="w-full rounded-xl border border-border bg-surface px-10 py-3 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted">Register as</label>
+            <select
+              name="role"
+              required
+              className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+            >
+              <option value="farmer">Farmer</option>
+              <option value="warehouse_owner">Warehouse Owner</option>
+              <option value="trader">Trader</option>
+            </select>
           </div>
         </div>
 
@@ -65,7 +103,7 @@ export function SignInForm() {
           disabled={isLoading}
           className="flex w-full items-center justify-center rounded-xl bg-primary py-3 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-70"
         >
-          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Sign In"}
+          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Create Account"}
         </button>
       </form>
 
@@ -87,9 +125,9 @@ export function SignInForm() {
       </button>
 
       <p className="text-center text-sm text-muted">
-        Don&apos;t have an account?{" "}
-        <Link href="/signup" className="font-semibold text-primary hover:underline">
-          Create Account
+        Already have an account?{" "}
+        <Link href="/signin" className="font-semibold text-primary hover:underline">
+          Sign In
         </Link>
       </p>
     </div>

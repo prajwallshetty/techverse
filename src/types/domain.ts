@@ -46,18 +46,14 @@ export type User = {
     licenseNumber?: string;
     tradingRegions?: string[];
   };
+  emailVerified?: Date | null;
+  verificationToken?: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
 
-/* ─── OTP Document ─── */
-export type OtpDocument = {
-  _id?: string;
-  phone: string;
-  code: string;
-  expiresAt: Date;
-  createdAt: Date;
-};
+
+
 
 /* ─── Legacy domain types (existing) ─── */
 export type CropRisk = "low" | "medium" | "high";

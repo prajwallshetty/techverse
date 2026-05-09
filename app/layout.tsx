@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "AgriHold AI",
-    template: "%s | AgriHold AI",
+    default: "TechVerse",
+    template: "%s | TechVerse",
   },
-  description:
-    "AI operating system for farm holdings, crop intelligence, and resilient agricultural supply.",
+  description: "AI-powered agricultural intelligence platform for a resilient future.",
 };
 
 export default function RootLayout({
@@ -16,12 +16,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className="h-full antialiased"
-    >
-      <body className="min-h-full bg-background text-foreground flex flex-col">
-        {children}
+    <html lang="en" className="h-full antialiased">
+      <body className="min-h-full bg-background text-foreground flex flex-col font-sans">
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
