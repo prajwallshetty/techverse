@@ -4,10 +4,73 @@ import dbConnect from "@/lib/db/mongoose";
 import { Loan } from "@/models/Loan";
 import { Booking } from "@/models/Booking";
 import { auth } from "@/lib/auth";
-import { DecentroAPI } from "@/lib/decentro";
+import { CreditEngine } from "@/lib/loans/credit-engine";
 
-// Fetch eligibility and loan history
-export async function GET(request: Request) {
+// Validation for checking eligibility
+const checkSchema = z.object({
+  bookingId: z.string().min(1),
+  cropType: z.string().min(1),
+  quantity: z.number().min(0.1),
+});
+
+export async function POST(request: Request) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const parsed = checkSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
+    }
+
+    const { bookingId, cropType, quantity } = parsed.data;
+
+    // 1. Calculate values using our Smart Credit Engine
+    const cropValue = CreditEngine.calculateCropValue(cropType, quantity);
+    const eligibleAmount = CreditEngine.estimateLoanAmount(cropValue);
+    const repaymentDate = CreditEngine.calculateRepaymentDate();
+    const transactionId = CreditEngine.generateTransactionId();
+
+    await dbConnect();
+
+    // 2. Save the loan document (Simulating instant payout/approval)
+    const loan = new Loan({
+      borrowerId: session.user.id,
+      bookingId,
+      cropType,
+      quantity,
+      cropValue,
+      eligibleAmount,
+      loanStatus: "active",
+      repaymentStatus: "pending",
+      repaymentDate,
+      transactionId,
+    });
+
+    await loan.save();
+
+    return NextResponse.json({
+      success: true,
+      message: "₹" + eligibleAmount.toLocaleString() + " credited successfully.",
+      loan: {
+        id: loan._id,
+        eligibleAmount,
+        transactionId,
+        repaymentDate: repaymentDate.toISOString(),
+      }
+    }, { status: 201 });
+
+  } catch (error: any) {
+    console.error("Loan API Error:", error);
+    return NextResponse.json({ error: "Failed to process loan request" }, { status: 500 });
+  }
+}
+
+export async function GET() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -16,89 +79,11 @@ export async function GET(request: Request) {
 
     await dbConnect();
 
-    // 1. Fetch all 'confirmed' bookings to calculate total collateral
-    const activeBookings = await Booking.find({ 
-      farmerId: session.user.id,
-      status: "confirmed"
-    }).lean();
+    // Fetch existing loans for the farmer
+    const loans = await Loan.find({ borrowerId: session.user.id }).sort({ createdAt: -1 }).lean();
 
-    const totalCollateralValue = activeBookings.reduce((sum, booking) => sum + booking.totalPrice, 0);
-
-    // 2. Query Decentro API for eligibility based on total collateral
-    const eligibility = await DecentroAPI.checkEligibility(totalCollateralValue);
-
-    // 3. Fetch existing loans
-    const loans = await Loan.find({ farmerId: session.user.id }).sort({ createdAt: -1 }).lean();
-
-    return NextResponse.json({ 
-      eligibility: {
-        ...eligibility,
-        totalCollateralValue
-      }, 
-      loans 
-    }, { status: 200 });
-
+    return NextResponse.json({ loans }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
-
-// Apply for a loan
-const applySchema = z.object({
-  amount: z.number().min(5000),
-  totalCollateralValue: z.number().min(0),
-});
-
-export async function POST(request: Request) {
-  try {
-    const sessionToken = await auth();
-    if (!sessionToken?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const parsed = applySchema.safeParse(body);
-
-    if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid loan request." }, { status: 400 });
-    }
-
-    const { amount, totalCollateralValue } = parsed.data;
-
-    // Verify Eligibility Server-Side
-    const eligibility = await DecentroAPI.checkEligibility(totalCollateralValue);
-    
-    if (!eligibility.isEligible || amount > eligibility.maxEligibleAmount) {
-      return NextResponse.json({ error: "Requested amount exceeds eligible limit." }, { status: 400 });
-    }
-
-    await dbConnect();
-
-    // In a real scenario, we'd pick a specific Booking ID as collateral. For now, we aggregate.
-    const decentroRes = await DecentroAPI.originateLoan(amount, sessionToken.user.id, "AGGREGATED_CROP_VALUE");
-
-    if (!decentroRes.success) {
-      throw new Error(decentroRes.message);
-    }
-
-    // Save the loan to our MongoDB
-    const loan = new Loan({
-      borrowerId: sessionToken.user.id,
-      amount: amount,
-      interestRate: eligibility.interestRate,
-      termMonths: 12, // Default term
-      status: decentroRes.status === "approved" ? "active" : "applied",
-      collateral: {
-        type: "crop",
-        estimatedValue: totalCollateralValue,
-      }
-    });
-
-    await loan.save();
-
-    return NextResponse.json({ success: true, loan }, { status: 201 });
-
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Loan origination failed." }, { status: 500 });
   }
 }

@@ -1,220 +1,348 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { IndianRupee, ShieldCheck, Banknote, Clock, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { 
+  Banknote, 
+  ShieldCheck, 
+  Zap, 
+  ArrowRight, 
+  Clock, 
+  CheckCircle2, 
+  Package, 
+  Loader2,
+  Calendar,
+  ChevronRight,
+  TrendingUp,
+  History
+} from "lucide-react";
 import { Card, CardContent } from "@/components/antigravity/card";
 import { Button } from "@/components/antigravity/button";
 import { Badge } from "@/components/antigravity/badge";
-import { Input } from "@/components/antigravity/input";
-import type { DecentroEligibilityResult } from "@/lib/decentro";
+import { CreditEngine } from "@/lib/loans/credit-engine";
 
-type LoanDashboardProps = {
-  eligibility: DecentroEligibilityResult & { totalCollateralValue: number };
-  loans: any[];
+type Booking = {
+  _id: string;
+  cropName: string;
+  quantityTons: number;
+  totalPrice: number;
+  warehouseId: { name: string };
+  status: string;
 };
 
-export function LoanDashboardClient({ eligibility, loans }: LoanDashboardProps) {
-  const router = useRouter();
-  const [isApplying, setIsApplying] = useState(false);
-  const [requestedAmount, setRequestedAmount] = useState<number | "">("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+type Loan = {
+  _id: string;
+  eligibleAmount: number;
+  cropType: string;
+  loanStatus: string;
+  repaymentStatus: string;
+  repaymentDate: string;
+  transactionId: string;
+  createdAt: string;
+};
 
-  const maxAmount = eligibility.maxEligibleAmount;
-  const reqAmountNum = Number(requestedAmount);
-  const isValidAmount = reqAmountNum >= 5000 && reqAmountNum <= maxAmount;
+export function LoanDashboardClient({ initialBookings }: { initialBookings: Booking[] }) {
+  const [loans, setLoans] = useState<Loan[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedBooking, setSelectedBooking] = useState<string>("");
+  const [applicationStep, setApplicationStep] = useState<"idle" | "calculating" | "approved" | "success">("idle");
+  const [currentOffer, setCurrentOffer] = useState<{ amount: number; crop: string } | null>(null);
 
-  const handleApply = async () => {
-    if (!isValidAmount) return;
-    setIsSubmitting(true);
-    setError(null);
+  // Filter for confirmed bookings that don't have a loan yet (in a real system we'd track this more strictly)
+  const availableBookings = initialBookings.filter(b => b.status === "confirmed");
 
+  useEffect(() => {
+    fetchLoans();
+  }, []);
+
+  const fetchLoans = async () => {
+    try {
+      const res = await fetch("/api/loans");
+      const data = await res.json();
+      setLoans(data.loans || []);
+    } catch (error) {
+      console.error("Failed to fetch loans");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCheckEligibility = () => {
+    const booking = availableBookings.find(b => b._id === selectedBooking);
+    if (!booking) return;
+
+    setApplicationStep("calculating");
+    
+    // Simulate realistic "Smart Credit" assessment
+    setTimeout(() => {
+      const value = CreditEngine.calculateCropValue(booking.cropName, booking.quantityTons);
+      const amount = CreditEngine.estimateLoanAmount(value);
+      setCurrentOffer({ amount, crop: booking.cropName });
+      setApplicationStep("approved");
+    }, 2000);
+  };
+
+  const handleClaimLoan = async () => {
+    const booking = availableBookings.find(b => b._id === selectedBooking);
+    if (!booking || !currentOffer) return;
+
+    setApplicationStep("success");
+    
     try {
       const res = await fetch("/api/loans", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: reqAmountNum,
-          totalCollateralValue: eligibility.totalCollateralValue,
+          bookingId: booking._id,
+          cropType: booking.cropName,
+          quantity: booking.quantityTons,
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      setIsApplying(false);
-      setRequestedAmount("");
-      router.refresh(); // Refresh the server component to load new loans
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "active":
-        return <Badge intent="high"><CheckCircle2 className="size-3 mr-1" /> Active</Badge>;
-      case "approved":
-        return <Badge intent="medium"><ShieldCheck className="size-3 mr-1" /> Approved</Badge>;
-      case "applied":
-        return <Badge intent="low"><Clock className="size-3 mr-1" /> Processing</Badge>;
-      default:
-        return <Badge intent="low">{status}</Badge>;
+      if (res.ok) {
+        fetchLoans();
+        // Keep success screen for 3s then reset
+        setTimeout(() => {
+          setApplicationStep("idle");
+          setSelectedBooking("");
+          setCurrentOffer(null);
+        }, 3500);
+      }
+    } catch (error) {
+      console.error("Payout failed");
     }
   };
 
   return (
-    <div className="space-y-6 px-5 py-6 lg:px-8 max-w-5xl mx-auto">
+    <div className="space-y-8 px-5 py-6 lg:px-8 max-w-6xl mx-auto">
       
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-black md:text-3xl">Microloans</h2>
-        <p className="mt-1 text-sm text-muted">Leverage your stored crops for instant liquidity via Decentro.</p>
-      </div>
-
-      {/* Dynamic Eligibility Banner */}
-      <div className={`relative overflow-hidden rounded-3xl p-8 border shadow-lg ${
-        eligibility.isEligible 
-          ? "bg-gradient-to-br from-primary/10 via-surface to-primary/5 border-primary/20" 
-          : "bg-surface border-border/60"
-      }`}>
-        <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
-          <Banknote className="size-32 text-primary" />
+      {/* Header section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-black tracking-tight flex items-center gap-2">
+            Smart Microloans <Badge className="bg-primary/10 text-primary border-none text-[10px]">PRE-APPROVED</Badge>
+          </h2>
+          <p className="mt-1 text-sm text-muted">Instant liquidity against your physically stored crop collateral.</p>
         </div>
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="flex items-center gap-3 bg-surface-muted/50 p-2 rounded-2xl border border-border/50">
+          <div className="p-2 bg-accent/10 rounded-xl text-accent">
+            <ShieldCheck className="size-5" />
+          </div>
           <div>
-            <div className="flex items-center gap-2 mb-2 text-sm font-bold text-muted">
-              <ShieldCheck className="size-4 text-emerald-500" />
-              Powered by Decentro Risk Engine
-            </div>
-            
-            {eligibility.isEligible ? (
-              <>
-                <h3 className="text-3xl font-black tracking-tight text-foreground">
-                  Eligible for <span className="text-primary">₹{maxAmount.toLocaleString()}</span> instant loan.
-                </h3>
-                <p className="mt-2 text-sm font-medium text-muted max-w-lg">
-                  Based on your physically stored warehouse collateral valued at ₹{eligibility.totalCollateralValue.toLocaleString()}, you are pre-approved for an instant line of credit at {eligibility.interestRate}% APY.
-                </p>
-              </>
-            ) : (
-              <>
-                <h3 className="text-xl font-black tracking-tight">Not currently eligible for a loan.</h3>
-                <p className="mt-2 text-sm font-medium text-muted max-w-md">
-                  {eligibility.message} Store more crops in our certified warehouses to unlock instant capital.
-                </p>
-              </>
-            )}
+            <p className="text-[10px] font-black uppercase text-muted tracking-widest">Collateral Status</p>
+            <p className="text-sm font-bold">Securely Verified</p>
           </div>
-
-          {eligibility.isEligible && (
-            <Button 
-              className="w-full md:w-auto shrink-0 shadow-xl shadow-primary/20 px-8 py-3 h-auto"
-              onClick={() => setIsApplying(true)}
-            >
-              Get Capital Now <ArrowRight className="ml-2 size-4" />
-            </Button>
-          )}
         </div>
       </div>
 
-      {/* Application Modal */}
-      {isApplying && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
-          <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-2xl">
-            <h2 className="text-2xl font-black tracking-tight">Request Loan</h2>
-            <p className="mt-1 text-sm font-medium text-muted mb-6">Instantly disbursed to your registered bank account.</p>
-
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-sm font-bold mb-1">
-                  <label>Loan Amount (INR)</label>
-                  <span className="text-primary">Max: ₹{maxAmount.toLocaleString()}</span>
-                </div>
-                <Input 
-                  type="number" 
-                  placeholder="Min. ₹5,000"
-                  value={requestedAmount}
-                  onChange={(e) => setRequestedAmount(e.target.value === "" ? "" : Number(e.target.value))}
-                  error={reqAmountNum > maxAmount ? "Exceeds eligible limit" : reqAmountNum !== 0 && reqAmountNum < 5000 ? "Minimum ₹5,000" : undefined}
-                />
-              </div>
-
-              <div className="rounded-xl border border-border/60 bg-surface-muted/30 p-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-muted">Interest Rate (APY)</span>
-                  <span className="font-semibold">{eligibility.interestRate}%</span>
-                </div>
-                <div className="mt-2 flex items-center justify-between border-t border-border/40 pt-2 text-sm">
-                  <span className="font-medium text-muted">Collateral Locked</span>
-                  <span className="font-semibold">₹{eligibility.totalCollateralValue.toLocaleString()}</span>
-                </div>
-              </div>
-
-              {error && <p className="text-sm font-bold text-danger">{error}</p>}
-
-              <div className="flex gap-3 pt-2">
-                <Button variant="secondary" className="flex-1" onClick={() => setIsApplying(false)} disabled={isSubmitting}>
-                  Cancel
-                </Button>
-                <Button className="flex-1" onClick={handleApply} disabled={!isValidAmount || isSubmitting}>
-                  {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : "Confirm"}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Loan History / Active Loans */}
-      <div className="mt-10">
-        <h3 className="text-xl font-black mb-4">Your Loans</h3>
-        {loans.length === 0 ? (
-          <div className="text-center py-16 border border-dashed border-border rounded-xl">
-            <Banknote className="size-10 text-muted mx-auto mb-3 opacity-50" />
-            <p className="text-sm text-muted">You have no active or past loans.</p>
-          </div>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2">
-            {loans.map((loan) => (
-              <Card key={loan._id} className="border-border/60">
-                <CardContent className="p-5 flex flex-col h-full justify-between">
+      <div className="grid lg:grid-cols-3 gap-8">
+        
+        {/* Left Col: Apply Card */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="overflow-hidden border-primary/20 shadow-xl shadow-primary/5 bg-gradient-to-br from-surface to-primary/[0.02]">
+            <CardContent className="p-0">
+              <div className="p-8 border-b border-border/50">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="size-12 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                    <Zap className="size-6" />
+                  </div>
                   <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        <div className="p-2 bg-primary/10 text-primary rounded-lg">
-                          <IndianRupee className="size-5" />
+                    <h3 className="text-xl font-black">Instant Loan Eligibility</h3>
+                    <p className="text-sm text-muted">Select a storage receipt to calculate credit limit.</p>
+                  </div>
+                </div>
+
+                {applicationStep === "idle" && (
+                  <div className="space-y-6">
+                    <div className="grid gap-4">
+                      {availableBookings.length === 0 ? (
+                        <div className="p-8 text-center bg-surface-muted/30 rounded-2xl border border-dashed border-border">
+                          <Package className="size-8 text-muted/40 mx-auto mb-3" />
+                          <p className="text-sm font-bold text-muted">No stored crops available for collateral</p>
+                          <p className="text-xs text-muted/60 mt-1">Book warehouse space to unlock microloans.</p>
                         </div>
-                        <div>
-                          <p className="text-xs font-bold text-muted uppercase tracking-wider">Principal</p>
-                          <p className="text-lg font-black leading-none">₹{loan.amount.toLocaleString()}</p>
-                        </div>
-                      </div>
-                      {getStatusBadge(loan.status)}
+                      ) : (
+                        availableBookings.map(b => (
+                          <div 
+                            key={b._id}
+                            onClick={() => setSelectedBooking(b._id)}
+                            className={`p-4 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
+                              selectedBooking === b._id 
+                                ? "border-primary bg-primary/5 ring-1 ring-primary/20" 
+                                : "border-border/60 hover:border-border hover:bg-surface-muted/20"
+                            }`}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="size-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent">
+                                <Package className="size-5" />
+                              </div>
+                              <div>
+                                <p className="font-bold text-sm">{b.quantityTons} MT {b.cropName}</p>
+                                <p className="text-xs text-muted">{b.warehouseId.name}</p>
+                              </div>
+                            </div>
+                            <ChevronRight className={`size-5 text-muted transition-transform ${selectedBooking === b._id ? "rotate-90 text-primary" : ""}`} />
+                          </div>
+                        ))
+                      )}
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-4 mt-4 bg-surface-muted/30 p-3 rounded-lg border border-border/50">
-                      <div>
-                        <p className="text-[11px] font-bold text-muted uppercase">Interest</p>
-                        <p className="font-semibold text-sm">{loan.interestRate}% APY</p>
-                      </div>
-                      <div>
-                        <p className="text-[11px] font-bold text-muted uppercase">Collateral</p>
-                        <p className="font-semibold text-sm">Crop Backed</p>
-                      </div>
+                    <Button 
+                      className="w-full py-6 text-base shadow-xl shadow-primary/10" 
+                      disabled={!selectedBooking}
+                      onClick={handleCheckEligibility}
+                    >
+                      Check Eligibility <ArrowRight className="ml-2 size-5" />
+                    </Button>
+                  </div>
+                )}
+
+                {applicationStep === "calculating" && (
+                  <div className="py-12 flex flex-col items-center justify-center space-y-6 animate-pulse">
+                    <Loader2 className="size-12 text-primary animate-spin" />
+                    <div className="text-center">
+                      <p className="text-xl font-black">SmartCredit Engine Assessment</p>
+                      <p className="text-sm text-muted mt-1">Evaluating market value and risk profile...</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
+                )}
 
+                {applicationStep === "approved" && currentOffer && (
+                  <div className="py-6 space-y-8 animate-in zoom-in-95 duration-300">
+                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-3xl p-8 text-center">
+                      <div className="size-16 rounded-full bg-emerald-500 text-white flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+                        <CheckCircle2 className="size-8" />
+                      </div>
+                      <h4 className="text-2xl font-black text-foreground">Congratulations!</h4>
+                      <p className="text-muted text-sm font-medium">You are eligible for instant credit.</p>
+                      
+                      <div className="mt-8 mb-4">
+                        <p className="text-[11px] font-black uppercase text-muted tracking-[0.2em] mb-1">Approved Amount</p>
+                        <p className="text-5xl font-black text-primary">₹{currentOffer.amount.toLocaleString()}</p>
+                      </div>
+                      <Badge intent="medium" className="bg-emerald-500/20 text-emerald-600 border-none px-4 py-1">Instant Payout Available</Badge>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-surface-muted/40 rounded-2xl border border-border/50">
+                        <p className="text-[10px] font-black uppercase text-muted mb-1 tracking-wider">Interest Rate</p>
+                        <p className="text-lg font-bold">12% APY</p>
+                      </div>
+                      <div className="p-4 bg-surface-muted/40 rounded-2xl border border-border/50">
+                        <p className="text-[10px] font-black uppercase text-muted mb-1 tracking-wider">Repayment Period</p>
+                        <p className="text-lg font-bold">6 Months</p>
+                      </div>
+                    </div>
+
+                    <Button className="w-full py-6 text-lg bg-emerald-500 hover:bg-emerald-600 shadow-xl shadow-emerald-500/10" onClick={handleClaimLoan}>
+                      Claim Instant Payout <Banknote className="ml-2 size-6" />
+                    </Button>
+                  </div>
+                )}
+
+                {applicationStep === "success" && currentOffer && (
+                  <div className="py-12 flex flex-col items-center justify-center space-y-6 text-center animate-in fade-in zoom-in duration-500">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
+                      <div className="relative size-24 rounded-full bg-primary flex items-center justify-center text-white shadow-2xl">
+                        <Banknote className="size-12 animate-[bounce_1s_infinite]" />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-3xl font-black text-foreground">₹{currentOffer.amount.toLocaleString()}</p>
+                      <p className="text-lg font-bold text-emerald-500 flex items-center justify-center gap-2 mt-1">
+                        Credited Successfully <CheckCircle2 className="size-5" />
+                      </p>
+                      <p className="text-sm text-muted mt-4 max-w-xs mx-auto">Funds have been disbursed to your linked bank account. Transaction ID generated.</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Utility Info Footer */}
+              <div className="p-6 bg-surface-muted/30 grid grid-cols-3 gap-4">
+                <div className="text-center">
+                  <TrendingUp className="size-5 text-muted mx-auto mb-1 opacity-50" />
+                  <p className="text-[10px] font-bold text-muted uppercase">Market Driven</p>
+                </div>
+                <div className="text-center">
+                  <ShieldCheck className="size-5 text-muted mx-auto mb-1 opacity-50" />
+                  <p className="text-[10px] font-bold text-muted uppercase">Bank Secured</p>
+                </div>
+                <div className="text-center">
+                  <Clock className="size-5 text-muted mx-auto mb-1 opacity-50" />
+                  <p className="text-[10px] font-bold text-muted uppercase">6 Month Term</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Col: Stats & History */}
+        <div className="space-y-6">
+          <Card className="border-border/60">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                  <TrendingUp className="size-5" />
+                </div>
+                <h3 className="font-bold text-lg">Financial Stats</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted">Total Borrowed</span>
+                  <span className="font-black">₹{loans.reduce((acc, curr) => acc + curr.eligibleAmount, 0).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted">Total Collateral Value</span>
+                  <span className="font-black text-accent">₹{(loans.reduce((acc, curr) => acc + curr.eligibleAmount, 0) / 0.7).toLocaleString()}</span>
+                </div>
+                <div className="pt-4 border-t border-border/50">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm font-bold">Credit Limit Utilized</span>
+                    <span className="text-xs font-bold text-muted">45%</span>
+                  </div>
+                  <div className="w-full bg-surface-muted h-2 rounded-full overflow-hidden">
+                    <div className="bg-primary h-full rounded-full w-[45%]" />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-black flex items-center gap-2"><History className="size-4" /> History</h3>
+              <Button variant="secondary" className="px-2 py-1 text-[10px] h-auto font-black uppercase">All activity</Button>
+            </div>
+            
+            {loading ? (
+              <div className="flex justify-center p-8"><Loader2 className="size-6 animate-spin text-muted" /></div>
+            ) : loans.length === 0 ? (
+              <div className="p-8 text-center border border-dashed border-border rounded-2xl">
+                <p className="text-xs text-muted font-medium">No previous loan activity.</p>
+              </div>
+            ) : (
+              loans.map(loan => (
+                <div key={loan._id} className="p-4 rounded-2xl border border-border/60 bg-surface hover:bg-surface-muted/20 transition-colors">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <p className="text-[10px] font-black text-muted uppercase tracking-wider">{loan.cropType} Backed</p>
+                      <p className="text-lg font-black leading-none mt-1">₹{loan.eligibleAmount.toLocaleString()}</p>
+                    </div>
+                    <Badge intent={loan.loanStatus === "active" ? "high" : "low"}>{loan.loanStatus}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-xs pt-3 border-t border-border/40">
+                    <div className="flex items-center gap-1 text-muted font-medium">
+                      <Calendar className="size-3" /> {new Date(loan.repaymentDate).toLocaleDateString()}
+                    </div>
+                    <div className="text-muted font-black truncate max-w-[80px]">#{loan.transactionId.split('-')[1]}</div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

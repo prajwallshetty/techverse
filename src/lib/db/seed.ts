@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 import bcrypt from "bcryptjs";
-import { User, UserRole } from "@/types/domain";
+import { User } from "@/types/domain";
 
 const uri = process.env.MONGODB_URI || "mongodb+srv://prajwal0shetty11_db_user:fyKpwjtzN1RS8tgn@techverse.n1aob5x.mongodb.net/?appName=techverse";
 const dbName = process.env.MONGODB_DB || "techverse";
@@ -93,7 +93,7 @@ async function seed() {
     ];
 
     console.log("Inserting users...");
-    await db.collection("users").insertMany(users as any[]);
+    await db.collection("users").insertMany(users as unknown as any[]);
     console.log("Successfully seeded database with demo users.");
     
   } catch (error) {

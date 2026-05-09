@@ -2,15 +2,15 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface ILoan extends Document {
   borrowerId: mongoose.Types.ObjectId;
-  amount: number;
-  interestRate: number;
-  termMonths: number;
-  status: "applied" | "approved" | "active" | "closed" | "defaulted";
-  collateral?: {
-    type: "crop" | "warehouse_receipt" | "land";
-    referenceId: mongoose.Types.ObjectId;
-    estimatedValue: number;
-  };
+  bookingId: mongoose.Types.ObjectId; // Reference to the stored crop
+  cropType: string;
+  quantity: number;
+  cropValue: number;
+  eligibleAmount: number;
+  loanStatus: "applied" | "approved" | "active" | "closed" | "defaulted";
+  repaymentStatus: "pending" | "paid" | "overdue";
+  repaymentDate: Date;
+  transactionId: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -18,20 +18,24 @@ export interface ILoan extends Document {
 const LoanSchema: Schema<ILoan> = new Schema(
   {
     borrowerId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
-    amount: { type: Number, required: true, min: 0 },
-    interestRate: { type: Number, required: true, min: 0 },
-    termMonths: { type: Number, required: true, min: 1 },
-    status: {
+    bookingId: { type: Schema.Types.ObjectId, ref: "Booking", required: true },
+    cropType: { type: String, required: true },
+    quantity: { type: Number, required: true },
+    cropValue: { type: Number, required: true },
+    eligibleAmount: { type: Number, required: true },
+    loanStatus: {
       type: String,
       enum: ["applied", "approved", "active", "closed", "defaulted"],
-      default: "applied",
+      default: "active", // In mock system, auto-approved
       index: true,
     },
-    collateral: {
-      type: { type: String, enum: ["crop", "warehouse_receipt", "land"] },
-      referenceId: { type: Schema.Types.ObjectId },
-      estimatedValue: { type: Number },
+    repaymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "overdue"],
+      default: "pending",
     },
+    repaymentDate: { type: Date, required: true },
+    transactionId: { type: String, required: true, unique: true },
   },
   { timestamps: true }
 );
