@@ -15,12 +15,7 @@ const steps = [
     icon: Warehouse,
     color: "bg-primary/10 text-primary",
   },
-  {
-    title: "Get Instant Credit",
-    desc: "Unlock up to 70% of your crop's value as an instant loan to fund your next season without selling in distress.",
-    icon: ShieldCheck,
-    color: "bg-secondary/10 text-secondary",
-  },
+
   {
     title: "Sell at Peak Price",
     desc: "Our AI Advisor monitors mandi arrivals and predicts price peaks, helping you sell directly to verified buyers.",
@@ -110,10 +105,7 @@ export function MarketingPage() {
                   <span className="material-symbols-outlined text-primary">verified_user</span>
                   <span className="text-sm font-bold text-on-surface-variant">WDRA Regd.</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary">currency_rupee</span>
-                  <span className="text-sm font-bold text-on-surface-variant">Instant Credit</span>
-                </div>
+
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-primary">monitoring</span>
                   <span className="text-sm font-bold text-on-surface-variant">AI Insights</span>
@@ -241,7 +233,7 @@ export function MarketingPage() {
                   {[
                     { title: "AI Price Advisor", desc: "Real-time mandi arrival tracking and predictive analytics.", icon: "insights" },
                     { title: "Nationwide Warehouse Network", desc: "Access 500+ verified and insured storage hubs.", icon: "grid_view" },
-                    { title: "Integrated Financials", desc: "Instant collateral-based loans directly in your wallet.", icon: "account_balance_wallet" }
+
                   ].map(f => (
                     <div key={f.title} className="flex gap-6 items-start group">
                       <div className="bg-white p-4 rounded-2xl shadow-sm group-hover:shadow-md transition-all text-primary">
@@ -309,7 +301,7 @@ export function MarketingPage() {
             </div>
             
             {[
-              { title: "Product", links: ["Warehouses", "AI Advisor", "Loans", "Marketplace"] },
+              { title: "Product", links: ["Warehouses", "AI Advisor", "Marketplace"] },
               { title: "Company", links: ["About Us", "Contact", "Careers", "Impact"] },
               { title: "Legal", links: ["Privacy Policy", "Terms of Service", "Cookie Policy"] }
             ].map(col => (

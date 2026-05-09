@@ -13,7 +13,6 @@ const navByRole: Record<
   farmer: [
     { label: 'Home',      icon: 'home',           href: '/dashboard/farmer' },
     { label: 'Warehouses',icon: 'warehouse',      href: '/dashboard/farmer/warehouses' },
-    { label: 'Loans',     icon: 'payments',       href: '/dashboard/farmer/loans' },
     { label: 'Bookings',  icon: 'calendar_month', href: '/dashboard/farmer/bookings' },
   ],
   warehouse_owner: [

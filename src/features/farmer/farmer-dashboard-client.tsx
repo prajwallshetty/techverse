@@ -51,13 +51,6 @@ export function FarmerDashboardClient({ sessionUser }: { sessionUser: any }) {
       bg: 'bg-primary/10',
     },
     {
-      label: 'Active Loan',
-      value: `₹${(data?.stats?.activeLoanAmount ?? 0).toLocaleString()}`,
-      icon: Banknote,
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-500/10',
-    },
-    {
       label: 'Active Bids',
       value: data?.stats?.activeBidsCount ?? 0,
       icon: Gavel,
@@ -68,7 +61,6 @@ export function FarmerDashboardClient({ sessionUser }: { sessionUser: any }) {
 
   const quickActions = [
     { label: 'Book Storage', href: '/dashboard/farmer/warehouses', icon: WarehouseIcon, primary: true },
-    { label: 'Apply for Loan', href: '/dashboard/farmer/loans', icon: Banknote, primary: false },
     { label: 'My Bookings', href: '/dashboard/farmer/bookings', icon: CheckCircle2, primary: false },
   ];
 
