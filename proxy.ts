@@ -1,4 +1,7 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth/auth.config";
+
+const { auth } = NextAuth(authConfig);
 import { NextResponse } from "next/server";
 import type { UserRole } from "@/types/domain";
 import { ROLE_DASHBOARD } from "@/types/domain";
