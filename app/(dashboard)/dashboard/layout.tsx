@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { TopAppBar } from "@/components/ui/top-app-bar";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { Sidebar } from "@/components/ui/sidebar";
+import { TraderSidebar } from "@/components/ui/trader-sidebar";
 
 export default async function DashboardLayout({
   children,
@@ -15,10 +16,12 @@ export default async function DashboardLayout({
     redirect("/signin");
   }
 
+  const role = session.user.role;
+
   return (
     <div className="min-h-screen bg-background text-foreground flex">
       {/* Desktop Sidebar */}
-      <Sidebar />
+      {role === "trader" ? <TraderSidebar /> : <Sidebar />}
 
       <div className="flex-1 flex flex-col min-w-0">
         <header className="lg:hidden sticky top-0 z-50">
@@ -30,7 +33,7 @@ export default async function DashboardLayout({
         </main>
 
         <footer className="lg:hidden">
-          <BottomNav />
+          <BottomNav role={role} />
         </footer>
       </div>
     </div>

@@ -11,6 +11,9 @@ export interface IBooking extends Document {
   marketplaceStatus: "none" | "listed" | "sold";
   autoSellTargetPrice?: number;
   isAutoSellEnabled: boolean;
+  auctionEndsAt?: Date;
+  startingBid?: number;
+  basePrice?: number;
   expiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -38,6 +41,9 @@ const BookingSchema: Schema<IBooking> = new Schema(
     },
     autoSellTargetPrice: { type: Number },
     isAutoSellEnabled: { type: Boolean, default: false },
+    auctionEndsAt: { type: Date },
+    startingBid: { type: Number },
+    basePrice: { type: Number },
     expiresAt: { type: Date },
   },
   { timestamps: true }

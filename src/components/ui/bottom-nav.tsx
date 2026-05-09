@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const navItems = [
+const farmerNavItems = [
   { label: 'Home', icon: 'home', href: '/dashboard/farmer' },
   { label: 'Warehouses', icon: 'warehouse', href: '/dashboard/farmer/warehouses' },
   { label: 'Prices', icon: 'trending_up', href: '/dashboard/farmer/prices' },
@@ -11,8 +11,17 @@ const navItems = [
   { label: 'Profile', icon: 'person', href: '/dashboard/farmer/profile' },
 ];
 
-export function BottomNav() {
+const traderNavItems = [
+  { label: 'Overview', icon: 'dashboard', href: '/dashboard/trader' },
+  { label: 'Market', icon: 'storefront', href: '/dashboard/trader/marketplace' },
+  { label: 'Bids', icon: 'gavel', href: '/dashboard/trader/bids' },
+  { label: 'Purchases', icon: 'shopping_cart', href: '/dashboard/trader/purchases' },
+  { label: 'Profile', icon: 'person', href: '/dashboard/trader/profile' },
+];
+
+export function BottomNav({ role = 'farmer' }: { role?: string }) {
   const pathname = usePathname();
+  const navItems = role === 'trader' ? traderNavItems : farmerNavItems;
 
   return (
     <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-1 h-16 bg-surface dark:bg-surface-container-lowest shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] border-t border-outline-variant">

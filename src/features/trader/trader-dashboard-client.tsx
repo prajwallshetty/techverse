@@ -108,12 +108,7 @@ export function TraderDashboardClient({ sessionUser }: { sessionUser: any }) {
               <Badge intent="low" className="font-bold">Real-time (Agmarknet)</Badge>
             </div>
             <div className="grid gap-4">
-              {[
-                { commodity: "Rice (Sona Masoori)", price: "₹3,450/qt", change: "+2.1%", up: true },
-                { commodity: "Wheat", price: "₹2,890/qt", change: "-0.8%", up: false },
-                { commodity: "Chilli (Guntur S4)", price: "₹14,200/qt", change: "+5.3%", up: true },
-                { commodity: "Turmeric", price: "₹11,800/qt", change: "+1.2%", up: true },
-              ].map((m) => (
+              {(data?.marketPrices || []).map((m: any) => (
                 <div key={m.commodity} className="flex items-center justify-between p-5 rounded-3xl border border-border/40 bg-surface-muted/10 group hover:bg-surface-muted/30 transition-colors">
                   <span className="font-black text-sm text-foreground/80">{m.commodity}</span>
                   <div className="flex items-center gap-6">
@@ -125,6 +120,11 @@ export function TraderDashboardClient({ sessionUser }: { sessionUser: any }) {
                   </div>
                 </div>
               ))}
+              {data?.marketPrices?.length === 0 && (
+                <div className="p-8 text-center border-2 border-dashed border-border/40 rounded-3xl">
+                  <p className="text-muted text-sm font-bold">No active marketplace data.</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>

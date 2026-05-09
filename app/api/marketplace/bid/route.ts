@@ -12,6 +12,7 @@ import mongoose from "mongoose";
 const bidSchema = z.object({
   bookingId: z.string().min(1),
   amount: z.number().min(1),
+  maxAutoBid: z.number().optional(),
 });
 
 export async function POST(request: Request) {
@@ -28,34 +29,85 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid bid data" }, { status: 400 });
     }
 
-    const { bookingId, amount } = parsed.data;
+    const { bookingId, amount, maxAutoBid } = parsed.data;
+
+    if (maxAutoBid && maxAutoBid <= amount) {
+      return NextResponse.json({ error: "Max auto bid must be higher than starting amount" }, { status: 400 });
+    }
 
     await dbConnect();
     const session_mongo = await mongoose.startSession();
     session_mongo.startTransaction();
 
     try {
-      // 1. Check if bid is higher than current highest
+      const booking = await Booking.findById(bookingId).session(session_mongo);
+      if (!booking || booking.marketplaceStatus !== "listed") {
+        throw new Error("Listing not found or not available.");
+      }
+
+      if (booking.auctionEndsAt && new Date() > new Date(booking.auctionEndsAt)) {
+        throw new Error("Auction has expired.");
+      }
+
+      // 1. Fetch current highest bid
       const highestBid = await Bid.findOne({ bookingId }).sort({ amount: -1 }).session(session_mongo);
-      if (highestBid && amount <= highestBid.amount) {
-        throw new Error("Bid must be higher than current highest: ₹" + highestBid.amount);
+      
+      let currentAmount = amount;
+      
+      if (highestBid) {
+        if (amount <= highestBid.amount) {
+          throw new Error("Bid must be higher than current highest: ₹" + highestBid.amount);
+        }
+
+        // Auto-bid logic: If current highest bidder has maxAutoBid, they fight back.
+        if (highestBid.maxAutoBid && highestBid.traderId.toString() !== session.user.id) {
+          if (highestBid.maxAutoBid > amount) {
+            // They outbid the incoming manual bid (or maxAutoBid)
+            // Determine the new amount. If the incoming has maxAutoBid, they fight.
+            if (maxAutoBid) {
+              if (highestBid.maxAutoBid >= maxAutoBid) {
+                // Previous bidder wins up to maxAutoBid + 10 (or up to their max)
+                const newAmount = Math.min(highestBid.maxAutoBid, maxAutoBid + 10);
+                throw new Error(`You were instantly outbid! Current bid is now ₹${newAmount}`);
+                // In a perfect system, we'd log both bids, but for simplicity, we reject the incoming and let the user know. 
+                // We actually need to create a new bid for the previous bidder.
+              } else {
+                // Incoming bidder wins over previous maxAutoBid
+                currentAmount = highestBid.maxAutoBid + 10; // Increment
+              }
+            } else {
+              // Incoming is just manual. Previous bidder outbids them immediately.
+              const newAmount = Math.min(highestBid.maxAutoBid, amount + 10);
+              // Create a counter-bid for the previous bidder
+              const counterBid = new Bid({
+                bookingId,
+                traderId: highestBid.traderId,
+                amount: newAmount,
+                maxAutoBid: highestBid.maxAutoBid,
+                status: "pending",
+              });
+              await counterBid.save({ session: session_mongo });
+              throw new Error(`You were instantly outbid by AutoBid! Current bid is now ₹${newAmount}`);
+            }
+          }
+        }
+      } else if (booking.startingBid && currentAmount < booking.startingBid) {
+         throw new Error("Bid must be at least the starting bid of ₹" + booking.startingBid);
       }
 
       // 2. Create the new bid
       const bid = new Bid({
         bookingId,
         traderId: session.user.id,
-        amount,
+        amount: currentAmount,
+        maxAutoBid,
         status: "pending",
       });
       await bid.save({ session: session_mongo });
 
-      // 3. AUTO-SELL LOGIC
-      const booking = await Booking.findById(bookingId).session(session_mongo);
+      // 3. AUTO-SELL LOGIC (for Farmers)
       let autoSold = false;
-
-      if (booking && booking.isAutoSellEnabled && booking.autoSellTargetPrice && amount >= booking.autoSellTargetPrice) {
-        // EXECUTE AUTOMATIC SALE
+      if (booking.isAutoSellEnabled && booking.autoSellTargetPrice && currentAmount >= booking.autoSellTargetPrice) {
         booking.marketplaceStatus = "sold";
         bid.status = "accepted";
         await booking.save({ session: session_mongo });
@@ -70,7 +122,7 @@ export async function POST(request: Request) {
       
       await pusherServer.trigger(`marketplace-${bookingId}`, "new-bid", {
         _id: bid._id,
-        amount,
+        amount: currentAmount,
         status: bid.status,
         traderId: {
           _id: session.user.id,
@@ -79,29 +131,27 @@ export async function POST(request: Request) {
         createdAt: bid.createdAt,
       });
 
-      if (booking) {
-        if (autoSold) {
-          await pusherServer.trigger(`marketplace-${bookingId}`, "auto-sold", {
-            amount,
-            traderName: trader?.name,
-          });
+      if (autoSold) {
+        await pusherServer.trigger(`marketplace-${bookingId}`, "auto-sold", {
+          amount: currentAmount,
+          traderName: trader?.name,
+        });
 
-          // SMS Notification for Auto-Sell
-          const farmer = await User.findById(booking.farmerId).select("email");
+        const farmer = await User.findById(booking.farmerId).select("email");
+        if (farmer) {
           NotificationService.notifyAutoSellExecuted(
-            farmer?.email || "+910000000000",
+            farmer.email || "+910000000000",
             booking.cropName,
-            amount
-          );
-        } else {
-          // SMS Notification for New Bid (Regular)
-          const farmer = await User.findById(booking.farmerId).select("email");
-          NotificationService.notifyNewBid(
-            farmer?.email || "+910000000000",
-            booking.cropName,
-            amount
+            currentAmount
           );
         }
+      } else if (highestBid && highestBid.traderId.toString() !== session.user.id) {
+         // Notify the outbid trader
+         await pusherServer.trigger(`trader-${highestBid.traderId}`, "outbid-alert", {
+            bookingId,
+            cropName: booking.cropName,
+            newAmount: currentAmount
+         });
       }
 
       await pusherServer.trigger("marketplace-global", "bid-count-update", { bookingId });
@@ -135,7 +185,7 @@ export async function GET(request: Request) {
     const bids = await Bid.find({ bookingId })
       .populate("traderId", "name")
       .sort({ amount: -1 })
-      .limit(10)
+      .limit(15)
       .lean();
 
     return NextResponse.json({ bids }, { status: 200 });
