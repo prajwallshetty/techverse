@@ -28,10 +28,12 @@ import {
 import { Card, CardContent } from "@/components/antigravity/card";
 import { Badge } from "@/components/antigravity/badge";
 import { Button } from "@/components/antigravity/button";
+import { useTranslation } from "@/lib/i18n/context";
 
 const COLORS = ["#00C49F", "#FFBB28", "#FF8042", "#0088FE", "#8884d8"];
 
 export function WarehouseOwnerClient() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<any>(null);
   const [chartData, setChartData] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
@@ -81,8 +83,8 @@ export function WarehouseOwnerClient() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-black tracking-tight">Facility Overview</h2>
-          <p className="text-muted text-sm mt-1">Real-time capacity tracking and revenue analytics.</p>
+          <h2 className="text-3xl font-black tracking-tight">{t("common.nav.inventory")}</h2>
+          <p className="text-muted text-sm mt-1">{t("common.dashboard.role_dashboard", { role: "Facility" })}</p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="secondary" className="px-4">Export Report</Button>
@@ -100,7 +102,7 @@ export function WarehouseOwnerClient() {
               </div>
               <Badge intent="high" className="bg-emerald-500/10 text-emerald-600 border-none">+12%</Badge>
             </div>
-            <p className="text-xs font-black uppercase text-muted tracking-widest">Total Revenue</p>
+            <p className="text-xs font-black uppercase text-muted tracking-widest">{t("common.dashboard.total_revenue")}</p>
             <h3 className="text-2xl font-black mt-1">₹{stats?.totalRevenue.toLocaleString()}</h3>
           </CardContent>
         </Card>
@@ -113,7 +115,7 @@ export function WarehouseOwnerClient() {
               </div>
               <span className="text-[10px] font-bold text-muted">{stats?.utilizationRate}% Utilized</span>
             </div>
-            <p className="text-xs font-black uppercase text-muted tracking-widest">Capacity Used</p>
+            <p className="text-xs font-black uppercase text-muted tracking-widest">{t("common.dashboard.capacity_used")}</p>
             <h3 className="text-2xl font-black mt-1">{stats?.currentStock} / {stats?.totalCapacity} MT</h3>
             <div className="w-full bg-surface-muted h-1.5 rounded-full mt-4 overflow-hidden">
               <div className="bg-accent h-full rounded-full" style={{ width: `${stats?.utilizationRate}%` }} />
@@ -128,7 +130,7 @@ export function WarehouseOwnerClient() {
                 <Clock className="size-5" />
               </div>
             </div>
-            <p className="text-xs font-black uppercase text-muted tracking-widest">Active Bookings</p>
+            <p className="text-xs font-black uppercase text-muted tracking-widest">{t("common.dashboard.active_bookings")}</p>
             <h3 className="text-2xl font-black mt-1">{stats?.activeBookings} Reservations</h3>
           </CardContent>
         </Card>
@@ -151,7 +153,7 @@ export function WarehouseOwnerClient() {
         
         <Card className="lg:col-span-2 border-border/60">
           <CardContent className="p-6">
-            <h3 className="font-black text-lg mb-6 flex items-center gap-2"><TrendingUp className="size-5 text-primary" /> Stock Distribution</h3>
+            <h3 className="font-black text-lg mb-6 flex items-center gap-2"><TrendingUp className="size-5 text-primary" /> {t("common.dashboard.stock_distribution")}</h3>
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>

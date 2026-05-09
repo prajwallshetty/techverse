@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "AI-powered agricultural intelligence platform for a resilient future.",
 };
 
+import { LanguageProvider } from "@/lib/i18n/context";
+
 export default function RootLayout({
   children,
 }: Readonly<{
