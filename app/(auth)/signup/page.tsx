@@ -2,8 +2,8 @@ import { SignUpForm } from "@/features/auth/signup-form";
 import { AuthCard } from "@/components/auth/auth-card";
 
 export const metadata = {
-  title: "Sign Up | TechVerse",
-  description: "Join TechVerse — Your agricultural intelligence partner",
+  title: "Sign Up | Krishi Hub",
+  description: "Join Krishi Hub — Your agricultural intelligence partner",
 };
 
 export default function SignUpPage() {

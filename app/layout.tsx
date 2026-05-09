@@ -4,8 +4,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "TechVerse",
-    template: "%s | TechVerse",
+    default: "Krishi Hub",
+    template: "%s | Krishi Hub",
   },
   description: "AI-powered agricultural intelligence platform for a resilient future.",
 };

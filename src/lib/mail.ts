@@ -16,12 +16,12 @@ export async function sendVerificationEmail(email: string, token: string) {
   });
 
   const mailOptions = {
-    from: `"TechVerse" <${process.env.MAIL_USER}>`,
+    from: `"Krishi Hub" <${process.env.MAIL_USER}>`,
     to: email,
     subject: "Verify your email address",
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eef5ea; border-radius: 12px; background-color: #f7faf5;">
-        <h2 style="color: #1e7b4b; margin-top: 0;">Welcome to TechVerse!</h2>
+        <h2 style="color: #1e7b4b; margin-top: 0;">Welcome to Krishi Hub!</h2>
         <p style="color: #172017; font-size: 16px; line-height: 1.5;">
           Thank you for signing up. Please verify your email address to get started with your account.
         </p>
@@ -37,7 +37,7 @@ export async function sendVerificationEmail(email: string, token: string) {
         </p>
         <hr style="border: 0; border-top: 1px solid #d9e5d3; margin: 20px 0;">
         <p style="color: #737873; font-size: 12px; text-align: center;">
-          &copy; 2026 TechVerse. All rights reserved.
+          &copy; 2026 Krishi Hub. All rights reserved.
         </p>
       </div>
     `,
