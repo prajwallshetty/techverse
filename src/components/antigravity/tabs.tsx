@@ -23,19 +23,24 @@ const TabsContext = createContext<TabsContextValue>({
 /* ─── Root ─── */
 export function Tabs({
   defaultValue,
+  value,
   children,
   className,
   onValueChange,
   ...props
 }: HTMLAttributes<HTMLDivElement> & {
-  defaultValue: string;
+  defaultValue?: string;
+  value?: string;
   onValueChange?: (value: string) => void;
 }) {
-  const [active, setActiveRaw] = useState(defaultValue);
+  const [activeInternal, setActiveInternal] = useState(defaultValue || "");
+  const active = value !== undefined ? value : activeInternal;
 
-  const setActive = (value: string) => {
-    setActiveRaw(value);
-    onValueChange?.(value);
+  const setActive = (newValue: string) => {
+    if (value === undefined) {
+      setActiveInternal(newValue);
+    }
+    onValueChange?.(newValue);
   };
 
   return (

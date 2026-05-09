@@ -23,11 +23,17 @@ export async function GET() {
     const bookings = await Booking.find({ warehouseId: warehouse._id });
     
     const stats = {
+      warehouseName: warehouse.name,
+      warehouseId: String(warehouse._id),
+      location: warehouse.location,
+      latitude: warehouse.latitude ?? null,
+      longitude: warehouse.longitude ?? null,
       totalRevenue: bookings
         .filter(b => b.status === "confirmed" || b.status === "completed")
         .reduce((sum, b) => sum + b.totalPrice, 0),
       activeBookings: bookings.filter(b => b.status === "confirmed").length,
       completedBookings: bookings.filter(b => b.status === "completed").length,
+      pendingBookings: bookings.filter(b => b.status === "pending").length,
       currentStock: warehouse.currentStockTons,
       totalCapacity: warehouse.capacityTons,
       utilizationRate: Math.round((warehouse.currentStockTons / warehouse.capacityTons) * 100),
@@ -44,7 +50,7 @@ export async function GET() {
       value: cropDistribution[name]
     }));
 
-    return NextResponse.json({ stats, chartData, warehouseName: warehouse.name }, { status: 200 });
+    return NextResponse.json({ stats, chartData }, { status: 200 });
 
   } catch (error) {
     console.error("Stats API Error:", error);
