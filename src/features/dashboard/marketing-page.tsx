@@ -1,104 +1,129 @@
-import { ArrowRight, CheckCircle2, ShieldCheck, TrendingUp, Users, Warehouse, Search, MapPin, BarChart3, ChevronRight } from "lucide-react";
+"use client";
+
+import { motion, useScroll, useTransform } from "framer-motion";
+import { 
+  ArrowRight, 
+  ShieldCheck, 
+  TrendingUp, 
+  Users, 
+  Warehouse as WarehouseIcon, 
+  ChevronRight,
+  Shield,
+  Zap,
+  Globe,
+  Coins,
+  ArrowUpRight,
+  LayoutDashboard
+} from "lucide-react";
 import Link from "next/link";
 import { LinkButton } from "@/components/antigravity/button";
+import { useRef } from "react";
 
 const stats = [
-  { label: "Farmers Empowered", value: "1.2M+", icon: Users },
-  { label: "Verified Warehouses", value: "500+", icon: Warehouse },
-  { label: "Value Unlocked", value: "₹4,500Cr", icon: TrendingUp },
+  { label: "Active Farmers", value: "1.2M+", icon: Users, color: "text-blue-500" },
+  { label: "Storage Capacity", value: "850K MT", icon: WarehouseIcon, color: "text-emerald-500" },
+  { label: "Credit Disbursed", value: "₹4,200Cr", icon: Coins, color: "text-amber-500" },
+  { label: "States Covered", value: "18+", icon: Globe, color: "text-indigo-500" },
 ];
 
-const steps = [
+const features = [
   {
-    title: "Deposit Your Crop",
-    desc: "Store your harvest in our network of verified warehouses with 24/7 monitoring and insurance coverage.",
-    icon: Warehouse,
-    color: "bg-primary/10 text-primary",
+    title: "Secure Warehousing",
+    desc: "WDRA-registered facilities with 24/7 digital surveillance and comprehensive insurance coverage.",
+    icon: ShieldCheck,
+    image: "/warehouse.png"
   },
-
   {
-    title: "Sell at Peak Price",
-    desc: "Our AI Advisor monitors mandi arrivals and predicts price peaks, helping you sell directly to verified buyers.",
-    icon: TrendingUp,
-    color: "bg-primary/10 text-primary",
-  },
+    title: "Instant Credit",
+    desc: "Unlock liquidity without selling your crops. Get instant loans against your electronic Negotiable Warehouse Receipts (eNWR).",
+    icon: Zap,
+    image: "/warehouse1.png"
+  }
 ];
 
 export function MarketingPage() {
+  const targetRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ["start start", "end start"],
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
+
   return (
-    <div className="flex flex-col min-h-screen bg-background font-sans selection:bg-primary/10">
-      {/* Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-outline-variant bg-surface/80 backdrop-blur-md">
+    <div className="flex flex-col min-h-screen bg-[#fafaf9] text-[#1c1917] selection:bg-primary/20 selection:text-primary overflow-x-hidden">
+      
+      {/* ── Navigation ─────────────────────────────────────────────────── */}
+      <nav className="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl border-b border-black/[0.03]">
         <div className="container mx-auto flex h-20 items-center justify-between px-6 lg:px-12">
-          <div className="flex items-center gap-2.5">
-            <div className="bg-primary rounded-xl p-1.5 shadow-lg shadow-primary/20">
-              <span className="material-symbols-outlined text-white text-2xl">agriculture</span>
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="bg-primary size-10 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
+              <span className="material-symbols-outlined text-white text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>agriculture</span>
             </div>
-            <span className="text-2xl font-black text-primary tracking-tighter uppercase">Krishi Hub</span>
-          </div>
+            <span className="text-xl font-black tracking-tighter uppercase text-primary">Krishi Hub</span>
+          </Link>
           
-          <nav className="hidden lg:flex items-center gap-10">
-            {["How it Works", "Warehouses", "Price Advisor", "About Us"].map((item) => (
+          <div className="hidden lg:flex items-center gap-10">
+            {["Network", "Pricing", "About", "Contact"].map((item) => (
               <Link 
                 key={item} 
-                href={`#${item.toLowerCase().replace(/ /g, "-")}`}
-                className="text-[15px] font-bold text-on-surface-variant hover:text-primary transition-all duration-300 relative group"
+                href="#"
+                className="text-xs font-black uppercase tracking-widest text-muted hover:text-primary transition-all"
               >
                 {item}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
               </Link>
             ))}
-          </nav>
+          </div>
 
-          <div className="flex items-center gap-6">
-            <Link href="/signin" className="hidden sm:block text-sm font-bold text-on-surface-variant hover:text-primary transition-colors">
-              Log In
+          <div className="flex items-center gap-4">
+            <Link href="/signin" className="text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-colors mr-2">
+              Sign In
             </Link>
-            <LinkButton href="/signup" className="rounded-full px-8 py-6 h-auto text-base shadow-xl shadow-primary/20 hover:scale-105 transition-transform duration-300">
-              Get Started
+            <LinkButton href="/signup" className="rounded-2xl px-8 h-12 bg-primary text-white shadow-xl shadow-primary/20 font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform">
+              Join Now
             </LinkButton>
           </div>
         </div>
-      </header>
+      </nav>
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden pt-16 pb-24 lg:pt-28 lg:pb-40">
-          {/* Decorative Elements */}
-          <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl pointer-events-none" />
+        
+        {/* ── Hero Section ──────────────────────────────────────────────── */}
+        <section ref={targetRef} className="relative min-h-screen flex items-center pt-20">
+          <motion.div 
+            style={{ opacity, scale }}
+            className="container mx-auto px-6 lg:px-12 grid lg:grid-cols-12 gap-12 items-center"
+          >
+            <div className="lg:col-span-7 space-y-10">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h1 className="text-6xl lg:text-[6.5rem] font-extrabold leading-[0.95] tracking-tight mt-6">
+                  Harvesting <br />
+                  <span className="text-primary">Prosperity</span> <br />
+                  Digitally.
+                </h1>
+                <p className="text-xl lg:text-2xl text-muted font-medium mt-8 max-w-xl leading-relaxed">
+                  The most advanced agricultural asset management platform. Secure storage, instant liquidity, and data-driven insights for the modern farmer.
+                </p>
+              </motion.div>
 
-          <div className="container mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-16 items-center">
-            <div className="relative z-10 space-y-10 max-w-2xl">
-              <div className="inline-flex items-center gap-3 bg-white border border-outline-variant px-5 py-2.5 rounded-full shadow-sm">
-                <div className="flex -space-x-2">
-                  {[1,2,3].map(i => (
-                    <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-surface-container-high flex items-center justify-center overflow-hidden">
-                      <img src={`https://placehold.co/40x40?text=${i}`} alt="" />
-                    </div>
-                  ))}
-                </div>
-                <span className="text-xs font-bold text-on-surface-variant tracking-wide">Trusted by 1.2M+ Farmers</span>
-              </div>
-
-              <h1 className="text-6xl lg:text-8xl font-black text-on-surface leading-[1.05] tracking-tight">
-                Store Your Crop, <br />
-                <span className="text-primary italic">Unlock Prosperity.</span>
-              </h1>
-              
-              <p className="text-xl lg:text-2xl text-on-surface-variant leading-relaxed font-medium max-w-xl">
-                India&apos;s premier digital storage platform. Empowering farmers with secure warehousing, instant credit, and AI-driven market intelligence.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-5 pt-4">
-                <LinkButton href="/signup" className="h-16 px-10 text-lg rounded-full shadow-2xl shadow-primary/30 group">
-                  Find a Warehouse
-                  <ArrowRight className="ml-2 size-6 transition-transform duration-300 group-hover:translate-x-1" />
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="flex flex-col sm:flex-row gap-5"
+              >
+                <LinkButton href="/signup" className="h-16 px-10 rounded-2xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-2xl shadow-primary/30 flex items-center gap-3">
+                  Start Your Journey <ArrowRight className="size-5" />
                 </LinkButton>
-                <LinkButton href="/signin" variant="secondary" className="h-16 px-10 text-lg rounded-full border-2 border-outline-variant bg-transparent hover:bg-surface-container-low">
-                  Check Market Prices
+                <LinkButton href="/signin" variant="secondary" className="h-16 px-10 rounded-2xl border-2 border-black/5 font-black text-sm uppercase tracking-widest">
+                  View Live Prices
                 </LinkButton>
-              </div>
+              </motion.div>
 
               <div className="flex items-center gap-8 pt-8 border-t border-outline-variant/50">
                 <div className="flex items-center gap-2">
@@ -112,205 +137,235 @@ export function MarketingPage() {
                 </div>
               </div>
             </div>
-            
-            {/* Visual Section */}
-            <div className="relative group">
-              <div className="absolute -inset-6 bg-gradient-to-tr from-primary/10 to-secondary/10 rounded-[40px] blur-2xl group-hover:blur-3xl transition-all duration-500" />
-              <div className="relative rounded-[40px] overflow-hidden shadow-[0_32px_64px_-16px_rgba(30,123,75,0.2)] border border-white/40 aspect-[4/5] lg:aspect-square">
+
+            <div className="lg:col-span-5 relative">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(30,123,75,0.25)] border-8 border-white bg-white"
+              >
                 <img 
-                  src="https://placehold.co/800x800?text=Lush+Farm+Sunset" 
-                  alt="Krishi Hub Empowerment" 
-                  className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700"
+                  src="/farmer.png" 
+                  alt="Modern Farmer" 
+                  className="w-full aspect-[4/5] object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 
-                {/* Floating UI Elements */}
-                <div className="absolute bottom-10 left-10 right-10 p-8 bg-white/95 backdrop-blur-xl rounded-[32px] shadow-2xl border border-white animate-in slide-in-from-bottom-8 duration-1000">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div className="bg-primary/10 p-3 rounded-2xl text-primary">
-                        <TrendingUp className="size-6" />
+                {/* Floating Insight Card */}
+                <motion.div 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 1, duration: 1 }}
+                  className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-xl p-5 rounded-[1.5rem] shadow-2xl border border-white/40"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-emerald-500/10 p-2.5 rounded-xl text-emerald-600">
+                        <TrendingUp className="size-5" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Current Market Price</p>
-                        <p className="text-2xl font-black text-on-surface">Wheat (Grade A)</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted">Price Prediction</p>
+                        <p className="text-lg font-bold">Wheat (Grade A+)</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-black text-primary">₹2,450</p>
-                      <p className="text-sm font-bold text-primary flex items-center justify-end gap-1">
-                        <TrendingUp className="size-3" /> +4.2%
-                      </p>
+                      <p className="text-lg font-black text-emerald-600">↑ ₹2,480</p>
                     </div>
                   </div>
-                  <div className="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
-                    <div className="h-full bg-primary w-[75%] rounded-full shadow-[0_0_8px_rgba(30,123,75,0.4)]" />
-                  </div>
-                  <div className="flex justify-between mt-3 text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">
-                    <span>Low: ₹2,100</span>
-                    <span className="text-primary">Best time to sell: In 8 days</span>
-                    <span>Peak: ₹2,680</span>
-                  </div>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
+
+              {/* Decorative backgrounds */}
+              <div className="absolute -top-20 -right-20 size-[500px] bg-primary/10 rounded-full blur-[100px] -z-10" />
+              <div className="absolute -bottom-20 -left-20 size-[500px] bg-amber-500/10 rounded-full blur-[100px] -z-10" />
             </div>
-          </div>
+          </motion.div>
         </section>
 
-        {/* Stats Section */}
-        <section className="bg-surface-container-lowest py-20 border-y border-outline-variant/30">
+        {/* ── Stats Section ─────────────────────────────────────────────── */}
+        <section className="py-24 bg-white border-y border-black/5">
           <div className="container mx-auto px-6 lg:px-12">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-              {stats.map((stat) => (
-                <div key={stat.label} className="flex flex-col items-center text-center space-y-4">
-                  <div className="bg-primary/5 w-16 h-16 rounded-[24px] flex items-center justify-center text-primary">
-                    <stat.icon className="size-8 stroke-[1.5px]" />
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
+              {stats.map((stat, idx) => (
+                <motion.div 
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="text-center space-y-3"
+                >
+                  <p className="text-5xl font-black tracking-tighter text-foreground">{stat.value}</p>
+                  <div className="flex items-center justify-center gap-2">
+                    <stat.icon className={`size-4 ${stat.color}`} />
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted">{stat.label}</p>
                   </div>
-                  <div>
-                    <p className="text-5xl font-black text-on-surface tracking-tight">{stat.value}</p>
-                    <p className="text-sm font-bold uppercase tracking-[0.2em] text-on-surface-variant mt-2">{stat.label}</p>
-                  </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* How It Works */}
-        <section id="how-it-works" className="py-32 lg:py-48 relative">
+        {/* ── Features Showcase ─────────────────────────────────────────── */}
+        <section className="py-32 lg:py-48 bg-[#fafaf9]">
           <div className="container mx-auto px-6 lg:px-12">
-            <div className="max-w-4xl mx-auto text-center space-y-6 mb-24">
-              <h2 className="text-5xl lg:text-6xl font-black text-on-surface leading-tight tracking-tight">
-                Maximize Your Income <br />
-                In <span className="text-primary italic">Three Simple Steps</span>
+            <div className="max-w-3xl mb-24">
+              <h2 className="text-5xl lg:text-7xl font-black tracking-tighter leading-[0.95]">
+                Infrastructure designed for <br />
+                <span className="text-primary italic">Absolute Confidence.</span>
               </h2>
-              <p className="text-xl text-on-surface-variant leading-relaxed max-w-2xl mx-auto font-medium">
-                We&apos;ve simplified the entire post-harvest process. No more distress selling. No more middle-men. Just technology that works for you.
-              </p>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-10">
+              {features.map((feature, idx) => (
+                <motion.div 
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: idx * 0.2 }}
+                  className="group relative h-[600px] rounded-[3.5rem] overflow-hidden border border-black/5 shadow-sm hover:shadow-2xl transition-all duration-700"
+                >
+                  <img 
+                    src={feature.image} 
+                    alt={feature.title}
+                    className="absolute inset-0 w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  
+                  <div className="absolute bottom-12 left-12 right-12 text-white">
+                    <div className="size-16 rounded-[1.5rem] bg-primary flex items-center justify-center mb-6 shadow-xl shadow-primary/20">
+                      <feature.icon className="size-8" />
+                    </div>
+                    <h3 className="text-4xl font-black tracking-tight mb-4">{feature.title}</h3>
+                    <p className="text-lg text-white/70 font-medium max-w-sm leading-relaxed mb-8">
+                      {feature.desc}
+                    </p>
+                    <button className="flex items-center gap-2 text-xs font-black uppercase tracking-widest hover:gap-4 transition-all">
+                      Learn More <ArrowRight className="size-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Experience Section ────────────────────────────────────────── */}
+        <section className="py-32 bg-white overflow-hidden">
+          <div className="container mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-10 order-2 lg:order-1">
+              <Badge label="Full Control" />
+              <h2 className="text-5xl lg:text-7xl font-black tracking-tighter leading-none">
+                Your Farm, <br /> In Your Pocket.
+              </h2>
+              <div className="space-y-8">
+                {[
+                  { title: "Real-time Monitoring", desc: "Watch your stock levels and quality parameters from anywhere.", icon: LayoutDashboard },
+                  { title: "Mandi Price Feed", desc: "Live rates from 2,500+ mandis across India at your fingertips.", icon: Activity },
+                  { title: "Financial Hub", desc: "Apply for loans, view balance, and withdraw funds instantly.", icon: Coins }
+                ].map((item, idx) => (
+                  <motion.div 
+                    key={item.title}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="flex gap-6 items-start"
+                  >
+                    <div className="size-12 rounded-2xl bg-primary/5 flex items-center justify-center shrink-0">
+                      <item.icon className="size-6 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-black tracking-tight">{item.title}</h4>
+                      <p className="text-muted font-medium mt-1 leading-relaxed">{item.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </div>
             
-            <div className="grid lg:grid-cols-3 gap-10">
-              {steps.map((step, idx) => (
-                <div key={step.title} className="bg-white p-12 rounded-[48px] border border-outline-variant hover:border-primary/30 hover:shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)] transition-all duration-500 group relative overflow-hidden">
-                  <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-48 h-48 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors" />
-                  
-                  <div className={`${step.color} w-20 h-20 rounded-[28px] flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
-                    <step.icon className="size-10 stroke-[1.5px]" />
-                  </div>
-                  
-                  <div className="space-y-4 relative z-10">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-black text-primary/40">0{idx + 1}</span>
-                      <h3 className="text-2xl font-black text-on-surface">{step.title}</h3>
-                    </div>
-                    <p className="text-lg text-on-surface-variant leading-relaxed font-medium">
-                      {step.desc}
-                    </p>
-                    <div className="pt-4">
-                      <button className="flex items-center gap-2 text-sm font-black text-primary group/link">
-                        Learn More 
-                        <ChevronRight className="size-4 transition-transform group-hover/link:translate-x-1" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Feature Grid */}
-        <section className="bg-surface-container-low py-32 rounded-[64px] mx-6 lg:mx-12 mb-32 overflow-hidden relative">
-          <div className="container mx-auto px-6 lg:px-12">
-            <div className="grid lg:grid-cols-2 gap-20 items-center">
-              <div className="space-y-10">
-                <h2 className="text-5xl font-black text-on-surface tracking-tight leading-tight">
-                  Smarter Decisions with <br />
-                  <span className="text-secondary">Data-Driven Insights</span>
-                </h2>
-                
-                <div className="space-y-8">
-                  {[
-                    { title: "AI Price Advisor", desc: "Real-time mandi arrival tracking and predictive analytics.", icon: "insights" },
-                    { title: "Nationwide Warehouse Network", desc: "Access 500+ verified and insured storage hubs.", icon: "grid_view" },
-
-                  ].map(f => (
-                    <div key={f.title} className="flex gap-6 items-start group">
-                      <div className="bg-white p-4 rounded-2xl shadow-sm group-hover:shadow-md transition-all text-primary">
-                        <span className="material-symbols-outlined text-3xl">{f.icon}</span>
-                      </div>
-                      <div className="space-y-1">
-                        <h4 className="text-xl font-black text-on-surface">{f.title}</h4>
-                        <p className="text-on-surface-variant font-medium leading-relaxed">{f.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <LinkButton href="/signup" className="h-16 px-10 rounded-full">
-                  Explore Features
-                </LinkButton>
+            <motion.div 
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1 }}
+              className="relative order-1 lg:order-2"
+            >
+              <div className="absolute -inset-20 bg-primary/5 rounded-full blur-[120px]" />
+              <div className="relative bg-surface rounded-[4rem] border-8 border-white shadow-2xl overflow-hidden aspect-[4/3]">
+                 <div className="absolute inset-0 flex items-center justify-center bg-primary/5">
+                    <LayoutDashboard className="size-20 text-primary/20 animate-pulse" />
+                 </div>
+                 {/* This would be a screenshot of the app dashboard */}
+                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/90 to-transparent">
+                    <p className="text-xs font-black uppercase tracking-widest text-muted text-center">Dashboard Experience Mockup</p>
+                 </div>
               </div>
+            </motion.div>
+          </div>
+        </section>
 
-              <div className="relative">
-                <div className="absolute -inset-10 bg-white/20 rounded-[48px] blur-3xl" />
-                <img 
-                  src="https://placehold.co/700x800?text=Dashboard+Preview" 
-                  alt="Dashboard Preview" 
-                  className="relative rounded-[48px] shadow-2xl border border-white"
-                />
-              </div>
+        {/* ── Final CTA ────────────────────────────────────────────────── */}
+        <section className="py-40 relative">
+          <div className="container mx-auto px-6 lg:px-12 relative z-10">
+            <div className="bg-primary rounded-[4rem] p-12 lg:p-32 text-center text-white relative overflow-hidden shadow-2xl shadow-primary/30">
+               <div className="absolute top-0 right-0 p-10 opacity-10">
+                  <WarehouseIcon className="size-64" />
+               </div>
+               
+               <motion.div
+                 initial={{ opacity: 0, y: 20 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 transition={{ duration: 0.8 }}
+                 className="relative z-10 space-y-10"
+               >
+                 <h2 className="text-6xl lg:text-8xl font-black tracking-tighter leading-none">
+                    Join the Digital <br /> Agriculture Revolution.
+                 </h2>
+                 <p className="text-xl lg:text-2xl text-white/70 font-medium max-w-2xl mx-auto leading-relaxed">
+                    Stop gambling with your harvest. Get the security and liquidity you deserve with Krishi Hub.
+                 </p>
+                 <div className="flex flex-col sm:flex-row gap-6 justify-center pt-6">
+                    <LinkButton href="/signup" className="h-16 px-12 rounded-2xl bg-white text-primary font-black text-sm uppercase tracking-widest shadow-2xl shadow-black/10 hover:scale-105 transition-transform">
+                      Register as Farmer
+                    </LinkButton>
+                    <LinkButton href="/signin" className="h-16 px-12 rounded-2xl border-2 border-white/20 hover:bg-white/10 font-black text-sm uppercase tracking-widest transition-all">
+                      Sign In to Account
+                    </LinkButton>
+                 </div>
+               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Final CTA */}
-        <section className="py-32 bg-primary text-white text-center relative overflow-hidden rounded-[48px] mx-6 lg:mx-12 mb-20">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)]" />
-          <div className="container mx-auto px-6 lg:px-12 relative z-10 space-y-10">
-            <h2 className="text-5xl lg:text-7xl font-black tracking-tight leading-tight">
-              Ready to Secure Your <br /> Agricultural Future?
-            </h2>
-            <p className="text-xl lg:text-2xl text-white/80 max-w-2xl mx-auto font-medium">
-              Join 1.2M+ farmers who are already getting better value for their crops with Krishi Hub.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <LinkButton href="/signup" className="bg-white text-primary hover:bg-white/90 h-16 px-12 text-xl rounded-full shadow-2xl shadow-black/20">
-                Register as Farmer
-              </LinkButton>
-              <LinkButton href="/signin" className="bg-transparent border-2 border-white text-white hover:bg-white/10 h-16 px-12 text-xl rounded-full">
-                Register as Trader
-              </LinkButton>
-            </div>
-          </div>
-        </section>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-surface py-20 border-t border-outline-variant/30">
+      {/* ── Footer ────────────────────────────────────────────────────── */}
+      <footer className="bg-white py-24 border-t border-black/5">
         <div className="container mx-auto px-6 lg:px-12">
-          <div className="grid md:grid-cols-4 gap-12 items-start">
+          <div className="grid md:grid-cols-4 gap-16">
             <div className="space-y-6">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-3xl">agriculture</span>
-                <span className="text-2xl font-black text-primary tracking-tighter uppercase">Krishi Hub</span>
-              </div>
-              <p className="text-on-surface-variant font-medium leading-relaxed">
-                Empowering Bharat&apos;s farmers with secure storage, instant credit, and data-driven prosperity.
+              <Link href="/" className="flex items-center gap-3 group">
+                <div className="bg-primary size-8 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <span className="material-symbols-outlined text-white text-lg">agriculture</span>
+                </div>
+                <span className="text-lg font-black tracking-tighter uppercase text-primary">Krishi Hub</span>
+              </Link>
+              <p className="text-muted text-sm font-medium leading-relaxed">
+                Empowering Bharat&apos;s agricultural ecosystem with secure technology and financial inclusion.
               </p>
             </div>
             
             {[
-              { title: "Product", links: ["Warehouses", "AI Advisor", "Marketplace"] },
-              { title: "Company", links: ["About Us", "Contact", "Careers", "Impact"] },
-              { title: "Legal", links: ["Privacy Policy", "Terms of Service", "Cookie Policy"] }
+              { title: "Platform", links: ["Warehouses", "Financing", "Marketplace", "Logistics"] },
+              { title: "Company", links: ["About", "Careers", "Press", "Security"] },
+              { title: "Support", links: ["Help Center", "API Docs", "Contact", "Status"] }
             ].map(col => (
               <div key={col.title} className="space-y-6">
-                <h5 className="font-black text-on-surface uppercase tracking-widest text-xs">{col.title}</h5>
+                <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">{col.title}</h5>
                 <ul className="space-y-4">
                   {col.links.map(l => (
                     <li key={l}>
-                      <Link href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors">{l}</Link>
+                      <Link href="#" className="text-sm font-bold text-muted hover:text-primary transition-colors">{l}</Link>
                     </li>
                   ))}
                 </ul>
@@ -318,19 +373,43 @@ export function MarketingPage() {
             ))}
           </div>
           
-          <div className="mt-20 pt-8 border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-on-surface-variant text-sm font-medium">
-              © 2026 Krishi Hub. All rights reserved. 
+          <div className="mt-20 pt-8 border-t border-black/5 flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="text-muted text-xs font-bold uppercase tracking-widest">
+              © 2026 Krishi Hub. All rights reserved.
             </p>
             <div className="flex gap-8">
-              {/* Social icons placeholders */}
-              {["Facebook", "Twitter", "LinkedIn", "YouTube"].map(s => (
-                <Link key={s} href="#" className="text-on-surface-variant hover:text-primary text-sm font-bold">{s}</Link>
+              {["Privacy", "Terms", "Cookies"].map(l => (
+                <Link key={l} href="#" className="text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-colors">{l}</Link>
               ))}
             </div>
           </div>
         </div>
       </footer>
     </div>
+  );
+}
+
+function Badge({ label }: { label: string }) {
+  return (
+    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/5 border border-primary/10">
+      <div className="size-1.5 rounded-full bg-primary animate-pulse" />
+      <span className="text-[10px] font-black uppercase tracking-widest text-primary">{label}</span>
+    </div>
+  );
+}
+
+function Activity({ className }: { className?: string }) {
+  return (
+    <svg 
+      className={className}
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2.5" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+    </svg>
   );
 }

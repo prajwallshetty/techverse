@@ -103,21 +103,6 @@
   --text-h1-mobile--font-weight: 700;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #10160f;
-    --foreground: #eef5ea;
-    --surface: #151f15;
-    --surface-muted: #1c2a1b;
-    --border: #30422d;
-    --primary: #86c78e;
-    --primary-foreground: #071009;
-    --accent: #e1b957;
-    --accent-foreground: #1b1302;
-    --muted: #a9b9a5;
-    --danger: #ff806d;
-  }
-}
 
 body {
   background: var(--background);
