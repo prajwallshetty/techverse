@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { getDistance } from "geolib";
 import { WarehouseMap, type MapWarehouse } from "./warehouse-map";
+import { BookingModal } from "./booking-modal";
 import { Card, CardContent } from "@/components/antigravity/card";
 import { Badge } from "@/components/antigravity/badge";
 import { Button } from "@/components/antigravity/button";
@@ -24,6 +25,8 @@ export function WarehouseDashboard() {
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string>("");
   const [showMapMobile, setShowMapMobile] = useState(false);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [bookingSuccessMsg, setBookingSuccessMsg] = useState(false);
 
   // Add distance calculation and filter logic
   const processedWarehouses = useMemo(() => {
@@ -141,13 +144,35 @@ export function WarehouseDashboard() {
                   <p className="font-bold text-sm">{processedWarehouses.find(w => w.id === selectedId)?.name}</p>
                   <p className="text-xs text-muted mt-0.5">Select dates to calculate final cost</p>
                 </div>
-                <Button>
+                <Button onClick={() => setIsBookingModalOpen(true)}>
                   Book Space
                 </Button>
               </CardContent>
             </Card>
           </div>
         )}
+
+        <BookingModal
+          isOpen={isBookingModalOpen}
+          onClose={() => setIsBookingModalOpen(false)}
+          warehouse={processedWarehouses.find(w => w.id === selectedId) || null}
+          onSuccess={() => {
+            setIsBookingModalOpen(false);
+            setBookingSuccessMsg(true);
+            setTimeout(() => setBookingSuccessMsg(false), 5000);
+          }}
+        />
+
+        {/* Success Toast Overlay */}
+        {bookingSuccessMsg && (
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50 animate-[fadeIn_0.3s_ease]">
+            <div className="bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg font-bold flex items-center gap-2">
+              <Package className="size-5" />
+              Space Successfully Booked!
+            </div>
+          </div>
+        )}
+
       </div>
 
     </div>
