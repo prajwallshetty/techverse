@@ -13,6 +13,35 @@
   "dashboard": {
     "title": "AgriHold AI",
     "welcome": "स्वागत है",
-    "role_dashboard": "{{role}} डैशबोर्ड"
+    "role_dashboard": "{{role}} डैशबोर्ड",
+    "total_revenue": "कुल आय",
+    "active_bookings": "सक्रिय बुकिंग",
+    "capacity_used": "उपयोग की गई क्षमता",
+    "stock_distribution": "स्टॉक वितरण"
+  },
+  "marketplace": {
+    "title": "फसल बाजार",
+    "subtitle": "किसानों और सत्यापित व्यापारियों के बीच सीधा व्यापार",
+    "place_bid": "बोली लगाएं",
+    "highest_bid": "वर्तमान उच्चतम बोली",
+    "bid_history": "हाल की बोलियां",
+    "confirm_bid": "बोली की पुष्टि करें",
+    "target_price": "लक्षित बिक्री मूल्य",
+    "auto_sell": "स्मार्ट ऑटो-सेल"
+  },
+  "loans": {
+    "title": "स्मार्ट माइक्रोलोन",
+    "subtitle": "आपकी फसल संपार्श्विक के विरुद्ध तत्काल नकदी",
+    "eligibility": "पात्रता जांचें",
+    "claim_payout": "तत्काल भुगतान का दावा करें",
+    "repayment_date": "पुनर्भुगतान तिथि",
+    "disbursed": "सफलतापूर्वक जमा किया गया"
+  },
+  "status": {
+    "confirmed": "पुष्टि की गई",
+    "completed": "पूरा हुआ",
+    "pending": "लंबित",
+    "sold": "बिक गया",
+    "active": "सक्रिय"
   }
 }

@@ -22,8 +22,10 @@ import { Button } from "@/components/antigravity/button";
 import { Badge } from "@/components/antigravity/badge";
 import { Input } from "@/components/antigravity/input";
 import { pusherClient } from "@/lib/pusher/client";
+import { useTranslation } from "@/lib/i18n/context";
 
 export function MarketplaceClient() {
+  const { t } = useTranslation();
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -143,8 +145,8 @@ export function MarketplaceClient() {
         <div className="p-6 border-b border-border/60 bg-surface/80 backdrop-blur-md sticky top-0 z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-black tracking-tight">Crop Marketplace</h2>
-              <p className="text-sm text-muted">Direct trade between farmers and verified traders.</p>
+              <h2 className="text-2xl font-black tracking-tight">{t("common.marketplace.title")}</h2>
+              <p className="text-sm text-muted">{t("common.marketplace.subtitle")}</p>
             </div>
             
             <div className="flex items-center gap-3">
@@ -205,7 +207,7 @@ export function MarketplaceClient() {
 
                       <div className="pt-4 border-t border-border/40 flex items-end justify-between">
                         <div>
-                          <p className="text-[10px] font-black uppercase text-muted tracking-wider mb-0.5">Current Highest Bid</p>
+                          <p className="text-[10px] font-black uppercase text-muted tracking-wider mb-0.5">{t("common.marketplace.highest_bid")}</p>
                           <p className="text-2xl font-black text-primary">₹{listing.highestBid.toLocaleString() || "---"}</p>
                         </div>
                         <Button variant="secondary" className="px-2 py-1 h-auto text-[10px] font-black uppercase">
@@ -228,7 +230,7 @@ export function MarketplaceClient() {
         {selectedListing && (
           <>
             <div className="p-6 border-b border-border/60 flex items-center justify-between">
-              <h3 className="font-black text-lg">Place a Bid</h3>
+              <h3 className="font-black text-lg">{t("common.marketplace.place_bid")}</h3>
               <button onClick={() => setSelectedListing(null)} className="p-2 hover:bg-surface-muted rounded-full transition-colors">
                 <X className="size-5 text-muted" />
               </button>
@@ -277,7 +279,7 @@ export function MarketplaceClient() {
                   onClick={handlePlaceBid}
                 >
                   {isSubmitting ? <Loader2 className="size-5 animate-spin" /> : (
-                    success ? <CheckCircle2 className="size-5" /> : "Confirm Bid"
+                    success ? <CheckCircle2 className="size-5" /> : t("common.marketplace.confirm_bid")
                   )}
                 </Button>
               </div>

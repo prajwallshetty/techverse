@@ -13,6 +13,35 @@
   "dashboard": {
     "title": "AgriHold AI",
     "welcome": "Welcome back",
-    "role_dashboard": "{{role}} Dashboard"
+    "role_dashboard": "{{role}} Dashboard",
+    "total_revenue": "Total Revenue",
+    "active_bookings": "Active Bookings",
+    "capacity_used": "Capacity Used",
+    "stock_distribution": "Stock Distribution"
+  },
+  "marketplace": {
+    "title": "Crop Marketplace",
+    "subtitle": "Direct trade between farmers and verified traders",
+    "place_bid": "Place a Bid",
+    "highest_bid": "Current Highest Bid",
+    "bid_history": "Recent Bids",
+    "confirm_bid": "Confirm Bid",
+    "target_price": "Target Selling Price",
+    "auto_sell": "Smart Auto-Sell"
+  },
+  "loans": {
+    "title": "Smart Microloans",
+    "subtitle": "Instant liquidity against your crop collateral",
+    "eligibility": "Check Eligibility",
+    "claim_payout": "Claim Instant Payout",
+    "repayment_date": "Repayment Date",
+    "disbursed": "Credited Successfully"
+  },
+  "status": {
+    "confirmed": "Confirmed",
+    "completed": "Completed",
+    "pending": "Pending",
+    "sold": "Sold",
+    "active": "Active"
   }
 }

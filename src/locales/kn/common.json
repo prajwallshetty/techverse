@@ -13,6 +13,35 @@
   "dashboard": {
     "title": "AgriHold AI",
     "welcome": "ಮತ್ತೆ ಸುಸ್ವಾಗತ",
-    "role_dashboard": "{{role}} ಡ್ಯಾಶ್‌ಬೋರ್ಡ್"
+    "role_dashboard": "{{role}} ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+    "total_revenue": "ಒಟ್ಟು ಆದಾಯ",
+    "active_bookings": "ಸಕ್ರಿಯ ಬುಕಿಂಗ್‌ಗಳು",
+    "capacity_used": "ಬಳಸಿದ ಸಾಮರ್ಥ್ಯ",
+    "stock_distribution": "ದಾಸ್ತಾನು ಹಂಚಿಕೆ"
+  },
+  "marketplace": {
+    "title": "ಬೆಳೆ ಮಾರುಕಟ್ಟೆ",
+    "subtitle": "ರೈತರು ಮತ್ತು ಪರಿಶೀಲಿಸಿದ ವ್ಯಾಪಾರಿಗಳ ನಡುವೆ ನೇರ ವ್ಯಾಪಾರ",
+    "place_bid": "ಬಿಡ್ ಮಾಡಿ",
+    "highest_bid": "ಪ್ರಸ್ತುತ ಗರಿಷ್ಠ ಬಿಡ್",
+    "bid_history": "ಇತ್ತೀಚಿನ ಬಿಡ್‌ಗಳು",
+    "confirm_bid": "ಬಿಡ್ ಖಚಿತಪಡಿಸಿ",
+    "target_price": "ಗುರಿ ಮಾರಾಟದ ಬೆಲೆ",
+    "auto_sell": "ಸ್ಮಾರ್ಟ್ ಆಟೋ-ಸೆಲ್"
+  },
+  "loans": {
+    "title": "ಸ್ಮಾರ್ಟ್ ಕಿರುಸಾಲಗಳು",
+    "subtitle": "ನಿಮ್ಮ ಬೆಳೆ ಮೇಲಾಧಾರದ ವಿರುದ್ಧ ತ್ವರಿತ ಹಣಕಾಸು",
+    "eligibility": "ಅರ್ಹತೆಯನ್ನು ಪರಿಶೀಲಿಸಿ",
+    "claim_payout": "ತ್ವರಿತ ಪಾವತಿಯನ್ನು ಪಡೆಯಿರಿ",
+    "repayment_date": "ಮರುಪಾವತಿ ದಿನಾಂಕ",
+    "disbursed": "ಯಶಸ್ವಿಯಾಗಿ ಜಮೆಯಾಗಿದೆ"
+  },
+  "status": {
+    "confirmed": "ಖಚಿತಪಡಿಸಲಾಗಿದೆ",
+    "completed": "ಪೂರ್ಣಗೊಂಡಿದೆ",
+    "pending": "ಬಾಕಿ ಇದೆ",
+    "sold": "ಮಾರಾಟವಾಗಿದೆ",
+    "active": "ಸಕ್ರಿಯ"
   }
 }
