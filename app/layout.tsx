@@ -20,7 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full bg-background text-foreground flex flex-col font-sans">
-        <Providers>{children}</Providers>
+        <LanguageProvider>
+          <Providers>{children}</Providers>
+        </LanguageProvider>
       </body>
     </html>
   );
