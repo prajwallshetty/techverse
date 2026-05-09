@@ -1,53 +1,39 @@
-import { Leaf } from "lucide-react";
-
-import { Card, CardContent, CardHeader } from "@/components/antigravity/card";
-import { Button } from "@/components/antigravity/button";
-import { env } from "@/lib/env";
+import { SignInForm } from "@/features/auth/signin-form";
 
 export const metadata = {
   title: "Sign In",
+  description: "Sign in to AgriHold AI — Agricultural intelligence platform",
 };
 
 export default function SignInPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-5 py-10">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <div className="flex size-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Leaf className="size-6" />
-          </div>
-          <h1 className="text-2xl font-black">Founder access</h1>
-          <p className="text-sm leading-6 text-muted">
-            Auth.js route handlers are configured. Use the demo credentials or
-            replace the provider with your production identity stack.
-          </p>
-        </CardHeader>
-        <CardContent>
-          <form action="/api/auth/signin/credentials" method="post" className="space-y-4">
-            <label className="block text-sm font-semibold">
-              Email
-              <input
-                className="mt-2 h-11 w-full rounded-md border border-border bg-background px-3 text-sm"
-                defaultValue={env.DEMO_EMAIL}
-                name="email"
-                type="email"
-              />
-            </label>
-            <label className="block text-sm font-semibold">
-              Password
-              <input
-                className="mt-2 h-11 w-full rounded-md border border-border bg-background px-3 text-sm"
-                defaultValue={env.DEMO_PASSWORD}
-                name="password"
-                type="password"
-              />
-            </label>
-            <Button className="w-full" type="submit">
-              Sign in
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-5 py-10">
+      {/* Background decoration */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-40 -top-40 size-80 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute -bottom-40 -right-40 size-80 rounded-full bg-accent/5 blur-3xl" />
+        <div className="absolute left-1/2 top-1/3 size-60 -translate-x-1/2 rounded-full bg-primary/3 blur-3xl" />
+      </div>
+
+      {/* Grid pattern overlay */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.015]"
+        style={{
+          backgroundImage:
+            "linear-gradient(var(--foreground) 1px, transparent 1px), linear-gradient(90deg, var(--foreground) 1px, transparent 1px)",
+          backgroundSize: "60px 60px",
+        }}
+      />
+
+      {/* Form */}
+      <div className="relative z-10 w-full max-w-md">
+        <SignInForm />
+
+        {/* Footer */}
+        <p className="mt-6 text-center text-xs text-muted">
+          Protected by AgriHold AI Security Stack
+        </p>
+      </div>
     </main>
   );
 }

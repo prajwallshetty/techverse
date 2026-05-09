@@ -47,8 +47,8 @@ export function MarketingPage() {
               predictive crop intelligence, and investable rural supply chains.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <LinkButton href="/dashboard">
-                Open command center
+              <LinkButton href="/signin">
+                Sign in to AgriHold
                 <ArrowRight className="size-4" />
               </LinkButton>
               <LinkButton href="/api/health" variant="secondary">

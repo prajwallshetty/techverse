@@ -1,9 +1,20 @@
-import { DashboardPage } from "@/features/dashboard/dashboard-page";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { ROLE_DASHBOARD } from "@/types/domain";
+import type { UserRole } from "@/types/domain";
 
 export const metadata = {
-  title: "Command Center",
+  title: "Dashboard",
 };
 
-export default function Page() {
-  return <DashboardPage />;
+export default async function DashboardIndexPage() {
+  const session = await auth();
+
+  if (!session?.user?.role) {
+    redirect("/signin");
+  }
+
+  const dashboard =
+    ROLE_DASHBOARD[session.user.role as UserRole] ?? "/dashboard/farmer";
+  redirect(dashboard);
 }
