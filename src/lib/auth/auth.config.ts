@@ -12,7 +12,7 @@ export const authConfig = {
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.role = user.role as UserRole;
+        token.role = (user.role || "farmer") as UserRole;
         token.phone = user.phone ?? null;
       }
       return token;
