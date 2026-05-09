@@ -79,7 +79,52 @@ graph TD
 
 ---
 
-## 🚀 6. Scalability & Deployment
+## 🛠️ 6. API Routing & Endpoint Registry
+
+The platform uses a modular API structure organized by domain. All routes are protected by role-based middleware.
+
+### 📦 Warehouse & Bookings
+- `POST /api/bookings`: Reserves storage space with ACID transaction locking.
+- `GET /api/bookings`: Retrieves a farmer's verified storage history.
+- `GET /api/warehouse/stats`: (Owner only) Aggregates revenue and utilization analytics.
+
+### 💰 Fintech & Microloans
+- `POST /api/loan/check`: Internal Credit Engine for instant eligibility calculation.
+- `POST /api/loans`: Disburses crop-backed credit and records transaction ledger.
+
+### 📈 Marketplace & Bidding
+- `GET /api/marketplace`: Dynamic listing discovery with location-based filtering.
+- `POST /api/marketplace/bid`: High-frequency bidding engine with **Smart Auto-Sell** execution.
+- `GET /api/marketplace/bid`: Real-time audit trail of bidding history for a specific listing.
+- `PATCH /api/marketplace/auto-sell`: (Farmer only) Updates automated selling thresholds.
+
+### 🏛️ Platform Governance (Admin Only)
+- `GET /api/admin/stats`: Global KPI aggregator (Total Tonnage, Total Exposure).
+- `GET /api/admin/transactions`: Multi-stream system audit log.
+
+---
+
+## 💻 7. User Dashboard Workflows
+
+### 👨‍🌾 The Farmer Journey
+1. **Discover**: Browse the interactive map to find nearby warehouses.
+2. **Store**: Reserve space and receive a secure **Digital Receipt (QR)**.
+3. **Liquidate**: Use the storage receipt as collateral for an **Instant Microloan**.
+4. **Trade**: List stored crops on the Marketplace and set a **Smart Auto-Sell** target.
+
+### 🤝 The Trader Journey
+1. **Monitor**: View live-updating crop listings in the Marketplace.
+2. **Compete**: Place bids in real-time and track the "Highest Bid" via Pusher.
+3. **Execute**: Secure inventory instantly through direct manual or auto-accepted bids.
+
+### 🏗️ The Warehouse Owner Journey
+1. **Analyze**: Monitor facility utilization via real-time charts and utilization bars.
+2. **Verify**: Use the QR scanner to validate incoming farmer stock against digital receipts.
+3. **Optimize**: Track revenue trends and manage storage capacity dynamically.
+
+---
+
+## 🚀 8. Scalability & Deployment
 - **Deployment**: Optimized for Vercel (Serverless).
 - **Performance**: SSR-safe mapping and dynamic imports for Leaflet ensure fast initial page loads and zero hydration errors.
 - **Reliability**: Centralized notification and error-handling services ensure that failures in third-party APIs (Twilio/Pusher) do not crash the core application.
