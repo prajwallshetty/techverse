@@ -1,21 +1,27 @@
 import { NextResponse } from "next/server";
-import { VoiceResponse } from "@/lib/twilio/client";
-import dbConnect from "@/lib/db/mongoose";
-import { User } from "@/models/User";
-import { Warehouse } from "@/models/Warehouse";
-import { Booking } from "@/models/Booking";
-import { IvrCall } from "@/models/IvrCall";
-import { pusherServer } from "@/lib/pusher/server";
+import { TwiML } from "@/lib/twilio/twiml";
 
 export async function POST(request: Request) {
-  const twiml = new VoiceResponse();
-  try {
-    const formData = await request.formData();
-    const digits = formData.get("Digits") as string;
-    const callSid = formData.get("CallSid") as string;
-    const from = formData.get("From") as string;
+  const twiml = new TwiML();
 
+  try {
+    // Parse Twilio's x-www-form-urlencoded body
+    const body = await request.text();
+    const params = new URLSearchParams(body);
+    const digits = params.get("Digits") || "";
+    const callSid = params.get("CallSid") || "unknown";
+    const from = params.get("From") || "unknown";
+
+    console.log(`[IVR:handle-input] Digits=${digits}, CallSid=${callSid}, From=${from}`);
+
+    // Connect to DB
+    const { default: dbConnect } = await import("@/lib/db/mongoose");
     await dbConnect();
+
+    const { User } = await import("@/models/User");
+    const { Warehouse } = await import("@/models/Warehouse");
+    const { Booking } = await import("@/models/Booking");
+    const { IvrCall } = await import("@/models/IvrCall");
 
     // Try to find farmer by phone
     const farmer = await User.findOne({ phone: from, role: "farmer" });
@@ -23,37 +29,43 @@ export async function POST(request: Request) {
     switch (digits) {
       case "1": {
         // Warehouse details
-        await IvrCall.updateOne({ callSid }, { actionTaken: "search_warehouse" });
+        try { await IvrCall.updateOne({ callSid }, { actionTaken: "search_warehouse" }); } catch (_) {}
+
         const warehouse = await Warehouse.findOne({ isActive: true });
-        
         if (warehouse) {
+          const available = warehouse.capacityTons - warehouse.currentStockTons;
           twiml.say(
-            { language: "en-IN", voice: "Polly.Aditi" },
-            `The nearest warehouse is ${warehouse.name} in ${warehouse.location}. It currently has ${warehouse.capacityTons - warehouse.currentStockTons} tons of available capacity. Cold storage slots are available.`
+            `The nearest warehouse is ${warehouse.name} in ${warehouse.location}. It currently has ${available} tons of available capacity. Cold storage slots are available.`,
+            { language: "en-IN", voice: "Polly.Aditi" }
           );
         } else {
-          twiml.say("Sorry, no active warehouses found in your region.");
+          twiml.say("Sorry, no active warehouses found in your region.", { language: "en-IN", voice: "Polly.Aditi" });
         }
         break;
       }
 
       case "2": {
-        // Hear crop prices
-        await IvrCall.updateOne({ callSid }, { actionTaken: "price_check" });
+        // Crop prices
+        try { await IvrCall.updateOne({ callSid }, { actionTaken: "price_check" }); } catch (_) {}
+
         twiml.say(
-          { language: "en-IN", voice: "Polly.Aditi" },
-          "Today's market prices are: Wheat is 2450 rupees per quintal. Paddy is 2100 rupees per quintal. Prices are trending upwards."
+          "Today's market prices are: Wheat is 2450 rupees per quintal. Paddy is 2100 rupees per quintal. Onion is 92 rupees per kilogram. Prices are trending upwards.",
+          { language: "en-IN", voice: "Polly.Aditi" }
         );
         break;
       }
 
       case "3": {
         // Book storage slot
-        await IvrCall.updateOne({ callSid }, { actionTaken: "booking_created" });
+        try { await IvrCall.updateOne({ callSid }, { actionTaken: "booking_created" }); } catch (_) {}
+
         const warehouse = await Warehouse.findOne({ isActive: true });
-        
+
         if (!farmer) {
-          twiml.say("We could not find a registered farmer account for this phone number. Please register via the website to make a booking.");
+          twiml.say(
+            "We could not find a registered farmer account for this phone number. Please register via the website to make a booking.",
+            { language: "en-IN", voice: "Polly.Aditi" }
+          );
         } else if (warehouse) {
           // Atomic reservation
           const updatedWarehouse = await Warehouse.findOneAndUpdate(
@@ -71,62 +83,76 @@ export async function POST(request: Request) {
               totalPrice: warehouse.pricePerTonPerWeek,
               status: "confirmed",
               source: "ivr",
-              isAutoSellEnabled: false
+              isAutoSellEnabled: false,
             });
 
-            // Sync with frontend
-            await pusherServer.trigger("ivr-channel", "new-ivr-booking", {
-              bookingId: booking._id,
-              warehouse: warehouse.name,
-              farmerPhone: from,
-              tons: 1
-            });
+            // Realtime sync (non-blocking, non-fatal)
+            try {
+              const { pusherServer } = await import("@/lib/pusher/server");
+              await pusherServer.trigger("ivr-channel", "new-ivr-booking", {
+                bookingId: booking._id,
+                warehouse: warehouse.name,
+                farmerPhone: from,
+                tons: 1,
+              });
+            } catch (pushErr) {
+              console.error("[IVR] Pusher sync error (non-fatal):", pushErr);
+            }
 
             twiml.say(
-              { language: "en-IN", voice: "Polly.Aditi" },
-              `Success! Your booking for 1 ton of Wheat at ${warehouse.name} is confirmed. You will receive an SMS shortly.`
+              `Success! Your booking for 1 ton of Wheat at ${warehouse.name} is confirmed. You will receive an SMS shortly.`,
+              { language: "en-IN", voice: "Polly.Aditi" }
             );
           } else {
-            twiml.say("Sorry, the warehouse is currently full. Booking could not be completed.");
+            twiml.say("Sorry, the warehouse is currently full. Booking could not be completed.", { language: "en-IN", voice: "Polly.Aditi" });
           }
+        } else {
+          twiml.say("Sorry, no active warehouses are available for booking at the moment.", { language: "en-IN", voice: "Polly.Aditi" });
         }
         break;
       }
 
       case "4": {
         // Booking status
-        await IvrCall.updateOne({ callSid }, { actionTaken: "status_check" });
+        try { await IvrCall.updateOne({ callSid }, { actionTaken: "status_check" }); } catch (_) {}
+
         if (!farmer) {
-          twiml.say("No farmer account found for this phone number.");
+          twiml.say("No farmer account found for this phone number. Please register on our website.", { language: "en-IN", voice: "Polly.Aditi" });
         } else {
           const bookings = await Booking.find({ farmerId: farmer._id, status: "confirmed" });
           if (bookings.length > 0) {
             const totalTons = bookings.reduce((acc, b) => acc + b.quantityTons, 0);
-            twiml.say(`You currently have ${totalTons} tons of crops stored in our warehouses.`);
+            twiml.say(
+              `You currently have ${totalTons} tons of crops stored across our warehouses in ${bookings.length} active bookings.`,
+              { language: "en-IN", voice: "Polly.Aditi" }
+            );
           } else {
-            twiml.say("You have no active bookings at the moment.");
+            twiml.say("You have no active bookings at the moment.", { language: "en-IN", voice: "Polly.Aditi" });
           }
         }
         break;
       }
 
       default:
-        twiml.say("Invalid input. Please call back and try again.");
+        twiml.say("Invalid input. Please call back and try again.", { language: "en-IN", voice: "Polly.Aditi" });
         break;
     }
 
-    twiml.pause({ length: 1 });
-    twiml.say("Thank you for using AgriHold A I. Goodbye!");
+    twiml.pause(1);
+    twiml.say("Thank you for using AgriHold A I. Goodbye!", { language: "en-IN", voice: "Polly.Aditi" });
     twiml.hangup();
 
-    return new NextResponse(twiml.toString(), {
-      headers: { "Content-Type": "text/xml" },
-    });
   } catch (error) {
-    console.error("IVR Process Error:", error);
-    twiml.say("Sorry, something went wrong. We are experiencing technical difficulties. Please try again later.");
-    return new NextResponse(twiml.toString(), { 
-      headers: { "Content-Type": "text/xml" } 
-    });
+    console.error("[IVR:handle-input] Fatal error:", error);
+    twiml.say("Sorry, something went wrong. Please try again later.");
+    twiml.hangup();
   }
+
+  return new NextResponse(twiml.toString(), {
+    status: 200,
+    headers: {
+      "Content-Type": "text/xml; charset=utf-8",
+      "Cache-Control": "no-cache, no-store",
+    },
+  });
 }
