@@ -146,3 +146,56 @@ textarea {
     transform: translateY(0);
   }
 }
+
+/* ── Leaflet Map Fixes ─────────────────────────────────────────────────────── */
+/* Ensure leaflet tiles are always visible — Next.js layout elements can
+   accidentally create stacking contexts that hide the map. */
+.leaflet-container {
+  z-index: 0 !important;
+  font-family: inherit;
+}
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-pane {
+  z-index: 1;
+}
+.leaflet-overlay-pane {
+  z-index: 2;
+}
+.leaflet-shadow-pane {
+  z-index: 3;
+}
+.leaflet-marker-pane {
+  z-index: 4;
+}
+.leaflet-tooltip-pane {
+  z-index: 5;
+}
+.leaflet-popup-pane {
+  z-index: 6;
+}
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 7;
+}
+/* Remove the default white border/background Leaflet puts around divIcon markers */
+.leaflet-marker-icon {
+  background: transparent !important;
+  border: none !important;
+}
+/* Leaflet popup styling */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  padding: 0 !important;
+}
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+}
+.leaflet-popup-tip-container {
+  margin-top: -1px;
+}
+

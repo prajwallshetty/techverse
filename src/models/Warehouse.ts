@@ -4,6 +4,8 @@ export interface IWarehouse extends Document {
   ownerId: mongoose.Types.ObjectId;
   name: string;
   location: string;
+  latitude?: number;
+  longitude?: number;
   capacityTons: number;
   currentStockTons: number;
   availableCapacity: number; // Virtual field
@@ -32,6 +34,8 @@ const WarehouseSchema: Schema<IWarehouse> = new Schema(
     },
     name: { type: String, required: true },
     location: { type: String, required: true, index: true },
+    latitude: { type: Number },
+    longitude: { type: Number },
     capacityTons: { type: Number, required: true, min: 0 },
     currentStockTons: { 
       type: Number, 

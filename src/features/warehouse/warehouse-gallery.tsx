@@ -2,25 +2,28 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Search, 
-  MapPin, 
-  ArrowRight, 
-  ShieldCheck, 
-  ThermometerSnowflake, 
+import {
+  Search,
+  MapPin,
+  ArrowRight,
+  ShieldCheck,
+  ThermometerSnowflake,
   Warehouse as WarehouseIcon,
   Filter,
-  Navigation
+  Navigation,
+  LayoutGrid,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/antigravity/card";
 import { Button } from "@/components/antigravity/button";
 import { Badge } from "@/components/antigravity/badge";
 import Link from "next/link";
+import { WarehouseDashboard } from "./warehouse-dashboard";
 
 export function WarehouseGallery() {
   const [warehouses, setWarehouses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
 
   useEffect(() => {
     fetchWarehouses();
@@ -38,19 +41,53 @@ export function WarehouseGallery() {
     }
   };
 
-  const filtered = warehouses.filter(w => 
-    w.name.toLowerCase().includes(search.toLowerCase()) || 
-    w.location.toLowerCase().includes(search.toLowerCase())
+  const filtered = warehouses.filter(
+    (w) =>
+      w.name.toLowerCase().includes(search.toLowerCase()) ||
+      w.location.toLowerCase().includes(search.toLowerCase())
   );
 
+  // ── Map View ──────────────────────────────────────────────────────────────
+  // The WarehouseDashboard is a full-height split-panel with its own sidebar
+  // and the interactive Leaflet map. We render it in a fixed-height container
+  // so it fills the remaining viewport space cleanly.
+  if (viewMode === "map") {
+    return (
+      <div className="space-y-4">
+        {/* Header bar with back-to-grid button */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-black tracking-tight">Map View</h2>
+            <p className="text-muted text-sm font-medium mt-0.5">
+              Browse warehouses on an interactive map.
+            </p>
+          </div>
+          <Button
+            variant="secondary"
+            className="px-5 py-3 rounded-2xl border-border/60 flex items-center gap-2"
+            onClick={() => setViewMode("grid")}
+          >
+            <LayoutGrid className="size-5" /> Grid View
+          </Button>
+        </div>
+
+        {/* Map panel — explicit height so the flex layout inside fills correctly */}
+        <div className="h-[calc(100vh-14rem)] min-h-[500px] rounded-3xl overflow-hidden border border-border/60 shadow-lg">
+          <WarehouseDashboard warehouses={warehouses} />
+        </div>
+      </div>
+    );
+  }
+
+  // ── Grid View ─────────────────────────────────────────────────────────────
   return (
     <div className="space-y-8">
       {/* Search & Stats Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="relative w-full md:w-[450px]">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-muted/60" />
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="Search by city, warehouse name, or crop type..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -58,10 +95,16 @@ export function WarehouseGallery() {
           />
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="secondary" className="px-5 py-6 rounded-2xl border-border/60">
+          <Button
+            variant="secondary"
+            className="px-5 py-6 rounded-2xl border-border/60"
+          >
             <Filter className="size-5 mr-2" /> Filters
           </Button>
-          <Button className="px-5 py-6 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20">
+          <Button
+            className="px-5 py-6 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20"
+            onClick={() => setViewMode("map")}
+          >
             <Navigation className="size-5 mr-2" /> Map View
           </Button>
         </div>
@@ -69,14 +112,19 @@ export function WarehouseGallery() {
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[1,2,3].map(i => <div key={i} className="h-[400px] bg-surface-muted/20 animate-pulse rounded-3xl" />)}
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-[400px] bg-surface-muted/20 animate-pulse rounded-3xl"
+            />
+          ))}
         </div>
       ) : (
-        <motion.div 
+        <motion.div
           layout
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          <AnimatePresence mode='popLayout'>
+          <AnimatePresence mode="popLayout">
             {filtered.map((warehouse) => (
               <motion.div
                 key={warehouse._id}
@@ -88,8 +136,11 @@ export function WarehouseGallery() {
                 <Card className="group overflow-hidden border-border/60 hover:border-primary/40 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 rounded-[2rem]">
                   <CardContent className="p-0">
                     <div className="relative h-56 overflow-hidden">
-                      <img 
-                        src={warehouse.images?.[0] || "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800"} 
+                      <img
+                        src={
+                          warehouse.images?.[0] ||
+                          "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800"
+                        }
                         alt={warehouse.name}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
@@ -97,7 +148,9 @@ export function WarehouseGallery() {
                       <div className="absolute bottom-4 left-5 right-4 flex items-center justify-between text-white">
                         <div className="flex items-center gap-2">
                           <MapPin className="size-4" />
-                          <span className="text-sm font-bold">{warehouse.location}</span>
+                          <span className="text-sm font-bold">
+                            {warehouse.location}
+                          </span>
                         </div>
                         <Badge className="bg-white/20 backdrop-blur-md border-none text-white font-bold">
                           ₹{warehouse.pricePerTonPerWeek}/MT
@@ -107,7 +160,9 @@ export function WarehouseGallery() {
 
                     <div className="p-6 space-y-6">
                       <div>
-                        <h3 className="text-2xl font-black tracking-tight group-hover:text-primary transition-colors">{warehouse.name}</h3>
+                        <h3 className="text-2xl font-black tracking-tight group-hover:text-primary transition-colors">
+                          {warehouse.name}
+                        </h3>
                         <div className="flex items-center gap-2 mt-2 text-muted text-sm font-medium">
                           <ShieldCheck className="size-4 text-emerald-500" />
                           Certified ISO 9001 Facility
@@ -116,11 +171,17 @@ export function WarehouseGallery() {
 
                       <div className="grid grid-cols-2 gap-4">
                         <div className="p-4 rounded-2xl bg-surface-muted/40 border border-border/40">
-                          <p className="text-[10px] font-black uppercase text-muted tracking-widest mb-1">Available</p>
-                          <p className="text-lg font-black">{warehouse.availableCapacity} MT</p>
+                          <p className="text-[10px] font-black uppercase text-muted tracking-widest mb-1">
+                            Available
+                          </p>
+                          <p className="text-lg font-black">
+                            {warehouse.availableCapacity} MT
+                          </p>
                         </div>
                         <div className="p-4 rounded-2xl bg-surface-muted/40 border border-border/40">
-                          <p className="text-[10px] font-black uppercase text-muted tracking-widest mb-1">Zones</p>
+                          <p className="text-[10px] font-black uppercase text-muted tracking-widest mb-1">
+                            Zones
+                          </p>
                           <div className="flex items-center gap-1.5 mt-1">
                             <ThermometerSnowflake className="size-4 text-blue-500" />
                             <WarehouseIcon className="size-4 text-amber-500" />
@@ -128,9 +189,12 @@ export function WarehouseGallery() {
                         </div>
                       </div>
 
-                      <Link href={`/dashboard/farmer/warehouses/${warehouse._id}/book`}>
+                      <Link
+                        href={`/dashboard/farmer/warehouses/${warehouse._id}/book`}
+                      >
                         <Button className="w-full py-7 rounded-2xl text-lg font-black group-hover:bg-primary transition-all">
-                          Select Storage Space <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
+                          Select Storage Space{" "}
+                          <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
                         </Button>
                       </Link>
                     </div>
