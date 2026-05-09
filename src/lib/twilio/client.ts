@@ -6,7 +6,7 @@ const globalForTwilio = global as unknown as { twilioClient: twilio.Twilio };
 export const twilioClient =
   globalForTwilio.twilioClient ||
   twilio(
-    process.env.TWILIO_ACCOUNT_SID || 'dummy_sid',
+    process.env.TWILIO_ACCOUNT_SID || 'AC00000000000000000000000000000000',
     process.env.TWILIO_AUTH_TOKEN || 'dummy_token'
   );
 
