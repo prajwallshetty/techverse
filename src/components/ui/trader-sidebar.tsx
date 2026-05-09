@@ -17,10 +17,10 @@ export function TraderSidebar() {
   return (
     <aside className="hidden lg:flex flex-col w-72 bg-surface border-r border-outline-variant h-screen sticky top-0">
       <div className="p-8">
-        <div className="flex items-center gap-2 mb-10">
-          <span className="material-symbols-outlined text-primary text-3xl">agriculture</span>
+        <Link href="/" className="flex items-center gap-2 mb-10 group">
+          <span className="material-symbols-outlined text-primary text-3xl group-hover:scale-110 transition-transform">agriculture</span>
           <span className="text-xl font-black text-primary tracking-tight">Trader Hub</span>
-        </div>
+        </Link>
 
         <nav className="space-y-2">
           {navItems.map((item) => {
