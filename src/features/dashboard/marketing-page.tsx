@@ -125,17 +125,16 @@ export function MarketingPage() {
                 </LinkButton>
               </motion.div>
 
-              <div className="flex items-center gap-8 pt-8 border-t border-black/5">
-                {[
-                  { label: "WDRA Certified", icon: Shield },
-                  { label: "Bank Integrated", icon: Coins },
-                  { label: "Real-time Data", icon: TrendingUp }
-                ].map(item => (
-                  <div key={item.label} className="flex items-center gap-2">
-                    <item.icon className="size-5 text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted">{item.label}</span>
-                  </div>
-                ))}
+              <div className="flex items-center gap-8 pt-8 border-t border-outline-variant/50">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary">verified_user</span>
+                  <span className="text-sm font-bold text-on-surface-variant">WDRA Regd.</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary">monitoring</span>
+                  <span className="text-sm font-bold text-on-surface-variant">AI Insights</span>
+                </div>
               </div>
             </div>
 

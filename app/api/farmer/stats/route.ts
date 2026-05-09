@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db/mongoose";
 import { Warehouse } from "@/models/Warehouse";
 import { Booking } from "@/models/Booking";
-import { Loan } from "@/models/Loan";
 import { Bid } from "@/models/Bid";
 import { Crop } from "@/models/Crop";
 import { auth } from "@/lib/auth";
@@ -18,9 +17,8 @@ export async function GET() {
     const userId = session.user.id;
 
     // 1. Fetch Key Stats
-    const [crops, loans, rawBookings, recentBookings] = await Promise.all([
+    const [crops, rawBookings, recentBookings] = await Promise.all([
       Crop.find({ farmerId: userId }).lean(),
-      Loan.find({ borrowerId: userId }).lean(),
       Booking.find({ farmerId: userId }).lean(),
       Booking.find({ farmerId: userId })
         .populate("warehouseId", "name location")
@@ -30,7 +28,6 @@ export async function GET() {
     ]);
 
     const totalStoredWeight = rawBookings.reduce((acc, b) => acc + (b.status === "confirmed" ? b.quantityTons : 0), 0);
-    const activeLoanAmount = loans.reduce((acc, l) => acc + (l.loanStatus === "active" ? l.eligibleAmount : 0), 0);
     
     // Count active bids for the farmer's bookings
     const bookingIds = rawBookings.map(b => b._id);
@@ -58,7 +55,6 @@ export async function GET() {
     return NextResponse.json({
       stats: {
         totalStoredWeight,
-        activeLoanAmount,
         activeBidsCount,
         cropCount: crops.length
       },

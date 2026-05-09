@@ -21,6 +21,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.MAIL_CLIENT_ID,
       clientSecret: process.env.MAIL_CLIENT_SECRET,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          role: "farmer", // Default role for OAuth
+        }
+      }
     }),
     Credentials({
       id: "credentials",
