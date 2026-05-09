@@ -8,6 +8,15 @@ export interface IWarehouse extends Document {
   currentStockTons: number;
   availableCapacity: number; // Virtual field
   certifications?: string[];
+  pricePerTonPerWeek: number;
+  images: string[];
+  zones: {
+    id: string;
+    name: string;
+    type: "cold" | "dry" | "grain";
+    rows: number;
+    cols: number;
+  }[];
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -37,6 +46,15 @@ const WarehouseSchema: Schema<IWarehouse> = new Schema(
       }
     },
     certifications: [{ type: String }],
+    pricePerTonPerWeek: { type: Number, default: 500 },
+    images: [{ type: String }],
+    zones: [{
+      id: String,
+      name: String,
+      type: { type: String, enum: ["cold", "dry", "grain"] },
+      rows: { type: Number, default: 5 },
+      cols: { type: Number, default: 10 }
+    }],
     isActive: { type: Boolean, default: true },
   },
   { 

@@ -1,13 +1,17 @@
-import { WarehouseDashboard } from "@/features/warehouse/warehouse-dashboard";
+import { WarehouseGallery } from "@/features/warehouse/warehouse-gallery";
 
 export const metadata = {
-  title: "Find Warehouses | AgriHold AI",
+  title: "Browse Warehouses | AgriHold AI",
 };
 
-export default function WarehousesPage() {
+export default function WarehouseBrowsePage() {
   return (
-    <div className="h-full w-full bg-surface">
-      <WarehouseDashboard />
+    <div className="p-6 lg:p-10 max-w-7xl mx-auto space-y-10">
+      <div>
+        <h1 className="text-4xl font-black tracking-tighter">Premium Storage Network</h1>
+        <p className="text-muted text-lg mt-2 font-medium">Discover and book verified storage space with real-time occupancy tracking.</p>
+      </div>
+      <WarehouseGallery />
     </div>
   );
 }
