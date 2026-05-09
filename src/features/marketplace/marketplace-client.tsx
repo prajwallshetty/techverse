@@ -21,6 +21,7 @@ import { Card, CardContent } from "@/components/antigravity/card";
 import { Button } from "@/components/antigravity/button";
 import { Badge } from "@/components/antigravity/badge";
 import { Input } from "@/components/antigravity/input";
+import { pusherClient } from "@/lib/pusher/client";
 
 export function MarketplaceClient() {
   const [listings, setListings] = useState<any[]>([]);
@@ -35,7 +36,43 @@ export function MarketplaceClient() {
 
   useEffect(() => {
     fetchListings();
+
+    // Subscribe to global updates (for bid counts on cards)
+    const channel = pusherClient.subscribe("marketplace-global");
+    channel.bind("bid-count-update", (data: { bookingId: string }) => {
+      setListings((prev) => 
+        prev.map(l => l._id === data.bookingId ? { ...l, bidCount: (l.bidCount || 0) + 1 } : l)
+      );
+    });
+
+    return () => {
+      pusherClient.unsubscribe("marketplace-global");
+    };
   }, [search]);
+
+  // Handle Real-time Bid Updates for selected listing
+  useEffect(() => {
+    if (!selectedListing) return;
+
+    const channel = pusherClient.subscribe(`marketplace-${selectedListing._id}`);
+    
+    channel.bind("new-bid", (data: any) => {
+      // 1. Update highest bid in the listings grid
+      setListings((prev) => 
+        prev.map(l => l._id === selectedListing._id ? { ...l, highestBid: Math.max(l.highestBid, data.amount) } : l)
+      );
+
+      // 2. Add to local bid history in the sidebar
+      setBidHistory((prev) => {
+        if (prev.find(b => b._id === data._id)) return prev;
+        return [data, ...prev].sort((a, b) => b.amount - a.amount);
+      });
+    });
+
+    return () => {
+      pusherClient.unsubscribe(`marketplace-${selectedListing._id}`);
+    };
+  }, [selectedListing]);
 
   const fetchListings = async () => {
     try {

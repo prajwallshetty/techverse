@@ -3,6 +3,8 @@ import { z } from "zod";
 import dbConnect from "@/lib/db/mongoose";
 import { Bid } from "@/models/Bid";
 import { auth } from "@/lib/auth";
+import { pusherServer } from "@/lib/pusher/server";
+import { User } from "@/models/User";
 
 const bidSchema = z.object({
   bookingId: z.string().min(1),
@@ -44,6 +46,25 @@ export async function POST(request: Request) {
     });
 
     await bid.save();
+
+    // 3. Trigger Real-time Event via Pusher
+    // Fetch trader name for the real-time notification
+    const trader = await User.findById(session.user.id).select("name");
+    
+    await pusherServer.trigger(`marketplace-${bookingId}`, "new-bid", {
+      _id: bid._id,
+      amount,
+      traderId: {
+        _id: session.user.id,
+        name: trader?.name || "A Trader",
+      },
+      createdAt: bid.createdAt,
+    });
+
+    // Also trigger global update for bid counts
+    await pusherServer.trigger("marketplace-global", "bid-count-update", {
+      bookingId,
+    });
 
     return NextResponse.json({ success: true, bid }, { status: 201 });
 
