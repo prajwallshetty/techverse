@@ -427,7 +427,7 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
                           <div>
                             <p className="text-xs font-bold text-foreground flex items-center gap-2">
                               {bid.traderId?.name}
-                              {bid.maxAutoBid && <Zap className="size-3 text-amber-500" title="Auto-Bid Active" />}
+                              {bid.maxAutoBid && <span title="Auto-Bid Active"><Zap className="size-3 text-amber-500" /></span>}
                             </p>
                             <p className="text-[10px] text-muted">{new Date(bid.createdAt).toLocaleTimeString()}</p>
                           </div>
