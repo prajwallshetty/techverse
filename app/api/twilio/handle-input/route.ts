@@ -45,13 +45,39 @@ export async function POST(request: Request) {
       }
 
       case "2": {
-        // Crop prices
+        // Crop prices — LIVE from MongoDB marketplace
         try { await IvrCall.updateOne({ callSid }, { actionTaken: "price_check" }); } catch (_) {}
 
-        twiml.say(
-          "Today's market prices are: Wheat is 2450 rupees per quintal. Paddy is 2100 rupees per quintal. Onion is 92 rupees per kilogram. Prices are trending upwards.",
-          { language: "en-IN", voice: "Polly.Aditi" }
-        );
+        try {
+          // Get latest prices from marketplace listings
+          const priceData = await Booking.aggregate([
+            { $match: { marketplaceStatus: "listed", basePrice: { $gt: 0 } } },
+            { $group: { _id: "$cropName", latestPrice: { $avg: "$basePrice" } } },
+            { $sort: { _id: 1 } },
+            { $limit: 5 }
+          ]);
+
+          if (priceData.length > 0) {
+            const priceLines = priceData
+              .map((p: { _id: string; latestPrice: number }) => `${p._id} is ${Math.round(p.latestPrice)} rupees per quintal`)
+              .join(". ");
+            twiml.say(
+              `Today's live market prices are: ${priceLines}. Prices are updated in real time.`,
+              { language: "en-IN", voice: "Polly.Aditi" }
+            );
+          } else {
+            twiml.say(
+              "No live crop prices available at the moment. Please check back later.",
+              { language: "en-IN", voice: "Polly.Aditi" }
+            );
+          }
+        } catch (priceErr) {
+          console.error("[IVR] Price fetch error:", priceErr);
+          twiml.say(
+            "Could not fetch live prices at the moment. Please try again later.",
+            { language: "en-IN", voice: "Polly.Aditi" }
+          );
+        }
         break;
       }
 

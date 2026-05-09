@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     });
 
     gather.say(
-      "Welcome to AgriHold A I. " +
+      "Welcome to Krishi Hub. " +
       "Press 1 for warehouse details. " +
       "Press 2 to hear crop prices. " +
       "Press 3 to book storage slots. " +
