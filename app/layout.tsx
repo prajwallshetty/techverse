@@ -10,6 +10,8 @@ export const metadata: Metadata = {
     "AI operating system for farm holdings, crop intelligence, and resilient agricultural supply.",
 };
 
+import { LanguageProvider } from "@/lib/i18n/context";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,7 +23,9 @@ export default function RootLayout({
       className="h-full antialiased"
     >
       <body className="min-h-full bg-background text-foreground flex flex-col">
-        {children}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

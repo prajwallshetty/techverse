@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "overview": "अवलोकन",
+    "my_farms": "मेरे खेत",
+    "crop_ai": "फसल AI",
+    "inventory": "इन्वेंट्री",
+    "markets": "बाजार",
+    "trades": "व्यापार",
+    "users": "उपयोगकर्ता",
+    "analytics": "एनालिटिक्स",
+    "sign_out": "साइन आउट"
+  },
+  "dashboard": {
+    "title": "AgriHold AI",
+    "welcome": "स्वागत है",
+    "role_dashboard": "{{role}} डैशबोर्ड"
+  }
+}

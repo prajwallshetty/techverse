@@ -1,0 +1,18 @@
+{
+  "nav": {
+    "overview": "ಅವಲೋಕನ",
+    "my_farms": "ನನ್ನ ಫಾರ್ಮ್‌ಗಳು",
+    "crop_ai": "ಬೆಳೆ AI",
+    "inventory": "ದಾಸ್ತಾನು",
+    "markets": "ಮಾರುಕಟ್ಟೆಗಳು",
+    "trades": "ವ್ಯಾಪಾರಗಳು",
+    "users": "ಬಳಕೆದಾರರು",
+    "analytics": "ವಿಶ್ಲೇಷಣೆ",
+    "sign_out": "ಸೈನ್ ಔಟ್"
+  },
+  "dashboard": {
+    "title": "AgriHold AI",
+    "welcome": "ಮತ್ತೆ ಸುಸ್ವಾಗತ",
+    "role_dashboard": "{{role}} ಡ್ಯಾಶ್‌ಬೋರ್ಡ್"
+  }
+}
