@@ -1,37 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AgriHold AI
 
-## Getting Started
+AgriHold AI is a fullstack agricultural intelligence platform built with Next.js App Router, TypeScript, Tailwind CSS, Auth.js, an internal Antigravity UI component layer, and MongoDB Atlas.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 App Router with route handlers
+- TypeScript and Tailwind CSS 4
+- Auth.js through `next-auth@beta`
+- MongoDB Atlas through the official MongoDB driver
+- Zod request and environment validation
+- Reusable Antigravity UI primitives in `src/components/antigravity`
+
+## Setup
 
 ```bash
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Required production variables:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+MONGODB_URI="mongodb+srv://USER:PASSWORD@cluster.mongodb.net/?retryWrites=true&w=majority"
+MONGODB_DB="agrihold-ai"
+AUTH_SECRET="replace-with-openssl-rand-base64-32"
+NEXTAUTH_SECRET="replace-with-openssl-rand-base64-32"
+NEXTAUTH_URL="http://localhost:3000"
+```
 
-## Learn More
+## Architecture
 
-To learn more about Next.js, take a look at the following resources:
+- `app/`: App Router pages, route groups, and public API endpoints.
+- `app/api/auth/[...nextauth]`: Auth.js route handlers.
+- `app/api/farms`: protected farm holding read/write API.
+- `app/api/insights`: protected AI insight API scaffold.
+- `app/api/health`: service readiness endpoint.
+- `src/lib/db`: MongoDB Atlas client and collection factories.
+- `src/lib/auth`: Auth.js configuration and exported helpers.
+- `src/lib/api`: shared API response helpers.
+- `src/components/antigravity`: internal startup-grade UI primitive system.
+- `src/features`: feature modules for product screens and future domain workflows.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Verification
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-"# techverse" 
+```bash
+npm run lint
+npm run build
+```
