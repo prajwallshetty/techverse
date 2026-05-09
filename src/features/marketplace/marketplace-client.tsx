@@ -36,6 +36,18 @@ export function MarketplaceClient() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  const fetchListings = async () => {
+    try {
+      const res = await fetch(`/api/marketplace?location=${search}`);
+      const data = await res.json();
+      setListings(data.listings || []);
+    } catch (err) {
+      console.error("Failed to fetch listings");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchListings();
 
@@ -75,18 +87,6 @@ export function MarketplaceClient() {
       pusherClient.unsubscribe(`marketplace-${selectedListing._id}`);
     };
   }, [selectedListing]);
-
-  const fetchListings = async () => {
-    try {
-      const res = await fetch(`/api/marketplace?location=${search}`);
-      const data = await res.json();
-      setListings(data.listings || []);
-    } catch (err) {
-      console.error("Failed to fetch listings");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchBidHistory = async (bookingId: string) => {
     try {

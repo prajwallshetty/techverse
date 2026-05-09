@@ -23,10 +23,12 @@ export function BookingModal({ isOpen, onClose, warehouse, onSuccess }: BookingM
   // Timer Logic
   useEffect(() => {
     if (!isOpen) {
-      setTimeLeft(600);
-      setCropName("");
-      setQuantity("");
-      setError(null);
+      setTimeout(() => {
+        setTimeLeft(600);
+        setCropName("");
+        setQuantity("");
+        setError(null);
+      }, 0);
       return;
     }
 

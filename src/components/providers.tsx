@@ -1,14 +1,14 @@
 "use client";
 
 import { SessionProvider } from "next-auth/react";
-import { LanguageProvider } from "@/lib/i18n/context";
+import { ThemeProvider } from "next-themes";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <LanguageProvider>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
         {children}
-      </LanguageProvider>
+      </ThemeProvider>
     </SessionProvider>
   );
 }

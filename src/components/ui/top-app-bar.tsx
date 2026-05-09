@@ -1,0 +1,44 @@
+'use client';
+
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
+
+export function TopAppBar() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setMounted(true), 0);
+  }, []);
+
+  return (
+    <header className="bg-surface dark:bg-background border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-4 h-14 sticky top-0 z-50">
+      <div className="flex items-center gap-2">
+        <span className="material-symbols-outlined text-primary dark:text-primary-fixed-dim">
+          agriculture
+        </span>
+        <h1 className="font-h1-mobile text-h1-mobile font-bold text-primary dark:text-primary-fixed-dim tracking-tight">
+          Krishi Hub
+        </h1>
+      </div>
+      
+      <div className="flex items-center gap-2">
+        {mounted && (
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="p-2 rounded-lg hover:bg-surface-container-low transition-colors"
+            aria-label="Toggle dark mode"
+          >
+            <span className="material-symbols-outlined text-on-surface-variant">
+              {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+            </span>
+          </button>
+        )}
+        
+        <button className="text-primary dark:text-primary-fixed-dim font-bold text-lg hover:bg-surface-container-low transition-colors px-2 py-1 rounded-lg active:scale-95 duration-150">
+          English
+        </button>
+      </div>
+    </header>
+  );
+}

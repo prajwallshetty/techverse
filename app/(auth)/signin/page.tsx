@@ -8,20 +8,34 @@ export const metadata = {
 
 export default function SignInPage() {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-5 py-10">
-      {/* Dynamic Background */}
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-6 py-12">
+      {/* Hand-crafted background elements */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-40 -top-40 size-96 rounded-full bg-primary/10 blur-[100px] animate-pulse" />
-        <div className="absolute -bottom-40 -right-40 size-96 rounded-full bg-secondary/10 blur-[100px] animate-pulse delay-700" />
-        <div className="absolute left-1/2 top-1/2 size-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/5 blur-[80px]" />
+        <div className="absolute -left-[10%] -top-[10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px] animate-pulse" />
+        <div className="absolute -right-[10%] -bottom-[10%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[120px] animate-pulse delay-1000" />
       </div>
 
-      <AuthCard 
-        title="Welcome Back" 
-        subtitle="Log in to manage your agricultural operations"
-      >
-        <SignInForm />
-      </AuthCard>
+      <div className="relative z-10 w-full max-w-md">
+        <div className="mb-10 text-center">
+          <div className="inline-flex bg-primary rounded-2xl p-2.5 shadow-xl shadow-primary/20 mb-6">
+            <span className="material-symbols-outlined text-white text-3xl">agriculture</span>
+          </div>
+          <h1 className="text-3xl font-black text-on-surface tracking-tight uppercase mb-2">Krishi Hub</h1>
+          <p className="text-on-surface-variant font-medium">Log in to your agricultural workspace</p>
+        </div>
+
+        <AuthCard 
+          title="Welcome Back" 
+          subtitle="Log in with your phone number or email"
+          className="shadow-2xl border-outline-variant/30"
+        >
+          <SignInForm />
+        </AuthCard>
+        
+        <p className="mt-12 text-center text-xs font-bold text-on-surface-variant/40 uppercase tracking-[0.2em]">
+          Secured by Krishi Hub Cloud
+        </p>
+      </div>
     </main>
   );
 }

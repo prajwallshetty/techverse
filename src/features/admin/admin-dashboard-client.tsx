@@ -39,10 +39,6 @@ export function AdminDashboardClient() {
   const [auditLog, setAuditLog] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
     try {
       const [statsRes, auditRes] = await Promise.all([
@@ -61,6 +57,10 @@ export function AdminDashboardClient() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   if (loading) return <div className="h-full flex items-center justify-center"><Loader2 className="size-10 animate-spin text-primary" /></div>;
 
