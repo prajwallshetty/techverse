@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { getDistance } from "geolib";
 import { WarehouseMap, type MapWarehouse } from "./warehouse-map";
 import { BookingModal } from "./booking-modal";
@@ -9,40 +9,56 @@ import { Badge } from "@/components/antigravity/badge";
 import { Button } from "@/components/antigravity/button";
 import { Search, MapPin, Map, Filter, Package, Star, ArrowRight } from "lucide-react";
 
-// The farmer's assumed location for distance calculations
-const FARMER_LOCATION = { latitude: 18.5204, longitude: 73.8567 };
+// Default fallback location (Pune) if geolocation is denied
+const DEFAULT_LOCATION = { latitude: 18.5204, longitude: 73.8567 };
 
-// Mock realistic spatial data
-const MOCK_WAREHOUSES: MapWarehouse[] = [
-  { id: "w1", name: "AgriSafe Storage Pune", latitude: 18.5590, longitude: 73.7868, capacityTons: 5000, availableCapacity: 1200, pricePerTon: 45 },
-  { id: "w2", name: "Deccan Cold Chain", latitude: 18.4636, longitude: 73.8681, capacityTons: 2000, availableCapacity: 450, pricePerTon: 55 },
-  { id: "w3", name: "Kisan Godown Co.", latitude: 18.6161, longitude: 73.7420, capacityTons: 10000, availableCapacity: 8000, pricePerTon: 35 },
-  { id: "w4", name: "Western Ghats Silos", latitude: 18.4204, longitude: 73.7867, capacityTons: 3000, availableCapacity: 50, pricePerTon: 40 },
-  { id: "w5", name: "Premium Fresh Hub", latitude: 18.5804, longitude: 73.9267, capacityTons: 1500, availableCapacity: 600, pricePerTon: 60 },
-];
-
-export function WarehouseDashboard() {
+export function WarehouseDashboard({ warehouses = [] }: { warehouses?: any[] }) {
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string>("");
+  const [farmerLocation, setFarmerLocation] = useState(DEFAULT_LOCATION);
   const [showMapMobile, setShowMapMobile] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [bookingSuccessMsg, setBookingSuccessMsg] = useState(false);
 
+  // Get real-time browser location
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setFarmerLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.warn("Geolocation access denied or failed. Using default location.", error);
+        }
+      );
+    }
+  }, []);
+
   // Add distance calculation and filter logic
   const processedWarehouses = useMemo(() => {
-    return MOCK_WAREHOUSES.map((w) => {
-      const distanceMeters = getDistance(FARMER_LOCATION, {
-        latitude: w.latitude,
-        longitude: w.longitude,
-      });
-      return { ...w, distanceKm: Math.round(distanceMeters / 100) / 10 };
-    })
-    .filter(w => w.name.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => (a.distanceKm || 0) - (b.distanceKm || 0));
-  }, [search]);
+    return warehouses
+      .filter((w) => w.latitude && w.longitude)
+      .map((w) => {
+        const distanceMeters = getDistance(farmerLocation, {
+          latitude: w.latitude,
+          longitude: w.longitude,
+        });
+        return { 
+          ...w, 
+          id: w._id || w.id,
+          pricePerTon: w.pricePerTonPerWeek || w.pricePerTon || 0,
+          distanceKm: Math.round(distanceMeters / 100) / 10 
+        };
+      })
+      .filter((w) => w.name.toLowerCase().includes(search.toLowerCase()))
+      .sort((a, b) => (a.distanceKm || 0) - (b.distanceKm || 0));
+  }, [warehouses, search, farmerLocation]);
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col md:flex-row overflow-hidden">
+    <div className="flex h-full flex-col md:flex-row overflow-hidden">
       
       {/* Mobile Map Toggle */}
       <div className="md:hidden p-4 border-b border-border bg-surface flex items-center justify-between z-10">
@@ -132,7 +148,8 @@ export function WarehouseDashboard() {
         <WarehouseMap 
           warehouses={processedWarehouses} 
           selectedId={selectedId} 
-          onSelect={setSelectedId} 
+          onSelect={setSelectedId}
+          farmerLocation={farmerLocation}
         />
         
         {/* Floating Book Action panel on Desktop when selected */}

@@ -22,6 +22,7 @@ export function WarehouseMap(props: {
   warehouses: MapWarehouse[];
   selectedId?: string;
   onSelect: (id: string) => void;
+  farmerLocation?: { latitude: number; longitude: number };
 }) {
   return <WarehouseMapClient {...props} />;
 }

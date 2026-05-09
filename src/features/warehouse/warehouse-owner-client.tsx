@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   BarChart, 
   Bar, 
@@ -15,21 +15,23 @@ import {
 } from "recharts";
 import { 
   TrendingUp, 
-  Users, 
   Package, 
   Banknote, 
-  ArrowUpRight, 
-  ArrowDownRight, 
   Clock,
   CheckCircle2,
-  AlertCircle,
   Loader2,
   Plus,
   Settings,
   LayoutDashboard,
   Box,
   MapPin,
-  ChevronRight
+  Map,
+  ChevronRight,
+  Activity,
+  AlertTriangle,
+  X,
+  Building2,
+  Warehouse
 } from "lucide-react";
 import { Card, CardContent } from "@/components/antigravity/card";
 import { Badge } from "@/components/antigravity/badge";
@@ -37,8 +39,20 @@ import { Button } from "@/components/antigravity/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/antigravity/tabs";
 import { useTranslation } from "@/lib/i18n/context";
 import { motion, AnimatePresence } from "framer-motion";
+import { WarehouseOwnerMap } from "./warehouse-owner-map";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const COLORS = ["#00C49F", "#FFBB28", "#FF8042", "#0088FE", "#8884d8"];
+
+const DEFAULT_FORM = {
+  name: "",
+  location: "",
+  latitude: "",
+  longitude: "",
+  capacityTons: "",
+  pricePerTonPerWeek: "500",
+  certifications: "",
+};
 
 export function WarehouseOwnerClient() {
   const { t } = useTranslation();
@@ -46,7 +60,36 @@ export function WarehouseOwnerClient() {
   const [chartData, setChartData] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("overview");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
+
+  // Sync state with URL query param
+  useEffect(() => {
+    const tab = searchParams.get("tab") || "overview";
+    if (tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === "overview") {
+      params.delete("tab");
+    } else {
+      params.set("tab", value);
+    }
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Add Space modal
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [form, setForm] = useState(DEFAULT_FORM);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const fetchData = async () => {
     try {
@@ -56,7 +99,7 @@ export function WarehouseOwnerClient() {
       ]);
       const statsData = await statsRes.json();
       const bookingsData = await bookingsRes.json();
-      
+      // stats now includes warehouseName, location, latitude, longitude, pendingBookings
       setStats(statsData?.stats || null);
       setChartData(statsData?.chartData || []);
       setBookings(bookingsData?.bookings || []);
@@ -84,6 +127,45 @@ export function WarehouseOwnerClient() {
     }
   };
 
+  const handleAddSpace = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/warehouses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          location: form.location,
+          latitude: form.latitude || undefined,
+          longitude: form.longitude || undefined,
+          capacityTons: Number(form.capacityTons),
+          pricePerTonPerWeek: Number(form.pricePerTonPerWeek),
+          certifications: form.certifications
+            ? form.certifications.split(",").map((c) => c.trim()).filter(Boolean)
+            : [],
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFormError(data.error || "Failed to create warehouse.");
+      } else {
+        setSuccessMsg(`"${data.warehouse.name}" added successfully!`);
+        setForm(DEFAULT_FORM);
+        fetchData();
+        setTimeout(() => {
+          setShowAddModal(false);
+          setSuccessMsg(null);
+        }, 2000);
+      }
+    } catch {
+      setFormError("Network error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) return (
     <div className="h-[80vh] flex flex-col items-center justify-center gap-4">
       <Loader2 className="size-12 animate-spin text-primary" />
@@ -106,19 +188,25 @@ export function WarehouseOwnerClient() {
           <Button variant="secondary" className="px-6 py-6 rounded-2xl font-black text-xs uppercase tracking-widest border-border/60">
             Export Report
           </Button>
-          <Button className="px-8 py-6 rounded-2xl bg-primary text-white shadow-2xl shadow-primary/20 font-black text-xs uppercase tracking-widest flex items-center gap-2">
+          <Button
+            className="px-8 py-6 rounded-2xl bg-primary text-white shadow-2xl shadow-primary/20 font-black text-xs uppercase tracking-widest flex items-center gap-2"
+            onClick={() => { setShowAddModal(true); setFormError(null); setSuccessMsg(null); }}
+          >
             <Plus className="size-4" /> Add Space
           </Button>
         </div>
       </div>
 
-      <Tabs defaultValue="overview" onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="bg-surface-muted/50 p-1.5 rounded-[2rem] border border-border/40 w-fit mb-10">
           <TabsTrigger value="overview" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
              <LayoutDashboard className="size-4 mr-2" /> Overview
           </TabsTrigger>
           <TabsTrigger value="bookings" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
              <Clock className="size-4 mr-2" /> Bookings
+          </TabsTrigger>
+          <TabsTrigger value="map" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
+             <Map className="size-4 mr-2" /> Map View
           </TabsTrigger>
           <TabsTrigger value="inventory" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
              <Box className="size-4 mr-2" /> Inventory
@@ -132,10 +220,10 @@ export function WarehouseOwnerClient() {
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { label: t("common.dashboard.total_revenue"), value: `₹${stats?.totalRevenue?.toLocaleString()}`, icon: Banknote, color: 'text-emerald-500', bg: 'bg-emerald-500/10', trend: '+12.5%' },
-              { label: t("common.dashboard.capacity_used"), value: `${stats?.currentStock} / ${stats?.totalCapacity} MT`, icon: Package, color: 'text-primary', bg: 'bg-primary/10', progress: stats?.utilizationRate },
-              { label: t("common.dashboard.active_bookings"), value: `${stats?.activeBookings} Reservations`, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-              { label: 'Completed', value: `${stats?.completedBookings} Deliveries`, icon: CheckCircle2, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+              { label: t("common.dashboard.total_revenue"), value: `₹${(stats?.totalRevenue ?? 0).toLocaleString()}`, icon: Banknote, color: 'text-emerald-500', bg: 'bg-emerald-500/10', trend: '+12.5%' },
+              { label: t("common.dashboard.capacity_used"), value: `${stats?.currentStock ?? 0} / ${stats?.totalCapacity ?? 0} MT`, icon: Package, color: 'text-primary', bg: 'bg-primary/10', progress: stats?.utilizationRate ?? 0 },
+              { label: t("common.dashboard.active_bookings"), value: `${stats?.activeBookings ?? 0} Reservations`, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+              { label: 'Completed', value: `${stats?.completedBookings ?? 0} Deliveries`, icon: CheckCircle2, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
             ].map((stat, idx) => (
               <motion.div 
                 key={stat.label}
@@ -243,6 +331,117 @@ export function WarehouseOwnerClient() {
           </div>
         </TabsContent>
 
+        {/* ── Map Tab ──────────────────────────────────────────────────────── */}
+        <TabsContent value="map" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="flex flex-col lg:flex-row gap-6">
+
+            {/* Left: live map */}
+            <div className="flex-1 h-[520px] lg:h-[600px] rounded-[3rem] overflow-hidden border border-border/40 shadow-sm">
+              <WarehouseOwnerMap stats={stats} />
+            </div>
+
+            {/* Right: stats sidebar */}
+            <div className="lg:w-[340px] space-y-5">
+
+              {/* Facility card */}
+              <Card className="border-border/40 rounded-[2.5rem] bg-surface shadow-sm">
+                <CardContent className="p-8 space-y-5">
+                  <div className="flex items-center gap-3">
+                    <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                      <MapPin className="size-6 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-black text-foreground leading-tight">{stats?.warehouseName || "Your Facility"}</p>
+                      <p className="text-xs text-muted font-medium mt-0.5">{stats?.location || "—"}</p>
+                    </div>
+                  </div>
+
+                  {/* Utilization bar */}
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[10px] font-black uppercase text-muted tracking-widest">Capacity Used</span>
+                      <span className={`text-sm font-black ${
+                        (stats?.utilizationRate ?? 0) > 80
+                          ? "text-red-500"
+                          : (stats?.utilizationRate ?? 0) > 50
+                          ? "text-amber-500"
+                          : "text-primary"
+                      }`}>{stats?.utilizationRate ?? 0}%</span>
+                    </div>
+                    <div className="w-full bg-surface-muted h-3 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${stats?.utilizationRate ?? 0}%` }}
+                        transition={{ duration: 1.2, ease: "easeOut" }}
+                        className={`h-full rounded-full ${
+                          (stats?.utilizationRate ?? 0) > 80
+                            ? "bg-red-500"
+                            : (stats?.utilizationRate ?? 0) > 50
+                            ? "bg-amber-500"
+                            : "bg-primary"
+                        }`}
+                      />
+                    </div>
+                    <p className="text-xs text-muted font-medium mt-1.5">
+                      {stats?.currentStock ?? 0} MT used of {stats?.totalCapacity ?? 0} MT total
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Booking status grid */}
+              {[
+                { label: "Active", value: stats?.activeBookings ?? 0, icon: Activity, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+                { label: "Pending", value: stats?.pendingBookings ?? 0, icon: AlertTriangle, color: "text-amber-500", bg: "bg-amber-500/10" },
+                { label: "Completed", value: stats?.completedBookings ?? 0, icon: CheckCircle2, color: "text-indigo-500", bg: "bg-indigo-500/10" },
+                { label: "Revenue", value: `₹${(stats?.totalRevenue ?? 0).toLocaleString()}`, icon: Banknote, color: "text-primary", bg: "bg-primary/10" },
+              ].map((item) => (
+                <Card key={item.label} className="border-border/40 rounded-[2rem] bg-surface shadow-sm">
+                  <CardContent className="p-5 flex items-center gap-4">
+                    <div className={`size-10 rounded-xl flex items-center justify-center ${item.bg} ${item.color}`}>
+                      <item.icon className="size-5" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase text-muted tracking-widest">{item.label}</p>
+                      <p className="text-xl font-black text-foreground mt-0.5">{item.value}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+
+              {/* Recent bookings list */}
+              {bookings.length > 0 && (
+                <Card className="border-border/40 rounded-[2.5rem] bg-surface shadow-sm">
+                  <CardContent className="p-6">
+                    <p className="text-[10px] font-black uppercase text-muted tracking-widest mb-4">Recent Bookings</p>
+                    <div className="space-y-3">
+                      {bookings.slice(0, 4).map((b: any) => (
+                        <div key={b._id} className="flex items-center justify-between">
+                          <div className="flex items-center gap-2.5">
+                            <div className="size-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black text-xs">
+                              {b.farmerId?.name?.[0] ?? "F"}
+                            </div>
+                            <div>
+                              <p className="text-xs font-black leading-none">{b.farmerId?.name ?? "Farmer"}</p>
+                              <p className="text-[10px] text-muted font-medium mt-0.5">{b.cropName} · {b.quantityTons} MT</p>
+                            </div>
+                          </div>
+                          <Badge
+                            intent={b.status === "confirmed" ? "high" : b.status === "completed" ? "medium" : "low"}
+                            className="rounded-xl text-[9px] font-black uppercase"
+                          >
+                            {b.status}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+
         <TabsContent value="bookings" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           <Card className="border-border/40 rounded-[3rem] overflow-hidden bg-surface shadow-xl shadow-black/5">
             <CardContent className="p-0">
@@ -331,6 +530,177 @@ export function WarehouseOwnerClient() {
         </TabsContent>
       </Tabs>
 
+      {/* ── Add Space Modal ─────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showAddModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={(e) => { if (e.target === e.currentTarget) setShowAddModal(false); }}
+          >
+            <motion.div
+              ref={modalRef}
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 40, scale: 0.95 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="w-full max-w-lg bg-surface rounded-[2.5rem] border border-border/40 shadow-2xl overflow-hidden"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between px-10 pt-10 pb-6 border-b border-border/30">
+                <div className="flex items-center gap-4">
+                  <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                    <Building2 className="size-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-xl text-foreground tracking-tight">Add New Space</h3>
+                    <p className="text-xs text-muted font-medium mt-0.5">Register a new warehouse facility</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="size-10 rounded-2xl flex items-center justify-center hover:bg-surface-muted transition-colors text-muted hover:text-foreground"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <form onSubmit={handleAddSpace} className="px-10 py-8 space-y-5">
+                {formError && (
+                  <div className="rounded-2xl bg-red-500/10 border border-red-500/20 p-4 text-sm font-semibold text-red-500">
+                    {formError}
+                  </div>
+                )}
+                {successMsg && (
+                  <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-4 text-sm font-semibold text-emerald-600">
+                    ✓ {successMsg}
+                  </div>
+                )}
+
+                {/* Warehouse Name */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted">Facility Name *</label>
+                  <div className="relative">
+                    <Warehouse className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted" />
+                    <input
+                      required
+                      type="text"
+                      placeholder="e.g. North Hub Storage"
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-border/60 bg-surface-muted/30 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Location */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted">Location *</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted" />
+                    <input
+                      required
+                      type="text"
+                      placeholder="e.g. Bagalkot, KA"
+                      value={form.location}
+                      onChange={(e) => setForm({ ...form, location: e.target.value })}
+                      className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-border/60 bg-surface-muted/30 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Lat / Lng */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">Latitude</label>
+                    <input
+                      type="number"
+                      step="any"
+                      placeholder="16.1815"
+                      value={form.latitude}
+                      onChange={(e) => setForm({ ...form, latitude: e.target.value })}
+                      className="w-full px-4 py-3.5 rounded-2xl border border-border/60 bg-surface-muted/30 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">Longitude</label>
+                    <input
+                      type="number"
+                      step="any"
+                      placeholder="75.6961"
+                      value={form.longitude}
+                      onChange={(e) => setForm({ ...form, longitude: e.target.value })}
+                      className="w-full px-4 py-3.5 rounded-2xl border border-border/60 bg-surface-muted/30 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Capacity & Price */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">Capacity (Tons) *</label>
+                    <input
+                      required
+                      type="number"
+                      min="1"
+                      placeholder="5000"
+                      value={form.capacityTons}
+                      onChange={(e) => setForm({ ...form, capacityTons: e.target.value })}
+                      className="w-full px-4 py-3.5 rounded-2xl border border-border/60 bg-surface-muted/30 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">Price / Ton / Week (₹)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="500"
+                      value={form.pricePerTonPerWeek}
+                      onChange={(e) => setForm({ ...form, pricePerTonPerWeek: e.target.value })}
+                      className="w-full px-4 py-3.5 rounded-2xl border border-border/60 bg-surface-muted/30 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Certifications */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted">Certifications <span className="normal-case font-medium">(comma separated)</span></label>
+                  <input
+                    type="text"
+                    placeholder="FSSAI, ISO 9001, Cold Chain"
+                    value={form.certifications}
+                    onChange={(e) => setForm({ ...form, certifications: e.target.value })}
+                    className="w-full px-4 py-3.5 rounded-2xl border border-border/60 bg-surface-muted/30 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                  />
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest border-border/60"
+                    onClick={() => setShowAddModal(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={submitting}
+                    className="flex-1 py-4 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-60"
+                  >
+                    {submitting ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+                    {submitting ? "Creating..." : "Create Facility"}
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

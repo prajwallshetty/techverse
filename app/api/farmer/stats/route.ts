@@ -18,17 +18,22 @@ export async function GET() {
     const userId = session.user.id;
 
     // 1. Fetch Key Stats
-    const [crops, loans, bookings] = await Promise.all([
+    const [crops, loans, rawBookings, recentBookings] = await Promise.all([
       Crop.find({ farmerId: userId }).lean(),
       Loan.find({ borrowerId: userId }).lean(),
-      Booking.find({ farmerId: userId }).lean()
+      Booking.find({ farmerId: userId }).lean(),
+      Booking.find({ farmerId: userId })
+        .populate("warehouseId", "name location")
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .lean()
     ]);
 
-    const totalStoredWeight = bookings.reduce((acc, b) => acc + (b.status === "confirmed" ? b.quantityTons : 0), 0);
+    const totalStoredWeight = rawBookings.reduce((acc, b) => acc + (b.status === "confirmed" ? b.quantityTons : 0), 0);
     const activeLoanAmount = loans.reduce((acc, l) => acc + (l.loanStatus === "active" ? l.eligibleAmount : 0), 0);
     
     // Count active bids for the farmer's bookings
-    const bookingIds = bookings.map(b => b._id);
+    const bookingIds = rawBookings.map(b => b._id);
     const activeBidsCount = await Bid.countDocuments({ 
       bookingId: { $in: bookingIds },
       status: "pending"
@@ -39,6 +44,17 @@ export async function GET() {
       .limit(3)
       .lean();
 
+    // Serialize ObjectIds for client
+    const serializedBookings = recentBookings.map(b => ({
+      ...b,
+      _id: b._id.toString(),
+      farmerId: b.farmerId.toString(),
+      warehouseId: b.warehouseId ? {
+        ...(b.warehouseId as any),
+        _id: (b.warehouseId as any)._id.toString(),
+      } : null,
+    }));
+
     return NextResponse.json({
       stats: {
         totalStoredWeight,
@@ -46,6 +62,7 @@ export async function GET() {
         activeBidsCount,
         cropCount: crops.length
       },
+      bookings: serializedBookings,
       warehouses: nearbyWarehouses
     });
   } catch (error: any) {
