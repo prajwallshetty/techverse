@@ -14,34 +14,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/antigravity/badge";
-import { ROLE_LABELS, ROLE_DASHBOARD } from "@/types/domain";
 import type { UserRole } from "@/types/domain";
+import { TranslatedSidebar } from "@/features/i18n/translated-sidebar";
+import { TranslatedHeader } from "@/features/i18n/translated-header";
+import { LanguageSwitcher } from "@/features/i18n/language-switcher";
 
-const navByRole: Record<
-  UserRole,
-  { label: string; href: string; icon: React.ComponentType<{ className?: string }> }[]
-> = {
-  farmer: [
-    { label: "Overview", href: "/dashboard/farmer", icon: BarChart3 },
-    { label: "My Farms", href: "/dashboard/farmer", icon: Map },
-    { label: "Crop AI", href: "/dashboard/farmer", icon: Sprout },
-  ],
-  warehouse_owner: [
-    { label: "Overview", href: "/dashboard/warehouse", icon: BarChart3 },
-    { label: "Inventory", href: "/dashboard/warehouse", icon: Warehouse },
-    { label: "Shipments", href: "/dashboard/warehouse", icon: Map },
-  ],
-  trader: [
-    { label: "Overview", href: "/dashboard/trader", icon: BarChart3 },
-    { label: "Markets", href: "/dashboard/trader", icon: LineChart },
-    { label: "Trades", href: "/dashboard/trader", icon: TrendingUp },
-  ],
-  admin: [
-    { label: "Overview", href: "/dashboard/admin", icon: BarChart3 },
-    { label: "Users", href: "/dashboard/admin", icon: ShieldCheck },
-    { label: "Analytics", href: "/dashboard/admin", icon: LineChart },
-  ],
-};
+const navByRole = null; // Replaced by TranslatedSidebar
 
 export default async function DashboardLayout({
   children,
@@ -55,8 +33,7 @@ export default async function DashboardLayout({
   }
 
   const role = (session.user.role as UserRole) ?? "farmer";
-  const roleLabel = ROLE_LABELS[role] ?? role;
-  const links = navByRole[role] ?? navByRole.farmer;
+  const roleLabel = (session.user.role as string)?.charAt(0).toUpperCase() + (session.user.role as string)?.slice(1);
 
   return (
     <div className="min-h-screen bg-background">
@@ -74,18 +51,7 @@ export default async function DashboardLayout({
         </div>
 
         {/* Navigation */}
-        <nav className="mt-10 space-y-1">
-          {links.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="flex h-11 items-center gap-3 rounded-md px-3 text-sm font-medium text-muted transition hover:bg-surface-muted hover:text-foreground"
-            >
-              <item.icon className="size-4" />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <TranslatedSidebar role={role} />
 
         {/* User info at bottom */}
         <div className="mt-auto border-t border-border pt-4">
@@ -125,13 +91,11 @@ export default async function DashboardLayout({
                 <Leaf className="size-4" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted">
-                  {roleLabel} Dashboard
-                </p>
-                <h2 className="text-lg font-bold lg:text-xl">AgriHold AI</h2>
+                <TranslatedHeader roleLabel={roleLabel} />
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <LanguageSwitcher />
               <Badge>{roleLabel}</Badge>
               <form action={signOutAction} className="lg:hidden">
                 <button

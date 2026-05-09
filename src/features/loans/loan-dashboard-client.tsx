@@ -19,6 +19,7 @@ import { Card, CardContent } from "@/components/antigravity/card";
 import { Button } from "@/components/antigravity/button";
 import { Badge } from "@/components/antigravity/badge";
 import { CreditEngine } from "@/lib/loans/credit-engine";
+import { useTranslation } from "@/lib/i18n/context";
 
 type Booking = {
   _id: string;
@@ -41,6 +42,7 @@ type Loan = {
 };
 
 export function LoanDashboardClient({ initialBookings }: { initialBookings: Booking[] }) {
+  const { t } = useTranslation();
   const [loans, setLoans] = useState<Loan[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState<string>("");
@@ -119,9 +121,9 @@ export function LoanDashboardClient({ initialBookings }: { initialBookings: Book
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-black tracking-tight flex items-center gap-2">
-            Smart Microloans <Badge className="bg-primary/10 text-primary border-none text-[10px]">PRE-APPROVED</Badge>
+            {t("common.loans.title")} <Badge className="bg-primary/10 text-primary border-none text-[10px]">PRE-APPROVED</Badge>
           </h2>
-          <p className="mt-1 text-sm text-muted">Instant liquidity against your physically stored crop collateral.</p>
+          <p className="mt-1 text-sm text-muted">{t("common.loans.subtitle")}</p>
         </div>
         <div className="flex items-center gap-3 bg-surface-muted/50 p-2 rounded-2xl border border-border/50">
           <div className="p-2 bg-accent/10 rounded-xl text-accent">
@@ -190,7 +192,7 @@ export function LoanDashboardClient({ initialBookings }: { initialBookings: Book
                       disabled={!selectedBooking}
                       onClick={handleCheckEligibility}
                     >
-                      Check Eligibility <ArrowRight className="ml-2 size-5" />
+                      {t("common.loans.eligibility")} <ArrowRight className="ml-2 size-5" />
                     </Button>
                   </div>
                 )}
@@ -233,7 +235,7 @@ export function LoanDashboardClient({ initialBookings }: { initialBookings: Book
                     </div>
 
                     <Button className="w-full py-6 text-lg bg-emerald-500 hover:bg-emerald-600 shadow-xl shadow-emerald-500/10" onClick={handleClaimLoan}>
-                      Claim Instant Payout <Banknote className="ml-2 size-6" />
+                      {t("common.loans.claim_payout")} <Banknote className="ml-2 size-6" />
                     </Button>
                   </div>
                 )}
