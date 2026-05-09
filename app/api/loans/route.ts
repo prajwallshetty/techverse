@@ -5,6 +5,7 @@ import { Loan } from "@/models/Loan";
 import { Booking } from "@/models/Booking";
 import { auth } from "@/lib/auth";
 import { CreditEngine } from "@/lib/loans/credit-engine";
+import { NotificationService } from "@/lib/notifications/service";
 
 // Validation for checking eligibility
 const checkSchema = z.object({
@@ -52,6 +53,12 @@ export async function POST(request: Request) {
     });
 
     await loan.save();
+
+    // 3. Send SMS Notification
+    NotificationService.notifyLoanDisbursed(
+      session?.user?.email || "+910000000000", 
+      eligibleAmount
+    );
 
     return NextResponse.json({
       success: true,

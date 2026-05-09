@@ -5,6 +5,7 @@ import { pusherServer } from "@/lib/pusher/server";
 import { User } from "@/models/User";
 import { Booking } from "@/models/Booking";
 import { Bid } from "@/models/Bid";
+import { NotificationService } from "@/lib/notifications/service";
 import dbConnect from "@/lib/db/mongoose";
 import mongoose from "mongoose";
 
@@ -78,11 +79,29 @@ export async function POST(request: Request) {
         createdAt: bid.createdAt,
       });
 
-      if (autoSold) {
-        await pusherServer.trigger(`marketplace-${bookingId}`, "auto-sold", {
-          amount,
-          traderName: trader?.name,
-        });
+      if (booking) {
+        if (autoSold) {
+          await pusherServer.trigger(`marketplace-${bookingId}`, "auto-sold", {
+            amount,
+            traderName: trader?.name,
+          });
+
+          // SMS Notification for Auto-Sell
+          const farmer = await User.findById(booking.farmerId).select("email");
+          NotificationService.notifyAutoSellExecuted(
+            farmer?.email || "+910000000000",
+            booking.cropName,
+            amount
+          );
+        } else {
+          // SMS Notification for New Bid (Regular)
+          const farmer = await User.findById(booking.farmerId).select("email");
+          NotificationService.notifyNewBid(
+            farmer?.email || "+910000000000",
+            booking.cropName,
+            amount
+          );
+        }
       }
 
       await pusherServer.trigger("marketplace-global", "bid-count-update", { bookingId });

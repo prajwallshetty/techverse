@@ -5,6 +5,7 @@ import dbConnect from "@/lib/db/mongoose";
 import { Warehouse } from "@/models/Warehouse";
 import { Booking } from "@/models/Booking";
 import { auth } from "@/lib/auth";
+import { NotificationService } from "@/lib/notifications/service";
 import QRCode from "qrcode";
 
 const bookingSchema = z.object({
@@ -90,6 +91,13 @@ export async function POST(request: Request) {
       // COMMIT TRANSACTION
       await session.commitTransaction();
       session.endSession();
+
+      // Send SMS Notification (Non-blocking)
+      NotificationService.notifyBookingConfirmed(
+        sessionToken?.user?.email || "+910000000000",
+        warehouse.name || "Warehouse",
+        quantityTons
+      );
 
       return NextResponse.json({ success: true, booking }, { status: 201 });
     } catch (transactionError: any) {
