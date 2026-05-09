@@ -5,6 +5,7 @@ import dbConnect from "@/lib/db/mongoose";
 import { Warehouse } from "@/models/Warehouse";
 import { Booking } from "@/models/Booking";
 import { auth } from "@/lib/auth";
+import QRCode from "qrcode";
 
 const bookingSchema = z.object({
   warehouseId: z.string().min(1),
@@ -63,8 +64,27 @@ export async function POST(request: Request) {
         cropName,
         quantityTons,
         totalPrice,
-        status: "confirmed", // Since transaction succeeds, we instantly confirm. (The UI timer was for the checkout phase)
+        status: "confirmed",
       });
+
+      // 5. Generate Secure QR Code Data
+      const qrPayload = JSON.stringify({
+        bookingId: booking._id.toString(),
+        farmerId: farmerId,
+        warehouseId: warehouseId,
+        timestamp: new Date().toISOString()
+      });
+      
+      const qrDataUrl = await QRCode.toDataURL(qrPayload, {
+        errorCorrectionLevel: 'H',
+        margin: 1,
+        color: {
+          dark: '#000000',
+          light: '#ffffff'
+        }
+      });
+
+      booking.qrCodeDataUrl = qrDataUrl;
       await booking.save({ session });
 
       // COMMIT TRANSACTION

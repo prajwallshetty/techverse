@@ -7,6 +7,7 @@ export interface IBooking extends Document {
   quantityTons: number;
   totalPrice: number;
   status: "pending" | "confirmed" | "expired" | "cancelled" | "completed";
+  qrCodeDataUrl?: string;
   expiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -25,6 +26,7 @@ const BookingSchema: Schema<IBooking> = new Schema(
       default: "pending",
       index: true,
     },
+    qrCodeDataUrl: { type: String },
     expiresAt: { type: Date },
   },
   { timestamps: true }
