@@ -31,7 +31,7 @@ export default async function DashboardLayout({
       </Suspense>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="lg:hidden sticky top-0 z-50">
+        <header className="sticky top-0 z-50">
           <TopAppBar />
         </header>
         

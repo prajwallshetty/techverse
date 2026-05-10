@@ -6,9 +6,12 @@ import { signIn } from "next-auth/react";
 import { Mail, Lock, User, Phone, Loader2 } from "lucide-react";
 import Link from "next/link";
 
+import { useTranslation } from "@/lib/i18n/context";
+
 export function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,7 +42,7 @@ export function SignUpForm() {
             <input
               name="name"
               type="text"
-              placeholder="Full Name"
+              placeholder={t('auth.name')}
               required
               minLength={2}
               className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
@@ -51,7 +54,7 @@ export function SignUpForm() {
             <input
               name="email"
               type="email"
-              placeholder="Email address"
+              placeholder={t('auth.email')}
               required
               className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
@@ -62,7 +65,7 @@ export function SignUpForm() {
             <input
               name="phone"
               type="tel"
-              placeholder="Phone number"
+              placeholder={t('auth.phone')}
               required
               minLength={10}
               pattern="[0-9]{10,15}"
@@ -76,7 +79,7 @@ export function SignUpForm() {
             <input
               name="password"
               type="password"
-              placeholder="Create password (min 8 chars)"
+              placeholder={t('auth.password')}
               required
               minLength={8}
               className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
@@ -84,15 +87,15 @@ export function SignUpForm() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-muted">Register as</label>
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted">{t('auth.register_as')}</label>
             <select
               name="role"
               required
               className="w-full rounded-xl border border-border bg-surface px-4 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
             >
-              <option value="farmer">Farmer</option>
-              <option value="warehouse_owner">Warehouse Owner</option>
-              <option value="trader">Trader</option>
+              <option value="farmer">{t('auth.onboarding.farmer.title')}</option>
+              <option value="warehouse_owner">{t('auth.onboarding.warehouse.title')}</option>
+              <option value="trader">{t('auth.onboarding.trader.title')}</option>
             </select>
           </div>
         </div>
@@ -102,7 +105,7 @@ export function SignUpForm() {
           disabled={isLoading}
           className="flex w-full items-center justify-center rounded-xl bg-primary py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-70 mt-2"
         >
-          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Create Account"}
+          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : t('auth.create_account')}
         </button>
       </form>
 
@@ -111,7 +114,7 @@ export function SignUpForm() {
           <div className="w-full border-t border-border"></div>
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted">Or continue with</span>
+          <span className="bg-background px-2 text-muted">{t('auth.or_continue_with')}</span>
         </div>
       </div>
 
@@ -126,13 +129,13 @@ export function SignUpForm() {
           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
         </svg>
-        Continue with Google
+        {t('auth.continue_with_google')}
       </button>
 
       <p className="text-center text-sm text-muted pt-2">
-        Already have an account?{" "}
+        {t('auth.already_have_account')}{" "}
         <Link href="/signin" className="font-semibold text-primary hover:underline">
-          Sign In
+          {t('auth.sign_in')}
         </Link>
       </p>
     </div>

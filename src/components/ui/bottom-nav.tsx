@@ -6,34 +6,35 @@ import { useSession } from 'next-auth/react';
 import type { UserRole } from '@/types/domain';
 
 /* ── Per-role bottom nav (max 4 items for mobile) ─────────────────── */
-const navByRole: Record<
+const getNavByRole = (t: any): Record<
   UserRole,
   { label: string; icon: string; href: string }[]
-> = {
+> => ({
   farmer: [
-    { label: 'Home',      icon: 'home',           href: '/dashboard/farmer' },
-    { label: 'Warehouses',icon: 'warehouse',      href: '/dashboard/farmer/warehouses' },
-    { label: 'Bookings',  icon: 'calendar_month', href: '/dashboard/farmer/bookings' },
+    { label: t('common.bottom_nav.home'),      icon: 'home',           href: '/dashboard/farmer' },
+    { label: t('common.bottom_nav.warehouses'),icon: 'warehouse',      href: '/dashboard/farmer/warehouses' },
+    { label: t('common.bottom_nav.bookings'),  icon: 'calendar_month', href: '/dashboard/farmer/bookings' },
   ],
   warehouse_owner: [
-    { label: 'Home',      icon: 'home',           href: '/dashboard/warehouse' },
-    { label: 'Bookings',  icon: 'calendar_month', href: '/dashboard/warehouse?tab=bookings' },
-    { label: 'Map',       icon: 'map',            href: '/dashboard/warehouse?tab=map' },
-    { label: 'Inventory', icon: 'inventory_2',    href: '/dashboard/warehouse?tab=inventory' },
+    { label: t('common.bottom_nav.home'),      icon: 'home',           href: '/dashboard/warehouse' },
+    { label: t('common.bottom_nav.bookings'),  icon: 'calendar_month', href: '/dashboard/warehouse?tab=bookings' },
+    { label: t('common.bottom_nav.map'),       icon: 'map',            href: '/dashboard/warehouse?tab=map' },
+    { label: t('common.bottom_nav.inventory'), icon: 'inventory_2',    href: '/dashboard/warehouse?tab=inventory' },
   ],
   trader: [
-    { label: 'Overview', icon: 'dashboard', href: '/dashboard/trader' },
-    { label: 'Market', icon: 'storefront', href: '/dashboard/trader/marketplace' },
-    { label: 'Bids', icon: 'gavel', href: '/dashboard/trader/bids' },
-    { label: 'Purchases', icon: 'shopping_cart', href: '/dashboard/trader/purchases' },
+    { label: t('common.bottom_nav.overview'), icon: 'dashboard', href: '/dashboard/trader' },
+    { label: t('common.bottom_nav.market'), icon: 'storefront', href: '/dashboard/trader/marketplace' },
+    { label: t('common.bottom_nav.bids'), icon: 'gavel', href: '/dashboard/trader/bids' },
+    { label: t('common.bottom_nav.purchases'), icon: 'shopping_cart', href: '/dashboard/trader/purchases' },
   ],
   admin: [
-    { label: 'Home',      icon: 'home',           href: '/dashboard/admin' },
-    { label: 'Users',     icon: 'group',          href: '/dashboard/admin?tab=users' },
-    { label: 'Analytics', icon: 'bar_chart',      href: '/dashboard/admin?tab=analytics' },
-    { label: 'Settings',  icon: 'settings',       href: '/dashboard/admin?tab=settings' },
+    { label: t('common.bottom_nav.home'),      icon: 'home',           href: '/dashboard/admin' },
+    { label: t('common.bottom_nav.users'),     icon: 'group',          href: '/dashboard/admin?tab=users' },
+    { label: t('common.bottom_nav.analytics'), icon: 'bar_chart',      href: '/dashboard/admin?tab=analytics' },
+    { label: t('common.bottom_nav.settings'),  icon: 'settings',       href: '/dashboard/admin?tab=settings' },
   ],
-};
+});
+
 
 const homeHref: Record<UserRole, string> = {
   farmer:          '/dashboard/farmer',
@@ -42,12 +43,16 @@ const homeHref: Record<UserRole, string> = {
   admin:           '/dashboard/admin',
 };
 
+import { useTranslation } from '@/lib/i18n/context';
+
 export function BottomNav({ role: propRole }: { role?: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
+  const { t } = useTranslation();
   
   const currentRole = (propRole || session?.user?.role || 'farmer') as UserRole;
+  const navByRole = getNavByRole(t);
   const navItems = navByRole[currentRole] ?? navByRole.farmer;
 
   return (

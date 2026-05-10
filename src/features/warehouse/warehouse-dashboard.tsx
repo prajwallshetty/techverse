@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/antigravity/card";
 import { Badge } from "@/components/antigravity/badge";
 import { Button } from "@/components/antigravity/button";
 import { Search, MapPin, Map, Filter, Package, Star, ArrowRight } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/context";
 
 // Default fallback location (Pune) if geolocation is denied
 const DEFAULT_LOCATION = { latitude: 18.5204, longitude: 73.8567 };
@@ -19,6 +20,8 @@ export function WarehouseDashboard({ warehouses = [] }: { warehouses?: any[] }) 
   const [showMapMobile, setShowMapMobile] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [bookingSuccessMsg, setBookingSuccessMsg] = useState(false);
+
+  const { t } = useTranslation();
 
   // Get real-time browser location
   useEffect(() => {
@@ -62,10 +65,10 @@ export function WarehouseDashboard({ warehouses = [] }: { warehouses?: any[] }) 
       
       {/* Mobile Map Toggle */}
       <div className="md:hidden p-4 border-b border-border bg-surface flex items-center justify-between z-10">
-        <h2 className="text-lg font-black tracking-tight">Find Warehouses</h2>
+        <h2 className="text-lg font-black tracking-tight">{t('dashboard.warehouse.title')}</h2>
         <Button variant="secondary" className="px-3 py-1.5 text-xs h-auto" onClick={() => setShowMapMobile(!showMapMobile)}>
           {showMapMobile ? <Filter className="size-4 mr-2" /> : <Map className="size-4 mr-2" />}
-          {showMapMobile ? "Show List" : "Map View"}
+          {showMapMobile ? t('common.actions.list') : t('common.tabs.map')}
         </Button>
       </div>
 
@@ -74,21 +77,21 @@ export function WarehouseDashboard({ warehouses = [] }: { warehouses?: any[] }) 
         
         {/* Search Header */}
         <div className="p-5 border-b border-border/60">
-          <h2 className="hidden md:block text-2xl font-black tracking-tight mb-4">Find Warehouses</h2>
+          <h2 className="hidden md:block text-2xl font-black tracking-tight mb-4">{t('dashboard.warehouse.title')}</h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" />
             <input 
               type="text" 
-              placeholder="Search by name or location..." 
+              placeholder={t('common.actions.search')} 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-surface-muted/50 border border-border/80 rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
           <div className="flex items-center gap-2 mt-3 overflow-x-auto pb-1 no-scrollbar">
-            <Badge className="whitespace-nowrap">Nearest First</Badge>
-            <Badge className="whitespace-nowrap bg-transparent hover:bg-surface-muted border-border cursor-pointer">Available Capacity</Badge>
-            <Badge className="whitespace-nowrap bg-transparent hover:bg-surface-muted border-border cursor-pointer">Lowest Price</Badge>
+            <Badge className="whitespace-nowrap">{t('dashboard.warehouse.nearest_first')}</Badge>
+            <Badge className="whitespace-nowrap bg-transparent hover:bg-surface-muted border-border cursor-pointer">{t('dashboard.warehouse.available_capacity')}</Badge>
+            <Badge className="whitespace-nowrap bg-transparent hover:bg-surface-muted border-border cursor-pointer">{t('dashboard.warehouse.lowest_price')}</Badge>
           </div>
         </div>
 
@@ -129,7 +132,7 @@ export function WarehouseDashboard({ warehouses = [] }: { warehouses?: any[] }) 
                   <span className="text-[10px] uppercase font-bold text-muted ml-1">/ MT / Mo</span>
                 </div>
                 <Button className="px-3 py-1.5 text-xs h-auto" variant={selectedId === w.id ? "primary" : "secondary"}>
-                  View <ArrowRight className="size-3 ml-1.5" />
+                  {t('common.actions.view')} <ArrowRight className="size-3 ml-1.5" />
                 </Button>
               </div>
             </div>
@@ -137,7 +140,7 @@ export function WarehouseDashboard({ warehouses = [] }: { warehouses?: any[] }) 
           {processedWarehouses.length === 0 && (
             <div className="text-center py-10">
               <MapPin className="size-10 text-border mx-auto mb-3" />
-              <p className="text-muted text-sm">No warehouses found matching your criteria.</p>
+              <p className="text-muted text-sm">{t('dashboard.warehouse.no_warehouses')}</p>
             </div>
           )}
         </div>
@@ -162,7 +165,7 @@ export function WarehouseDashboard({ warehouses = [] }: { warehouses?: any[] }) 
                   <p className="text-xs text-muted mt-0.5">Select dates to calculate final cost</p>
                 </div>
                 <Button onClick={() => setIsBookingModalOpen(true)}>
-                  Book Space
+                  {t('common.actions.book_space')}
                 </Button>
               </CardContent>
             </Card>
@@ -185,7 +188,7 @@ export function WarehouseDashboard({ warehouses = [] }: { warehouses?: any[] }) 
           <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50 animate-[fadeIn_0.3s_ease]">
             <div className="bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg font-bold flex items-center gap-2">
               <Package className="size-5" />
-              Space Successfully Booked!
+              {t('common.status.success')}
             </div>
           </div>
         )}

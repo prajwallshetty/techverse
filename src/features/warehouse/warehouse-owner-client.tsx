@@ -169,7 +169,7 @@ export function WarehouseOwnerClient() {
   if (loading) return (
     <div className="h-[80vh] flex flex-col items-center justify-center gap-4">
       <Loader2 className="size-12 animate-spin text-primary" />
-      <p className="font-black text-lg text-muted animate-pulse tracking-widest uppercase">Initializing Facility Dashboard...</p>
+      <p className="font-black text-lg text-muted animate-pulse tracking-widest uppercase">{t('common.status.loading')}</p>
     </div>
   );
 
@@ -179,20 +179,20 @@ export function WarehouseOwnerClient() {
       {/* Dynamic Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-4xl font-black tracking-tight text-foreground">{t("common.nav.inventory")} <span className="text-primary">.</span></h2>
+          <h2 className="text-4xl font-black tracking-tight text-foreground">{t('dashboard.warehouse.owner_dashboard')} <span className="text-primary">.</span></h2>
           <p className="text-muted text-sm mt-2 font-medium flex items-center gap-2">
-             <MapPin className="size-4" /> {stats?.warehouseName || "Facility Hub"} • Real-time Operations
+             <MapPin className="size-4" /> {stats?.warehouseName || t('dashboard.warehouse.facility_name')} • {t('common.status.active')}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="secondary" className="px-6 py-6 rounded-2xl font-black text-xs uppercase tracking-widest border-border/60">
-            Export Report
+            {t('common.actions.export')}
           </Button>
           <Button
             className="px-8 py-6 rounded-2xl bg-primary text-white shadow-2xl shadow-primary/20 font-black text-xs uppercase tracking-widest flex items-center gap-2"
             onClick={() => { setShowAddModal(true); setFormError(null); setSuccessMsg(null); }}
           >
-            <Plus className="size-4" /> Add Space
+            <Plus className="size-4" /> {t('dashboard.warehouse.add_new')}
           </Button>
         </div>
       </div>
@@ -200,19 +200,19 @@ export function WarehouseOwnerClient() {
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="bg-surface-muted/50 p-1.5 rounded-[2rem] border border-border/40 w-fit mb-10">
           <TabsTrigger value="overview" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
-             <LayoutDashboard className="size-4 mr-2" /> Overview
+             <LayoutDashboard className="size-4 mr-2" /> {t('common.tabs.overview')}
           </TabsTrigger>
           <TabsTrigger value="bookings" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
-             <Clock className="size-4 mr-2" /> Bookings
+             <Clock className="size-4 mr-2" /> {t('dashboard.warehouse.recent_bookings')}
           </TabsTrigger>
           <TabsTrigger value="map" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
-             <Map className="size-4 mr-2" /> Map View
+             <Map className="size-4 mr-2" /> {t('common.tabs.map')}
           </TabsTrigger>
           <TabsTrigger value="inventory" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
-             <Box className="size-4 mr-2" /> Inventory
+             <Box className="size-4 mr-2" /> {t('common.nav.inventory')}
           </TabsTrigger>
           <TabsTrigger value="settings" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
-             <Settings className="size-4 mr-2" /> Settings
+             <Settings className="size-4 mr-2" /> {t('common.nav.settings')}
           </TabsTrigger>
         </TabsList>
 
@@ -222,8 +222,8 @@ export function WarehouseOwnerClient() {
             {[
               { label: t("common.dashboard.total_revenue"), value: `₹${(stats?.totalRevenue ?? 0).toLocaleString()}`, icon: Banknote, color: 'text-emerald-500', bg: 'bg-emerald-500/10', trend: '+12.5%' },
               { label: t("common.dashboard.capacity_used"), value: `${stats?.currentStock ?? 0} / ${stats?.totalCapacity ?? 0} MT`, icon: Package, color: 'text-primary', bg: 'bg-primary/10', progress: stats?.utilizationRate ?? 0 },
-              { label: t("common.dashboard.active_bookings"), value: `${stats?.activeBookings ?? 0} Reservations`, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-              { label: 'Completed', value: `${stats?.completedBookings ?? 0} Deliveries`, icon: CheckCircle2, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
+              { label: t("common.dashboard.active_bookings"), value: `${stats?.activeBookings ?? 0}`, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+              { label: t('common.status.completed'), value: `${stats?.completedBookings ?? 0}`, icon: CheckCircle2, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
             ].map((stat, idx) => (
               <motion.div 
                 key={stat.label}
@@ -291,7 +291,7 @@ export function WarehouseOwnerClient() {
 
             <Card className="border-border/40 rounded-[3rem] shadow-sm overflow-hidden bg-surface">
               <CardContent className="p-10">
-                <h3 className="font-black text-xl mb-10 tracking-tight text-center">Capacity Allocation</h3>
+                <h3 className="font-black text-xl mb-10 tracking-tight text-center">{t('dashboard.warehouse.capacity_allocation')}</h3>
                 <div className="h-[300px] w-full relative">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -312,7 +312,7 @@ export function WarehouseOwnerClient() {
                   </ResponsiveContainer>
                   <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                     <p className="text-3xl font-black text-foreground">{stats?.utilizationRate}%</p>
-                    <p className="text-[10px] font-black text-muted uppercase tracking-widest">Utilized</p>
+                    <p className="text-[10px] font-black text-muted uppercase tracking-widest">{t('dashboard.warehouse.utilized')}</p>
                   </div>
                 </div>
                 <div className="space-y-4 mt-8">
@@ -351,7 +351,7 @@ export function WarehouseOwnerClient() {
                       <MapPin className="size-6 text-primary" />
                     </div>
                     <div>
-                      <p className="font-black text-foreground leading-tight">{stats?.warehouseName || "Your Facility"}</p>
+                      <p className="font-black text-foreground leading-tight">{stats?.warehouseName || t('dashboard.warehouse.facility_name')}</p>
                       <p className="text-xs text-muted font-medium mt-0.5">{stats?.location || "—"}</p>
                     </div>
                   </div>
@@ -359,7 +359,7 @@ export function WarehouseOwnerClient() {
                   {/* Utilization bar */}
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-[10px] font-black uppercase text-muted tracking-widest">Capacity Used</span>
+                      <span className="text-[10px] font-black uppercase text-muted tracking-widest">{t('dashboard.warehouse.utilized')}</span>
                       <span className={`text-sm font-black ${
                         (stats?.utilizationRate ?? 0) > 80
                           ? "text-red-500"
@@ -391,10 +391,10 @@ export function WarehouseOwnerClient() {
 
               {/* Booking status grid */}
               {[
-                { label: "Active", value: stats?.activeBookings ?? 0, icon: Activity, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-                { label: "Pending", value: stats?.pendingBookings ?? 0, icon: AlertTriangle, color: "text-amber-500", bg: "bg-amber-500/10" },
-                { label: "Completed", value: stats?.completedBookings ?? 0, icon: CheckCircle2, color: "text-indigo-500", bg: "bg-indigo-500/10" },
-                { label: "Revenue", value: `₹${(stats?.totalRevenue ?? 0).toLocaleString()}`, icon: Banknote, color: "text-primary", bg: "bg-primary/10" },
+                { label: t('common.status.active'), value: stats?.activeBookings ?? 0, icon: Activity, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+                { label: t('dashboard.warehouse.pending'), value: stats?.pendingBookings ?? 0, icon: AlertTriangle, color: "text-amber-500", bg: "bg-amber-500/10" },
+                { label: t('common.status.completed'), value: stats?.completedBookings ?? 0, icon: CheckCircle2, color: "text-indigo-500", bg: "bg-indigo-500/10" },
+                { label: t('common.dashboard.total_revenue'), value: `₹${(stats?.totalRevenue ?? 0).toLocaleString()}`, icon: Banknote, color: "text-primary", bg: "bg-primary/10" },
               ].map((item) => (
                 <Card key={item.label} className="border-border/40 rounded-[2rem] bg-surface shadow-sm">
                   <CardContent className="p-5 flex items-center gap-4">
@@ -413,7 +413,7 @@ export function WarehouseOwnerClient() {
               {bookings.length > 0 && (
                 <Card className="border-border/40 rounded-[2.5rem] bg-surface shadow-sm">
                   <CardContent className="p-6">
-                    <p className="text-[10px] font-black uppercase text-muted tracking-widest mb-4">Recent Bookings</p>
+                    <p className="text-[10px] font-black uppercase text-muted tracking-widest mb-4">{t('dashboard.warehouse.recent_bookings')}</p>
                     <div className="space-y-3">
                       {bookings.slice(0, 4).map((b: any) => (
                         <div key={b._id} className="flex items-center justify-between">
@@ -422,7 +422,7 @@ export function WarehouseOwnerClient() {
                               {b.farmerId?.name?.[0] ?? "F"}
                             </div>
                             <div>
-                              <p className="text-xs font-black leading-none">{b.farmerId?.name ?? "Farmer"}</p>
+                              <p className="text-xs font-black leading-none">{b.farmerId?.name ?? t('auth.farmer')}</p>
                               <p className="text-[10px] text-muted font-medium mt-0.5">{b.cropName} · {b.quantityTons} MT</p>
                             </div>
                           </div>
@@ -447,23 +447,23 @@ export function WarehouseOwnerClient() {
             <CardContent className="p-0">
               <div className="p-10 border-b border-border/40 flex items-center justify-between bg-surface-muted/10">
                 <div>
-                  <h3 className="font-black text-2xl tracking-tight text-foreground">Reservation Queue</h3>
-                  <p className="text-sm text-muted font-medium mt-1">Manage incoming and active storage requests.</p>
+                  <h3 className="font-black text-2xl tracking-tight text-foreground">{t('dashboard.warehouse.reservation_queue')}</h3>
+                  <p className="text-sm text-muted font-medium mt-1">{t('dashboard.warehouse.queue_desc')}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge intent="low" className="rounded-xl px-4 py-2 font-black text-[10px] uppercase cursor-pointer hover:bg-surface-muted transition-colors">Pending</Badge>
-                  <Badge intent="high" className="rounded-xl px-4 py-2 font-black text-[10px] uppercase cursor-pointer hover:bg-surface-muted transition-colors">Confirmed</Badge>
+                  <Badge intent="low" className="rounded-xl px-4 py-2 font-black text-[10px] uppercase cursor-pointer hover:bg-surface-muted transition-colors">{t('dashboard.warehouse.pending')}</Badge>
+                  <Badge intent="high" className="rounded-xl px-4 py-2 font-black text-[10px] uppercase cursor-pointer hover:bg-surface-muted transition-colors">{t('dashboard.warehouse.confirmed')}</Badge>
                 </div>
               </div>
               <div className="overflow-x-auto px-6 pb-10 pt-4">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-border/40">
-                      <th className="px-6 py-6 text-[10px] font-black uppercase text-muted tracking-[0.2em]">Farmer Profile</th>
-                      <th className="px-6 py-6 text-[10px] font-black uppercase text-muted tracking-[0.2em]">Crop Spec</th>
-                      <th className="px-6 py-6 text-[10px] font-black uppercase text-muted tracking-[0.2em]">Storage Vol</th>
-                      <th className="px-6 py-6 text-[10px] font-black uppercase text-muted tracking-[0.2em]">Status</th>
-                      <th className="px-6 py-6 text-[10px] font-black uppercase text-muted tracking-[0.2em] text-right">Actions</th>
+                      <th className="px-6 py-6 text-[10px] font-black uppercase text-muted tracking-[0.2em]">{t('dashboard.warehouse.farmer_profile')}</th>
+                      <th className="px-6 py-6 text-[10px] font-black uppercase text-muted tracking-[0.2em]">{t('dashboard.warehouse.crop_spec')}</th>
+                      <th className="px-6 py-6 text-[10px] font-black uppercase text-muted tracking-[0.2em]">{t('dashboard.warehouse.storage_vol')}</th>
+                      <th className="px-6 py-6 text-[10px] font-black uppercase text-muted tracking-[0.2em]">{t('dashboard.warehouse.status')}</th>
+                      <th className="px-6 py-6 text-[10px] font-black uppercase text-muted tracking-[0.2em] text-right">{t('dashboard.warehouse.actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border/20">
@@ -511,11 +511,11 @@ export function WarehouseOwnerClient() {
                                   className="px-5 py-2.5 rounded-xl text-[10px] h-auto bg-emerald-500 hover:bg-emerald-600 font-black uppercase tracking-widest shadow-lg shadow-emerald-500/10"
                                   onClick={() => handleUpdateStatus(booking._id, "completed")}
                                 >
-                                  Complete Delivery
+                                  {t('common.actions.complete_delivery')}
                                 </Button>
                               )}
                               <Button variant="secondary" className="px-5 py-2.5 rounded-xl text-[10px] h-auto font-black uppercase tracking-widest border-border/60">
-                                Details <ChevronRight className="size-3 ml-1" />
+                                {t('common.actions.view')} <ChevronRight className="size-3 ml-1" />
                               </Button>
                             </div>
                           </td>
@@ -555,8 +555,8 @@ export function WarehouseOwnerClient() {
                     <Building2 className="size-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-black text-xl text-foreground tracking-tight">Add New Space</h3>
-                    <p className="text-xs text-muted font-medium mt-0.5">Register a new warehouse facility</p>
+                    <h3 className="font-black text-xl text-foreground tracking-tight">{t('dashboard.warehouse.add_new')}</h3>
+                    <p className="text-xs text-muted font-medium mt-0.5">{t('dashboard.warehouse.add_new_desc')}</p>
                   </div>
                 </div>
                 <button
@@ -582,7 +582,7 @@ export function WarehouseOwnerClient() {
 
                 {/* Warehouse Name */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted">Facility Name *</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted">{t('dashboard.warehouse.facility_name')} *</label>
                   <div className="relative">
                     <Warehouse className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted" />
                     <input
@@ -598,7 +598,7 @@ export function WarehouseOwnerClient() {
 
                 {/* Location */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted">Location *</label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted">{t('dashboard.warehouse.location')} *</label>
                   <div className="relative">
                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted" />
                     <input
@@ -615,7 +615,7 @@ export function WarehouseOwnerClient() {
                 {/* Lat / Lng */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">Latitude</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">{t('dashboard.warehouse.latitude')}</label>
                     <input
                       type="number"
                       step="any"
@@ -626,7 +626,7 @@ export function WarehouseOwnerClient() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">Longitude</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">{t('dashboard.warehouse.longitude')}</label>
                     <input
                       type="number"
                       step="any"
@@ -641,7 +641,7 @@ export function WarehouseOwnerClient() {
                 {/* Capacity & Price */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">Capacity (Tons) *</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">{t('dashboard.warehouse.capacity_tons')} *</label>
                     <input
                       required
                       type="number"
@@ -653,7 +653,7 @@ export function WarehouseOwnerClient() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">Price / Ton / Week (₹)</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted">{t('dashboard.warehouse.price_ton')}</label>
                     <input
                       type="number"
                       min="1"
@@ -667,7 +667,7 @@ export function WarehouseOwnerClient() {
 
                 {/* Certifications */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-muted">Certifications <span className="normal-case font-medium">(comma separated)</span></label>
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted">{t('dashboard.warehouse.certifications')} <span className="normal-case font-medium">{t('dashboard.warehouse.cert_desc')}</span></label>
                   <input
                     type="text"
                     placeholder="FSSAI, ISO 9001, Cold Chain"
@@ -685,7 +685,7 @@ export function WarehouseOwnerClient() {
                     className="flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest border-border/60"
                     onClick={() => setShowAddModal(false)}
                   >
-                    Cancel
+                    {t('common.actions.cancel')}
                   </Button>
                   <Button
                     type="submit"
@@ -693,7 +693,7 @@ export function WarehouseOwnerClient() {
                     className="flex-1 py-4 rounded-2xl bg-primary text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-60"
                   >
                     {submitting ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-                    {submitting ? "Creating..." : "Create Facility"}
+                    {submitting ? t('common.status.saving') : t('common.actions.create_facility')}
                   </Button>
                 </div>
               </form>

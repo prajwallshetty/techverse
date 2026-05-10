@@ -18,24 +18,23 @@ import {
 import Link from "next/link";
 import { LinkButton } from "@/components/antigravity/button";
 import { useRef } from "react";
+import { useTranslation } from "@/lib/i18n/context";
 
-const stats = [
-  { label: "Active Farmers", value: "1.2M+", icon: Users, color: "text-blue-500" },
-  { label: "Storage Capacity", value: "850K MT", icon: WarehouseIcon, color: "text-emerald-500" },
-  { label: "Credit Disbursed", value: "₹4,200Cr", icon: Coins, color: "text-amber-500" },
-  { label: "States Covered", value: "18+", icon: Globe, color: "text-indigo-500" },
+const statsConfig = [
+  { key: "farmers", icon: Users, color: "text-blue-500" },
+  { key: "capacity", icon: WarehouseIcon, color: "text-emerald-500" },
+  { key: "credit", icon: Coins, color: "text-amber-500" },
+  { key: "states", icon: Globe, color: "text-indigo-500" },
 ];
 
-const features = [
+const featuresConfig = [
   {
-    title: "Secure Warehousing",
-    desc: "WDRA-registered facilities with 24/7 digital surveillance and comprehensive insurance coverage.",
+    key: "warehousing",
     icon: ShieldCheck,
     image: "/warehouse.png"
   },
   {
-    title: "Instant Credit",
-    desc: "Unlock liquidity without selling your crops. Get instant loans against your electronic Negotiable Warehouse Receipts (eNWR).",
+    key: "credit",
     icon: Zap,
     image: "/warehouse1.png"
   }
@@ -43,6 +42,7 @@ const features = [
 
 export function MarketingPage() {
   const targetRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
   const { scrollYProgress } = useScroll({
     target: targetRef,
     offset: ["start start", "end start"],
@@ -68,23 +68,28 @@ export function MarketingPage() {
           </Link>
           
           <div className="hidden lg:flex items-center gap-10">
-            {["Network", "Pricing", "About", "Contact"].map((item) => (
+            {[
+              { key: 'network', label: t('marketing.nav.network') },
+              { key: 'pricing', label: t('marketing.nav.pricing') },
+              { key: 'about',   label: t('marketing.nav.about') },
+              { key: 'contact', label: t('marketing.nav.contact') }
+            ].map((item) => (
               <Link 
-                key={item} 
+                key={item.key} 
                 href="#"
                 className="text-xs font-black uppercase tracking-widest text-muted hover:text-primary transition-all"
               >
-                {item}
+                {item.label}
               </Link>
             ))}
           </div>
 
           <div className="flex items-center gap-4">
             <Link href="/signin" className="text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-colors mr-2">
-              Sign In
+              {t('marketing.nav.sign_in')}
             </Link>
             <LinkButton href="/signup" className="rounded-2xl px-8 h-12 bg-primary text-white shadow-xl shadow-primary/20 font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform">
-              Join Now
+              {t('marketing.nav.join_now')}
             </LinkButton>
           </div>
         </div>
@@ -105,12 +110,12 @@ export function MarketingPage() {
                 transition={{ duration: 0.8 }}
               >
                 <h1 className="text-6xl lg:text-[6.5rem] font-extrabold leading-[0.95] tracking-tight mt-6">
-                  Harvesting <br />
-                  <span className="text-primary">Prosperity</span> <br />
-                  Digitally.
+                  {t('marketing.hero.title_part1')} <br />
+                  <span className="text-primary">{t('marketing.hero.title_part2')}</span> <br />
+                  {t('marketing.hero.title_part3')}
                 </h1>
                 <p className="text-xl lg:text-2xl text-muted font-medium mt-8 max-w-xl leading-relaxed">
-                  The most advanced agricultural asset management platform. Secure storage, instant liquidity, and data-driven insights for the modern farmer.
+                  {t('marketing.hero.subtitle')}
                 </p>
               </motion.div>
 
@@ -121,22 +126,22 @@ export function MarketingPage() {
                 className="flex flex-col sm:flex-row gap-5"
               >
                 <LinkButton href="/signup" className="h-16 px-10 rounded-2xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-2xl shadow-primary/30 flex items-center gap-3">
-                  Start Your Journey <ArrowRight className="size-5" />
+                  {t('marketing.hero.cta_start')} <ArrowRight className="size-5" />
                 </LinkButton>
                 <LinkButton href="/signin" variant="secondary" className="h-16 px-10 rounded-2xl border-2 border-black/5 font-black text-sm uppercase tracking-widest">
-                  View Live Prices
+                  {t('marketing.hero.cta_prices')}
                 </LinkButton>
               </motion.div>
 
               <div className="flex items-center gap-8 pt-8 border-t border-outline-variant/50">
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-primary">verified_user</span>
-                  <span className="text-sm font-bold text-on-surface-variant">WDRA Regd.</span>
+                  <span className="text-sm font-bold text-on-surface-variant">{t('marketing.hero.wdra')}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-primary">monitoring</span>
-                  <span className="text-sm font-bold text-on-surface-variant">AI Insights</span>
+                  <span className="text-sm font-bold text-on-surface-variant">{t('marketing.hero.ai_insights')}</span>
                 </div>
               </div>
             </div>
@@ -190,18 +195,20 @@ export function MarketingPage() {
         <section className="py-24 bg-white border-y border-black/5">
           <div className="container mx-auto px-6 lg:px-12">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
-              {stats.map((stat, idx) => (
+              {statsConfig.map((stat, idx) => (
                 <motion.div 
-                  key={stat.label}
+                  key={stat.key}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 }}
                   className="text-center space-y-3"
                 >
-                  <p className="text-5xl font-black tracking-tighter text-foreground">{stat.value}</p>
+                  <p className="text-5xl font-black tracking-tighter text-foreground">
+                    {stat.key === 'farmers' ? '1.2M+' : stat.key === 'capacity' ? '850K MT' : stat.key === 'credit' ? '₹4,200Cr' : '18+'}
+                  </p>
                   <div className="flex items-center justify-center gap-2">
                     <stat.icon className={`size-4 ${stat.color}`} />
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted">{stat.label}</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted">{t(`marketing.stats.${stat.key}`)}</p>
                   </div>
                 </motion.div>
               ))}
@@ -214,15 +221,15 @@ export function MarketingPage() {
           <div className="container mx-auto px-6 lg:px-12">
             <div className="max-w-3xl mb-24">
               <h2 className="text-5xl lg:text-7xl font-black tracking-tighter leading-[0.95]">
-                Infrastructure designed for <br />
-                <span className="text-primary italic">Absolute Confidence.</span>
+                {t('marketing.features.title')} <br />
+                <span className="text-primary italic">{t('marketing.features.title_italic')}</span>
               </h2>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-10">
-              {features.map((feature, idx) => (
+              {featuresConfig.map((feature, idx) => (
                 <motion.div 
-                  key={feature.title}
+                  key={feature.key}
                   initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -231,7 +238,7 @@ export function MarketingPage() {
                 >
                   <img 
                     src={feature.image} 
-                    alt={feature.title}
+                    alt={t(`marketing.features.${feature.key}.title`)}
                     className="absolute inset-0 w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -240,12 +247,12 @@ export function MarketingPage() {
                     <div className="size-16 rounded-[1.5rem] bg-primary flex items-center justify-center mb-6 shadow-xl shadow-primary/20">
                       <feature.icon className="size-8" />
                     </div>
-                    <h3 className="text-4xl font-black tracking-tight mb-4">{feature.title}</h3>
+                    <h3 className="text-4xl font-black tracking-tight mb-4">{t(`marketing.features.${feature.key}.title`)}</h3>
                     <p className="text-lg text-white/70 font-medium max-w-sm leading-relaxed mb-8">
-                      {feature.desc}
+                      {t(`marketing.features.${feature.key}.desc`)}
                     </p>
                     <button className="flex items-center gap-2 text-xs font-black uppercase tracking-widest hover:gap-4 transition-all">
-                      Learn More <ArrowRight className="size-4" />
+                      {t('marketing.features.learn_more')} <ArrowRight className="size-4" />
                     </button>
                   </div>
                 </motion.div>
@@ -258,18 +265,18 @@ export function MarketingPage() {
         <section className="py-32 bg-white overflow-hidden">
           <div className="container mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-20 items-center">
             <div className="space-y-10 order-2 lg:order-1">
-              <Badge label="Full Control" />
+              <Badge label={t('marketing.experience.badge')} />
               <h2 className="text-5xl lg:text-7xl font-black tracking-tighter leading-none">
-                Your Farm, <br /> In Your Pocket.
+                {t('marketing.experience.title').split(',').map((p, i) => <span key={i}>{p}{i === 0 ? ',' : ''} <br /></span>)}
               </h2>
               <div className="space-y-8">
                 {[
-                  { title: "Real-time Monitoring", desc: "Watch your stock levels and quality parameters from anywhere.", icon: LayoutDashboard },
-                  { title: "Mandi Price Feed", desc: "Live rates from 2,500+ mandis across India at your fingertips.", icon: Activity },
-                  { title: "Financial Hub", desc: "Apply for loans, view balance, and withdraw funds instantly.", icon: Coins }
+                  { key: "monitoring", icon: LayoutDashboard },
+                  { key: "mandi",      icon: Activity },
+                  { key: "finance",    icon: Coins }
                 ].map((item, idx) => (
                   <motion.div 
-                    key={item.title}
+                    key={item.key}
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.1 }}
@@ -279,8 +286,8 @@ export function MarketingPage() {
                       <item.icon className="size-6 text-primary" />
                     </div>
                     <div>
-                      <h4 className="text-xl font-black tracking-tight">{item.title}</h4>
-                      <p className="text-muted font-medium mt-1 leading-relaxed">{item.desc}</p>
+                      <h4 className="text-xl font-black tracking-tight">{t(`marketing.experience.${item.key}.title`)}</h4>
+                      <p className="text-muted font-medium mt-1 leading-relaxed">{t(`marketing.experience.${item.key}.desc`)}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -322,17 +329,17 @@ export function MarketingPage() {
                  className="relative z-10 space-y-10"
                >
                  <h2 className="text-6xl lg:text-8xl font-black tracking-tighter leading-none">
-                    Join the Digital <br /> Agriculture Revolution.
+                    {t('marketing.cta.title')}
                  </h2>
                  <p className="text-xl lg:text-2xl text-white/70 font-medium max-w-2xl mx-auto leading-relaxed">
-                    Stop gambling with your harvest. Get the security and liquidity you deserve with Krishi Hub.
+                    {t('marketing.cta.subtitle')}
                  </p>
                  <div className="flex flex-col sm:flex-row gap-6 justify-center pt-6">
                     <LinkButton href="/signup" className="h-16 px-12 rounded-2xl bg-white text-primary font-black text-sm uppercase tracking-widest shadow-2xl shadow-black/10 hover:scale-105 transition-transform">
-                      Register as Farmer
+                      {t('marketing.cta.register_farmer')}
                     </LinkButton>
                     <LinkButton href="/signin" className="h-16 px-12 rounded-2xl border-2 border-white/20 hover:bg-white/10 font-black text-sm uppercase tracking-widest transition-all">
-                      Sign In to Account
+                      {t('marketing.cta.sign_in')}
                     </LinkButton>
                  </div>
                </motion.div>
@@ -357,17 +364,17 @@ export function MarketingPage() {
                 </div>
               </Link>
               <p className="text-muted text-sm font-medium leading-relaxed">
-                Empowering Bharat&apos;s agricultural ecosystem with secure technology and financial inclusion.
+                {t('marketing.footer.desc')}
               </p>
             </div>
             
             {[
-              { title: "Platform", links: ["Warehouses", "Financing", "Marketplace", "Logistics"] },
-              { title: "Company", links: ["About", "Careers", "Press", "Security"] },
-              { title: "Support", links: ["Help Center", "API Docs", "Contact", "Status"] }
+              { key: "platform", links: ["Warehouses", "Financing", "Marketplace", "Logistics"] },
+              { key: "company",  links: ["About", "Careers", "Press", "Security"] },
+              { key: "support",  links: ["Help Center", "API Docs", "Contact", "Status"] }
             ].map(col => (
-              <div key={col.title} className="space-y-6">
-                <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">{col.title}</h5>
+              <div key={col.key} className="space-y-6">
+                <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">{t(`marketing.footer.${col.key}`)}</h5>
                 <ul className="space-y-4">
                   {col.links.map(l => (
                     <li key={l}>
@@ -381,11 +388,11 @@ export function MarketingPage() {
           
           <div className="mt-20 pt-8 border-t border-black/5 flex flex-col md:flex-row justify-between items-center gap-6">
             <p className="text-muted text-xs font-bold uppercase tracking-widest">
-              © 2026 Krishi Hub. All rights reserved.
+              {t('marketing.footer.copyright')}
             </p>
             <div className="flex gap-8">
-              {["Privacy", "Terms", "Cookies"].map(l => (
-                <Link key={l} href="#" className="text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-colors">{l}</Link>
+              {["privacy", "terms", "cookies"].map(l => (
+                <Link key={l} href="#" className="text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-colors">{t(`marketing.footer.${l}`)}</Link>
               ))}
             </div>
           </div>

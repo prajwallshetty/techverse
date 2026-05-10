@@ -125,7 +125,7 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
     });
 
     channel.bind("auto-sold", (data: any) => {
-       addToast(`Listing sold automatically at ₹${data.amount}!`, "info");
+       addToast(t('dashboard.marketplace.auto_sold', { amount: data.amount.toString() }), "info");
        fetchListings();
     });
 
@@ -139,7 +139,7 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
     if (!sessionUser?.id) return;
     const channel = pusherClient.subscribe(`trader-${sessionUser.id}`);
     channel.bind("outbid-alert", (data: any) => {
-      addToast(`You were outbid on ${data.cropName}! New bid: ₹${data.newAmount}`, "error");
+      addToast(t('dashboard.marketplace.outbid_alert', { crop: data.cropName, amount: data.newAmount.toString() }), "error");
     });
     return () => {
       pusherClient.unsubscribe(`trader-${sessionUser.id}`);
@@ -191,7 +191,7 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
       if (!res.ok) throw new Error(data.error);
 
       setSuccess(true);
-      addToast("Bid placed successfully!", "success");
+      addToast(t('dashboard.marketplace.bid_success'), "success");
       fetchListings();
       fetchBidHistory(selectedListing._id);
       setTimeout(() => setSuccess(false), 3000);
@@ -235,7 +235,7 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" />
                 <input 
                   type="text" 
-                  placeholder="Filter by location..." 
+                  placeholder={t('dashboard.marketplace.filter_location')} 
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full bg-surface-muted/50 border border-border/80 rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -252,8 +252,8 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
           ) : listings.length === 0 ? (
             <div className="text-center py-20 border border-dashed border-border rounded-3xl">
               <Package className="size-12 text-muted/40 mx-auto mb-4" />
-              <p className="text-lg font-bold text-muted">No listings found</p>
-              <p className="text-sm text-muted/60">Try adjusting your filters or location search.</p>
+              <p className="text-lg font-bold text-muted">{t('dashboard.marketplace.no_listings')}</p>
+              <p className="text-sm text-muted/60">{t('dashboard.marketplace.no_listings_desc')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -284,20 +284,20 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
                     <div className="p-5 space-y-4">
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-1.5 text-muted font-medium">
-                          <MapPin className="size-4 text-primary" /> {listing.warehouseId?.location || "Local Warehouse"}
+                          <MapPin className="size-4 text-primary" /> {listing.warehouseId?.location || t('dashboard.warehouse.location')}
                         </div>
                         <div className="flex items-center gap-1.5 text-accent font-bold">
-                          <TrendingUp className="size-4" /> {listing.bidCount || 0} Bids
+                          <TrendingUp className="size-4" /> {listing.bidCount || 0} {t('dashboard.marketplace.bid_count')}
                         </div>
                       </div>
 
                       <div className="pt-4 border-t border-border/40 flex items-end justify-between">
                         <div>
-                          <p className="text-[10px] font-black uppercase text-muted tracking-wider mb-0.5">{t("common.marketplace.highest_bid")}</p>
+                          <p className="text-[10px] font-black uppercase text-muted tracking-wider mb-0.5">{t("dashboard.marketplace.highest_bid")}</p>
                           <p className="text-2xl font-black text-primary">₹{listing.highestBid?.toLocaleString() || listing.startingBid?.toLocaleString() || "---"}</p>
                         </div>
                         <Button variant="secondary" className="px-2 py-1 h-auto text-[10px] font-black uppercase">
-                          Bid Now <ArrowUpRight className="size-3 ml-1" />
+                          {t('dashboard.marketplace.bid_now')} <ArrowUpRight className="size-3 ml-1" />
                         </Button>
                       </div>
                     </div>
@@ -317,7 +317,7 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
           <>
             <div className="p-6 border-b border-border/60 flex items-center justify-between bg-surface sticky top-0 z-10">
               <h3 className="font-black text-lg flex items-center gap-2">
-                <Zap className="size-5 text-amber-500" /> Auction Arena
+                <Zap className="size-5 text-amber-500" /> {t('dashboard.marketplace.auction_arena')}
               </h3>
               <button onClick={() => setSelectedListing(null)} className="p-2 hover:bg-surface-muted rounded-full transition-colors">
                 <X className="size-5 text-muted" />
@@ -327,20 +327,20 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
             <div className="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
               <div className="bg-surface border border-border/60 rounded-2xl p-5 shadow-sm">
                 <div className="flex justify-between items-center mb-4">
-                   <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">Market Summary</p>
+                   <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em]">{t('dashboard.marketplace.market_summary')}</p>
                    {selectedListing.auctionEndsAt && <CountdownTimer endsAt={selectedListing.auctionEndsAt} />}
                 </div>
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted">Commodity</span>
+                    <span className="text-sm text-muted">{t('dashboard.marketplace.commodity')}</span>
                     <span className="text-sm font-bold">{selectedListing.cropName}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted">Volume</span>
+                    <span className="text-sm text-muted">{t('dashboard.marketplace.volume')}</span>
                     <span className="text-sm font-bold">{selectedListing.quantityTons} MT</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-muted">Current Market Price</span>
+                    <span className="text-sm text-muted">{t('dashboard.marketplace.market_price')}</span>
                     <span className="text-sm font-bold text-emerald-600">₹{selectedListing.basePrice?.toLocaleString() || "---"}</span>
                   </div>
                 </div>
@@ -348,7 +348,7 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
 
               <div className="space-y-4 bg-surface p-5 rounded-2xl border border-border shadow-sm">
                 <div>
-                  <label className="text-xs font-black mb-2 block uppercase tracking-wider text-muted">Standard Bid (INR)</label>
+                  <label className="text-xs font-black mb-2 block uppercase tracking-wider text-muted">{t('dashboard.marketplace.standard_bid')}</label>
                   <div className="relative">
                     <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" />
                     <input 
@@ -365,7 +365,7 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
                 <div className="pt-4 border-t border-border/40">
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-xs font-black uppercase tracking-wider text-muted flex items-center gap-1">
-                      <Zap className="size-3 text-amber-500" /> Enable Auto-Bid
+                      <Zap className="size-3 text-amber-500" /> {t('dashboard.marketplace.enable_auto_bid')}
                     </label>
                     <input 
                       type="checkbox" 
@@ -374,20 +374,19 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
                       className="w-4 h-4 text-primary rounded border-border"
                     />
                   </div>
-                  
-                  {isAutoBidEnabled && (
+                                {isAutoBidEnabled && (
                     <div className="animate-in slide-in-from-top-2 duration-200">
                       <div className="relative">
                         <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted" />
                         <input 
                           type="number"
-                          placeholder="Maximum limit to auto-bid"
+                          placeholder={t('dashboard.marketplace.auto_bid_limit')} 
                           value={maxAutoBid}
                           onChange={(e) => setMaxAutoBid(e.target.value === "" ? "" : Number(e.target.value))}
                           className="w-full bg-amber-500/5 border-2 border-amber-500/30 focus:border-amber-500 rounded-xl pl-9 pr-4 py-2 text-sm font-bold transition-all"
                         />
                       </div>
-                      <p className="text-[10px] text-muted mt-2 font-medium">We'll automatically bid up to this limit to keep you in the lead.</p>
+                      <p className="text-[10px] text-muted mt-2 font-medium">{t('dashboard.marketplace.auto_bid_desc')}</p>
                     </div>
                   )}
                 </div>
@@ -405,7 +404,7 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
                   onClick={handlePlaceBid}
                 >
                   {isSubmitting ? <Loader2 className="size-5 animate-spin" /> : (
-                    success ? <CheckCircle2 className="size-5" /> : t("common.marketplace.confirm_bid")
+                    success ? <CheckCircle2 className="size-5" /> : t("dashboard.marketplace.confirm_bid")
                   )}
                 </Button>
               </div>
@@ -413,11 +412,11 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
               {/* Bid History Timeline */}
               <div className="space-y-4">
                 <h4 className="font-black text-sm uppercase tracking-widest text-muted flex items-center gap-2">
-                  <History className="size-4" /> Live Bid History
+                  <History className="size-4" /> {t('dashboard.marketplace.live_bid_history')}
                 </h4>
                 <div className="space-y-3">
                   {bidHistory.length === 0 ? (
-                    <p className="text-xs text-muted/60 italic p-4 text-center border border-dashed border-border rounded-xl">No bids placed yet. Be the first!</p>
+                    <p className="text-xs text-muted/60 italic p-4 text-center border border-dashed border-border rounded-xl">{t('dashboard.marketplace.no_bids_yet')}</p>
                   ) : (
                     bidHistory.map((bid, i) => (
                       <div key={bid._id} className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
@@ -439,7 +438,7 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
                         </div>
                         <div className="text-right">
                           <p className={`font-black text-sm ${i === 0 ? "text-primary text-base" : "text-foreground"}`}>₹{bid.amount.toLocaleString()}</p>
-                          {i === 0 && <Badge className="text-[8px] px-1.5 py-0.5 h-auto bg-primary text-white border-none mt-1">WINNING</Badge>}
+                          {i === 0 && <Badge className="text-[8px] px-1.5 py-0.5 h-auto bg-primary text-white border-none mt-1">{t('dashboard.marketplace.winning')}</Badge>}
                         </div>
                       </div>
                     ))

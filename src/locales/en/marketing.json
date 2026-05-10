@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "network": "Network",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "sign_in": "Sign In",
+    "join_now": "Join Now"
+  },
+  "hero": {
+    "title_part1": "Harvesting",
+    "title_part2": "Prosperity",
+    "title_part3": "Digitally.",
+    "subtitle": "The most advanced agricultural asset management platform. Secure storage, instant liquidity, and data-driven insights for the modern farmer.",
+    "cta_start": "Start Your Journey",
+    "cta_prices": "View Live Prices",
+    "wdra": "WDRA Regd.",
+    "ai_insights": "AI Insights"
+  },
+  "stats": {
+    "farmers": "Active Farmers",
+    "capacity": "Storage Capacity",
+    "credit": "Credit Disbursed",
+    "states": "States Covered"
+  },
+  "features": {
+    "title": "Infrastructure designed for",
+    "title_italic": "Absolute Confidence.",
+    "warehousing": {
+      "title": "Secure Warehousing",
+      "desc": "WDRA-registered facilities with 24/7 digital surveillance and comprehensive insurance coverage."
+    },
+    "credit": {
+      "title": "Instant Credit",
+      "desc": "Unlock liquidity without selling your crops. Get instant loans against your electronic Negotiable Warehouse Receipts (eNWR)."
+    },
+    "learn_more": "Learn More"
+  },
+  "experience": {
+    "badge": "Full Control",
+    "title": "Your Farm, In Your Pocket.",
+    "monitoring": {
+      "title": "Real-time Monitoring",
+      "desc": "Watch your stock levels and quality parameters from anywhere."
+    },
+    "mandi": {
+      "title": "Mandi Price Feed",
+      "desc": "Live rates from 2,500+ mandis across India at your fingertips."
+    },
+    "finance": {
+      "title": "Financial Hub",
+      "desc": "Apply for loans, view balance, and withdraw funds instantly."
+    }
+  },
+  "cta": {
+    "title": "Join the Digital Agriculture Revolution.",
+    "subtitle": "Stop gambling with your harvest. Get the security and liquidity you deserve with Krishi Hub.",
+    "register_farmer": "Register as Farmer",
+    "sign_in": "Sign In to Account"
+  },
+  "footer": {
+    "desc": "Empowering Bharat's agricultural ecosystem with secure technology and financial inclusion.",
+    "platform": "Platform",
+    "company": "Company",
+    "support": "Support",
+    "copyright": "© 2026 Krishi Hub. All rights reserved.",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "cookies": "Cookies"
+  }
+}

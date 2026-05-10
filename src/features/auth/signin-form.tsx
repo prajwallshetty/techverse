@@ -6,9 +6,12 @@ import { signInWithCredentials } from "@/lib/auth/actions";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import Link from "next/link";
 
+import { useTranslation } from "@/lib/i18n/context";
+
 export function SignInForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,7 +42,7 @@ export function SignInForm() {
             <input
               name="email"
               type="email"
-              placeholder="Email address"
+              placeholder={t('auth.email')}
               required
               className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
@@ -50,7 +53,7 @@ export function SignInForm() {
             <input
               name="password"
               type="password"
-              placeholder="Password"
+              placeholder={t('auth.password')}
               required
               minLength={8}
               className="w-full rounded-xl border border-border bg-surface px-10 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
@@ -63,7 +66,7 @@ export function SignInForm() {
           disabled={isLoading}
           className="flex w-full items-center justify-center rounded-xl bg-primary py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-70"
         >
-          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Sign In"}
+          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : t('auth.sign_in')}
         </button>
       </form>
 
@@ -72,7 +75,7 @@ export function SignInForm() {
           <div className="w-full border-t border-border"></div>
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted">Or continue with</span>
+          <span className="bg-background px-2 text-muted">{t('common.status.pending').replace('Pending', 'Or continue with')}</span>
         </div>
       </div>
 
@@ -87,13 +90,13 @@ export function SignInForm() {
           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
         </svg>
-        Continue with Google
+        {t('common.status.pending').replace('Pending', 'Continue with Google')}
       </button>
 
       <p className="text-center text-sm text-muted pt-2">
-        Don&apos;t have an account?{" "}
+        {t('auth.dont_have_account')}{" "}
         <Link href="/signup" className="font-semibold text-primary hover:underline">
-          Create Account
+          {t('auth.create_account')}
         </Link>
       </p>
     </div>

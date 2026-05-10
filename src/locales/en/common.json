@@ -8,7 +8,26 @@
     "trades": "Trades",
     "users": "Users",
     "analytics": "Analytics",
+    "settings": "Settings",
     "sign_out": "Sign out"
+  },
+  "tabs": {
+    "overview": "Overview",
+    "bookings": "Bookings",
+    "map": "Map",
+    "inventory": "Inventory",
+    "settings": "Settings"
+  },
+  "actions": {
+    "search": "Search...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "view": "View",
+    "export": "Export",
+    "list": "List",
+    "book_space": "Book Space",
+    "complete_delivery": "Complete Delivery",
+    "create_facility": "Create Facility"
   },
   "dashboard": {
     "title": "Krishi Hub",
@@ -42,6 +61,23 @@
     "completed": "Completed",
     "pending": "Pending",
     "sold": "Sold",
-    "active": "Active"
+    "active": "Active",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "success": "Success!"
+  },
+  "bottom_nav": {
+    "home": "Home",
+    "warehouses": "Warehouses",
+    "bookings": "Bookings",
+    "map": "Map",
+    "inventory": "Inventory",
+    "overview": "Overview",
+    "market": "Market",
+    "bids": "Bids",
+    "purchases": "Purchases",
+    "users": "Users",
+    "analytics": "Analytics",
+    "settings": "Settings"
   }
 }

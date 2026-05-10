@@ -1,47 +1,83 @@
 {
   "nav": {
-    "overview": "ಒವರ್‌ವ್ಯೂ",
-    "my_farms": "ಎನ್ನ ಕೃಷಿ",
+    "overview": "ಓವರ್ ವ್ಯೂ",
+    "my_farms": "ಎನ್ನ ಫಾರ್ಮ್‌ಲು",
     "crop_ai": "ಬೆಳೆ AI",
     "inventory": "ದಾಸ್ತಾನು",
-    "markets": "ಮಾರ್ಕೆಟ್",
+    "markets": "ಮಾರುಕಟ್ಟೆಲು",
     "trades": "ವ್ಯಾಪಾರೊಲು",
-    "users": "ಬಳಕೆದಾರೆರ್",
+    "users": "ಬಳಕೆದಾರರ್",
     "analytics": "ವಿಶ್ಲೇಷಣೆ",
+    "settings": "ಸೆಟ್ಟಿಂಗ್‌ಲು",
     "sign_out": "ಸೈನ್ ಔಟ್"
   },
+  "tabs": {
+    "overview": "ಓವರ್ ವ್ಯೂ",
+    "bookings": "ಬುಕಿಂಗ್‌ಲು",
+    "map": "ನಕ್ಷೆ",
+    "inventory": "ದಾಸ್ತಾನು",
+    "settings": "ಸೆಟ್ಟಿಂಗ್‌ಲು"
+  },
+  "actions": {
+    "search": "ನಾಡ್ಲೆ...",
+    "save": "ಉಳಿಸುಲೆ",
+    "cancel": "ರದ್ದ್ ಮಲ್ಪುಲೆ",
+    "view": "ತೂಲೆ",
+    "export": "ರಫ್ತು",
+    "list": "ಪಟ್ಟಿ",
+    "book_space": "ಜಾಗೆ ಬುಕ್ ಮಲ್ಪುಲೆ",
+    "complete_delivery": "ವಿತರಣೆ ಪೂರ್ತಿ ಮಲ್ಪುಲೆ",
+    "create_facility": "ಸೌಲಭ್ಯ ಮಲ್ಪುಲೆ"
+  },
   "dashboard": {
-    "title": "AgriHold AI",
-    "welcome": "ಸ್ವಾಗತ",
+    "title": "ಕೃಷಿ ಹಬ್",
+    "welcome": "ಪಿರ ಬತ್ತ್‌ದರ್, ಎಡ್ಡೆ ಬರ್ಪು",
     "role_dashboard": "{{role}} ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
     "total_revenue": "ಒಟ್ಟು ಆದಾಯ",
-    "active_bookings": "ಸಕ್ರಿಯ ಬುಕ್ಕಿಂಗ್‌ಲು",
-    "capacity_used": "ಬಳಕೆಯಾದ ಜಾಗ",
-    "stock_distribution": "ದಾಸ್ತಾನು ಹಂಚಿಕೆ"
+    "active_bookings": "ಸಕ್ರಿಯ ಬುಕಿಂಗ್‌ಲು",
+    "capacity_used": "ಗಲಸಿನ ಸಾಮರ್ಥ್ಯ",
+    "stock_distribution": "ದಾಸ್ತಾನು ಪಟ್ಟೆ"
   },
   "marketplace": {
-    "title": "ಬೆಳೆ ಮಾರ್ಕೆಟ್",
-    "subtitle": "ರೈತರ್ ಮತ್ ವ್ಯಾಪಾರಿನ ನಡುವೆ ನೇರ ವ್ಯಾಪಾರ",
+    "title": "ಬೆಳೆ ಮಾರುಕಟ್ಟೆ",
+    "subtitle": "ರೈತೆರ್ ಬೊಕ್ಕ ಪರಿಶೀಲನೆ ಮಲ್ದಿನ ವ್ಯಾಪಾರಿಯೆರೆನ ನಡುಟೆ ನೇರ ವ್ಯಾಪಾರ",
     "place_bid": "ಬಿಡ್ ಮಲ್ಪುಲೆ",
-    "highest_bid": "ಎಡ್ಡೆ ಬಿಡ್",
-    "bid_history": "ಬಿಡ್ ಇತಿಹಾಸ",
+    "highest_bid": "ಇತ್ತೆದ ಗರಿಷ್ಠ ಬಿಡ್",
+    "bid_history": "ಇತ್ತೀಚಿನ ಬಿಡ್‌ಲು",
     "confirm_bid": "ಬಿಡ್ ಖಚಿತ ಮಲ್ಪುಲೆ",
-    "target_price": "ಗುರಿ ಬೆಲೆ",
+    "target_price": "ಗುರಿ ಮಾರಾಟ ಬೆಲೆ",
     "auto_sell": "ಸ್ಮಾರ್ಟ್ ಆಟೋ-ಸೆಲ್"
   },
   "loans": {
-    "title": "ಸ್ಮಾರ್ಟ್ ಕಿರುಸಾಲ",
-    "subtitle": "ಬೆಳೆ ಆಧಾರಿತ ತ್ವರಿತ ಸಾಲ",
-    "eligibility": "ಅರ್ಹತೆ ಪರಿಶೀಲನೆ",
-    "claim_payout": "ಪಾವತಿ ಪಡೆಯಲೆ",
-    "repayment_date": "ಮರುಪಾವತಿ ದಿನ",
-    "disbursed": "ಸಾಲ ಜಮೆಯಾತ್ಂಡ್"
+    "title": "ಸ್ಮಾರ್ಟ್ ಮೈಕ್ರೋಲೋನ್",
+    "subtitle": "ನಿನ್ನ ಬೆಳೆ ಅಡಮಾನದ ಮಿತ್ತ್ ತಕ್ಷಣ ಕಾಸ್",
+    "eligibility": "ಅರ್ಹತೆ ಪರಿಶೀಲನೆ ಮಲ್ಪುಲೆ",
+    "claim_payout": "ತಕ್ಷಣದ ಪಾವತಿ ದೆತೊನ್ಲೆ",
+    "repayment_date": "ಮರುಪಾವತಿ ತಾರೀಕು",
+    "disbursed": "ಯಶಸ್ವಿಯಾದ್ ಜಮಾ ಮಲ್ತ್ಂಡ್"
   },
   "status": {
-    "confirmed": "ಖಚಿತವಾತ್ಂಡ್",
-    "completed": "ಮುಗಿದ್",
+    "confirmed": "ಖಚಿತ ಆಂಡ್",
+    "completed": "ಮುಗಿಯುಂಡ್",
     "pending": "ಬಾಕಿ ಉಂಡು",
-    "sold": "ಮಾರಾಟವಾತ್ಂಡ್",
-    "active": "ಸಕ್ರಿಯ"
+    "sold": "ಮಾರಾಟ ಆಂಡ್",
+    "active": "ಸಕ್ರಿಯ ಉಂಡು",
+    "loading": "ಲೋಡ್ ಆವೊಂದುಂಡು...",
+    "saving": "ಉಳಿಸೊಂದುಂಡು...",
+    "success": "ಯಶಸ್ವಿ!"
+  },
+  "bottom_nav": {
+    "home": "ಹೋಮ್",
+    "warehouses": "ಗೋದಾಮುಲು",
+    "bookings": "ಬುಕಿಂಗ್‌ಲು",
+    "map": "ನಕ್ಷೆ",
+    "inventory": "ದಾಸ್ತಾನು",
+    "overview": "ಓವರ್ ವ್ಯೂ",
+    "market": "ಮಾರುಕಟ್ಟೆ",
+    "bids": "ಬಿಡ್‌ಲು",
+    "purchases": "ಖರೀದಿಲು",
+    "users": "ಬಳಕೆದಾರರ್",
+    "analytics": "ವಿಶ್ಲೇಷಣೆ",
+    "settings": "ಸೆಟ್ಟಿಂಗ್‌ಲು"
   }
 }
