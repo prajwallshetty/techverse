@@ -20,7 +20,7 @@
   "stats": {
     "farmers": "Active Farmers",
     "capacity": "Storage Capacity",
-    "credit": "Credit Disbursed",
+    "ivr": "Offline IVR Access",
     "states": "States Covered"
   },
   "features": {
@@ -30,9 +30,9 @@
       "title": "Secure Warehousing",
       "desc": "WDRA-registered facilities with 24/7 digital surveillance and comprehensive insurance coverage."
     },
-    "credit": {
-      "title": "Instant Credit",
-      "desc": "Unlock liquidity without selling your crops. Get instant loans against your electronic Negotiable Warehouse Receipts (eNWR)."
+    "ivr": {
+      "title": "Offline IVR Access",
+      "desc": "No internet? No problem. Book warehouse space, list your crops, and get price predictions through our toll-free IVR system."
     },
     "learn_more": "Learn More"
   },
@@ -47,9 +47,9 @@
       "title": "Mandi Price Feed",
       "desc": "Live rates from 2,500+ mandis across India at your fingertips."
     },
-    "finance": {
-      "title": "Financial Hub",
-      "desc": "Apply for loans, view balance, and withdraw funds instantly."
+    "ivr": {
+      "title": "Toll-Free IVR Access",
+      "desc": "Manage your crops using simple keypresses on any basic feature phone without requiring internet."
     }
   },
   "cta": {

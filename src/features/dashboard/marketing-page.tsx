@@ -13,7 +13,8 @@ import {
   Globe,
   Coins,
   ArrowUpRight,
-  LayoutDashboard
+  LayoutDashboard,
+  PhoneCall
 } from "lucide-react";
 import Link from "next/link";
 import { LinkButton } from "@/components/antigravity/button";
@@ -24,7 +25,7 @@ import { LanguageSwitcher } from "@/features/i18n/language-switcher";
 const statsConfig = [
   { key: "farmers", icon: Users, color: "text-blue-500" },
   { key: "capacity", icon: WarehouseIcon, color: "text-emerald-500" },
-  { key: "credit", icon: Coins, color: "text-amber-500" },
+  { key: "ivr", icon: PhoneCall, color: "text-amber-500" },
   { key: "states", icon: Globe, color: "text-indigo-500" },
 ];
 
@@ -35,8 +36,8 @@ const featuresConfig = [
     image: "/warehouse.png"
   },
   {
-    key: "credit",
-    icon: Zap,
+    key: "ivr",
+    icon: PhoneCall,
     image: "/warehouse1.png"
   }
 ];
@@ -70,14 +71,13 @@ export function MarketingPage() {
           
           <div className="hidden lg:flex items-center gap-10">
             {[
-              { key: 'network', label: t('marketing.nav.network') },
-              { key: 'pricing', label: t('marketing.nav.pricing') },
-              { key: 'about',   label: t('marketing.nav.about') },
-              { key: 'contact', label: t('marketing.nav.contact') }
+              { key: 'about',   label: t('marketing.nav.about'), href: '#about' },
+              { key: 'how_to_use', label: 'How to Use', href: '#how-to-use' },
+              { key: 'contact', label: t('marketing.nav.contact'), href: '#contact' }
             ].map((item) => (
               <Link 
                 key={item.key} 
-                href="#"
+                href={item.href}
                 className="text-xs font-black uppercase tracking-widest text-muted hover:text-primary transition-all"
               >
                 {item.label}
@@ -130,9 +130,6 @@ export function MarketingPage() {
               >
                 <LinkButton href="/signup" className="h-16 px-10 rounded-2xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-2xl shadow-primary/30 flex items-center gap-3">
                   {t('marketing.hero.cta_start')} <ArrowRight className="size-5" />
-                </LinkButton>
-                <LinkButton href="/signin" variant="secondary" className="h-16 px-10 rounded-2xl border-2 border-black/5 font-black text-sm uppercase tracking-widest">
-                  {t('marketing.hero.cta_prices')}
                 </LinkButton>
               </motion.div>
 
@@ -207,7 +204,7 @@ export function MarketingPage() {
                   className="text-center space-y-3"
                 >
                   <p className="text-5xl font-black tracking-tighter text-foreground">
-                    {stat.key === 'farmers' ? '1.2M+' : stat.key === 'capacity' ? '850K MT' : stat.key === 'credit' ? '₹4,200Cr' : '18+'}
+                    {stat.key === 'farmers' ? '1.2M+' : stat.key === 'capacity' ? '850K MT' : stat.key === 'ivr' ? '24/7' : '18+'}
                   </p>
                   <div className="flex items-center justify-center gap-2">
                     <stat.icon className={`size-4 ${stat.color}`} />
@@ -276,7 +273,7 @@ export function MarketingPage() {
                 {[
                   { key: "monitoring", icon: LayoutDashboard },
                   { key: "mandi",      icon: Activity },
-                  { key: "finance",    icon: Coins }
+                  { key: "ivr",        icon: PhoneCall }
                 ].map((item, idx) => (
                   <motion.div 
                     key={item.key}
@@ -304,15 +301,211 @@ export function MarketingPage() {
               className="relative order-1 lg:order-2"
             >
               <div className="absolute -inset-20 bg-primary/5 rounded-full blur-[120px]" />
-              <div className="relative bg-surface rounded-[4rem] border-8 border-white shadow-2xl overflow-hidden aspect-[4/3]">
-                 <div className="absolute inset-0 flex items-center justify-center bg-primary/5">
-                    <LayoutDashboard className="size-20 text-primary/20 animate-pulse" />
-                 </div>
-                 {/* This would be a screenshot of the app dashboard */}
-                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-white via-white/90 to-transparent">
-                    <p className="text-xs font-black uppercase tracking-widest text-muted text-center">Dashboard Experience Mockup</p>
+              <div className="relative bg-surface rounded-[4rem] border-8 border-white shadow-2xl overflow-hidden aspect-[4/3] group cursor-pointer">
+                 <img 
+                   src="/dashboard_mockup.png" 
+                   alt="Platform Dashboard UI" 
+                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                 />
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                 <div className="absolute bottom-0 left-0 right-0 p-8 text-white pointer-events-none transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                    <p className="text-xl font-black tracking-tight mb-1">Intelligent Dashboard</p>
+                    <p className="text-sm font-medium text-white/80">Command center for all your agricultural operations</p>
                  </div>
               </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── How to Use Section ────────────────────────────────────────── */}
+        <section id="how-to-use" className="py-32 lg:py-48 bg-[#fafaf9] border-t border-black/5">
+          <div className="container mx-auto px-6 lg:px-12">
+            <div className="text-center max-w-3xl mx-auto mb-24">
+              <Badge label="Platform Guide" />
+              <h2 className="text-5xl lg:text-7xl font-black tracking-tighter leading-[0.95] mt-6">
+                How It Works
+              </h2>
+              <p className="text-xl text-muted font-medium mt-6 leading-relaxed">
+                A seamless ecosystem connecting every stakeholder in the agricultural supply chain.
+              </p>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-10">
+              {/* Farmer Flow */}
+              <motion.div 
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="bg-white p-10 rounded-[3rem] border border-black/5 shadow-xl shadow-black/5 group hover:-translate-y-2 transition-transform duration-500"
+              >
+                <div className="size-16 rounded-[1.5rem] bg-blue-500/10 text-blue-600 flex items-center justify-center mb-8">
+                  <Users className="size-8" />
+                </div>
+                <h3 className="text-3xl font-black tracking-tight mb-8">For Farmers</h3>
+                <ul className="space-y-6">
+                  {[
+                    "Sign up and get AI price predictions for your crops.",
+                    "Book trusted warehouse space online to prevent spoilage.",
+                    "List stored crops on the marketplace with 1-click Auto-Sell.",
+                    "Receive instant payments when traders buy your stock."
+                  ].map((step, i) => (
+                    <li key={i} className="flex gap-4 items-start">
+                      <div className="size-6 shrink-0 rounded-full bg-blue-500 text-white font-black text-[10px] flex items-center justify-center mt-1">
+                        {i + 1}
+                      </div>
+                      <p className="font-bold text-muted leading-relaxed">{step}</p>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+
+              {/* Warehouse Owner Flow */}
+              <motion.div 
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="bg-white p-10 rounded-[3rem] border border-black/5 shadow-xl shadow-black/5 group hover:-translate-y-2 transition-transform duration-500"
+              >
+                <div className="size-16 rounded-[1.5rem] bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-8">
+                  <WarehouseIcon className="size-8" />
+                </div>
+                <h3 className="text-3xl font-black tracking-tight mb-8">For Warehouses</h3>
+                <ul className="space-y-6">
+                  {[
+                    "Register your facility and list available capacity (MT).",
+                    "Get a verified Trust Score to attract more farmers.",
+                    "Receive automated booking requests directly from farmers.",
+                    "Monitor real-time space utilization and revenue on your dashboard."
+                  ].map((step, i) => (
+                    <li key={i} className="flex gap-4 items-start">
+                      <div className="size-6 shrink-0 rounded-full bg-emerald-500 text-white font-black text-[10px] flex items-center justify-center mt-1">
+                        {i + 1}
+                      </div>
+                      <p className="font-bold text-muted leading-relaxed">{step}</p>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+
+              {/* Trader Flow */}
+              <motion.div 
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="bg-white p-10 rounded-[3rem] border border-black/5 shadow-xl shadow-black/5 group hover:-translate-y-2 transition-transform duration-500"
+              >
+                <div className="size-16 rounded-[1.5rem] bg-amber-500/10 text-amber-600 flex items-center justify-center mb-8">
+                  <TrendingUp className="size-8" />
+                </div>
+                <h3 className="text-3xl font-black tracking-tight mb-8">For Traders</h3>
+                <ul className="space-y-6">
+                  {[
+                    "Browse live marketplace listings directly from verified warehouses.",
+                    "View AI-backed quality metrics and historical price trends.",
+                    "Place direct bids on crops, bypassing traditional middlemen.",
+                    "Track your purchased inventory and trading history."
+                  ].map((step, i) => (
+                    <li key={i} className="flex gap-4 items-start">
+                      <div className="size-6 shrink-0 rounded-full bg-amber-500 text-white font-black text-[10px] flex items-center justify-center mt-1">
+                        {i + 1}
+                      </div>
+                      <p className="font-bold text-muted leading-relaxed">{step}</p>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── About Section ────────────────────────────────────────────── */}
+        <section id="about" className="py-32 bg-white border-t border-black/5">
+          <div className="container mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-20 items-center">
+            <motion.div 
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1 }}
+              className="relative"
+            >
+              <div className="absolute -inset-20 bg-emerald-500/10 rounded-full blur-[100px]" />
+              <div className="relative bg-surface rounded-[4rem] border-8 border-white shadow-2xl overflow-hidden aspect-[4/4]">
+                 <img src="/warehouse.png" alt="About AgriHold" className="w-full h-full object-cover grayscale-[0.2]" />
+              </div>
+            </motion.div>
+
+            <div className="space-y-10">
+              <Badge label="Our Mission" />
+              <h2 className="text-5xl lg:text-6xl font-black tracking-tighter leading-none">
+                Empowering India's <br /><span className="text-primary">Agricultural Future</span>
+              </h2>
+              <div className="space-y-6 text-lg text-muted font-medium leading-relaxed">
+                <p>
+                  AgriHold is on a mission to completely eliminate the trust deficit in the post-harvest supply chain. For too long, farmers have been forced into distress sales due to a lack of secure storage and transparent pricing.
+                </p>
+                <p>
+                  By digitizing warehouses, implementing AI-driven quality checks, and bringing traders directly to the warehouse floor via our online marketplace, we are ensuring that farmers get the true value for their hard work.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Contact Section ───────────────────────────────────────────── */}
+        <section id="contact" className="py-32 bg-[#fafaf9] border-t border-black/5 relative overflow-hidden">
+          <div className="absolute top-0 right-0 size-[800px] bg-primary/5 rounded-full blur-[150px] -z-10" />
+          
+          <div className="container mx-auto px-6 lg:px-12">
+            <div className="text-center max-w-2xl mx-auto mb-20">
+              <Badge label="Get in Touch" />
+              <h2 className="text-5xl lg:text-6xl font-black tracking-tighter leading-[0.95] mt-6">
+                Let's Build Together
+              </h2>
+              <p className="text-xl text-muted font-medium mt-6">
+                Have questions or want to partner with us? Our team is ready to help you digitize your agricultural operations.
+              </p>
+            </div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="max-w-4xl mx-auto bg-white p-10 lg:p-16 rounded-[3rem] shadow-2xl shadow-black/5 border border-black/5 relative z-10"
+            >
+              <form className="space-y-8">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted">Your Name</label>
+                    <input type="text" placeholder="John Doe" className="w-full bg-surface-muted border-none rounded-2xl px-6 py-4 font-bold text-foreground focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted/50" />
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-xs font-black uppercase tracking-widest text-muted">Email Address</label>
+                    <input type="email" placeholder="john@example.com" className="w-full bg-surface-muted border-none rounded-2xl px-6 py-4 font-bold text-foreground focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted/50" />
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <label className="text-xs font-black uppercase tracking-widest text-muted">Subject</label>
+                  <select className="w-full bg-surface-muted border-none rounded-2xl px-6 py-4 font-bold text-foreground focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer">
+                    <option>I am a Farmer looking for storage</option>
+                    <option>I want to list my Warehouse</option>
+                    <option>I am a Trader interested in the marketplace</option>
+                    <option>Other inquiries</option>
+                  </select>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="text-xs font-black uppercase tracking-widest text-muted">Message</label>
+                  <textarea rows={5} placeholder="How can we help you?" className="w-full bg-surface-muted border-none rounded-2xl px-6 py-4 font-bold text-foreground focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted/50 resize-none"></textarea>
+                </div>
+
+                <button type="button" onClick={(e) => { e.preventDefault(); alert("Message sent successfully!"); }} className="w-full h-16 rounded-2xl bg-primary text-white font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform">
+                  Send Message
+                </button>
+              </form>
             </motion.div>
           </div>
         </section>

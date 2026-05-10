@@ -27,7 +27,6 @@ export function Sidebar() {
     farmer: [
       { label: t('dashboard.sidebar.dashboard'),     icon: 'home',           href: '/dashboard/farmer' },
       { label: t('dashboard.sidebar.warehouses'),    icon: 'warehouse',      href: '/dashboard/farmer/warehouses' },
-      { label: t('dashboard.sidebar.apply_loan'),    icon: 'payments',       href: '/dashboard/farmer/loans' },
       { label: t('dashboard.sidebar.my_bookings'),   icon: 'calendar_month', href: '/dashboard/farmer/bookings' },
     ],
     warehouse_owner: [
