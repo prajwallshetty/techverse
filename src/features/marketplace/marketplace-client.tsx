@@ -204,7 +204,7 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
   };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] overflow-hidden bg-surface relative">
+    <div className="flex h-[calc(100dvh-8rem)] lg:h-[100dvh] overflow-hidden bg-surface relative">
       
       {/* Toast Container */}
       <div className="absolute top-4 right-4 z-50 flex flex-col gap-2">
@@ -310,8 +310,8 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
       </div>
 
       {/* Right: Bidding Sidebar */}
-      <div className={`w-full lg:w-[400px] border-l border-border bg-surface-muted/10 h-full flex flex-col transition-transform duration-300 ${
-        selectedListing ? "translate-x-0" : "translate-x-full absolute right-0"
+      <div className={`absolute top-0 right-0 z-40 w-full lg:w-[400px] border-l border-border bg-surface shadow-2xl lg:shadow-none h-full flex flex-col transition-transform duration-300 ${
+        selectedListing ? "translate-x-0 lg:relative" : "translate-x-full"
       }`}>
         {selectedListing && (
           <>
@@ -392,7 +392,12 @@ export function MarketplaceClient({ sessionUser }: { sessionUser?: any }) {
                   )}
                 </div>
 
-                {error && <p className="text-xs font-bold text-danger flex items-center gap-1 bg-danger/5 p-2 rounded-lg"><AlertCircle className="size-3" /> {error}</p>}
+                {error && (
+                  <div className="mt-2 p-3 rounded-xl bg-danger/10 border border-danger/20 flex items-start gap-2 shadow-sm">
+                    <AlertCircle className="size-4 text-danger shrink-0 mt-0.5" />
+                    <p className="text-xs font-bold text-danger leading-relaxed break-words">{error}</p>
+                  </div>
+                )}
 
                 <Button 
                   className="w-full py-6 text-lg shadow-xl shadow-primary/20 mt-4"

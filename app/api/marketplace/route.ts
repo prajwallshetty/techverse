@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db/mongoose";
 import { Booking } from "@/models/Booking";
 import { Bid } from "@/models/Bid";
+import { Warehouse } from "@/models/Warehouse";
 import { auth } from "@/lib/auth";
 
 export async function GET(request: Request) {
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
 
     // 2. Fetch Bookings (Crops) and their current highest bids
     const bookings = await Booking.find(query)
-      .populate("warehouseId", "name location")
+      .populate({ path: "warehouseId", select: "name location", model: Warehouse })
       .sort({ createdAt: -1 })
       .lean();
 
@@ -35,8 +36,11 @@ export async function GET(request: Request) {
           .lean();
         
         // Filter by location if provided (on the populated warehouseId)
-        if (location && !b.warehouseId?.location?.toLowerCase().includes(location.toLowerCase())) {
-          return null;
+        if (location) {
+          const warehouseLocation = b.warehouseId?.location || "";
+          if (!warehouseLocation.toLowerCase().includes(location.toLowerCase())) {
+            return null;
+          }
         }
 
         return {

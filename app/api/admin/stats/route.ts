@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db/mongoose";
 import { User } from "@/models/User";
 import { Booking } from "@/models/Booking";
-import { Loan } from "@/models/Loan";
 import { Warehouse } from "@/models/Warehouse";
 import { Bid } from "@/models/Bid";
 import { auth } from "@/lib/auth";
@@ -23,9 +22,7 @@ export async function GET() {
       Booking.aggregate([
         { $group: { _id: null, totalTonnage: { $sum: "$quantityTons" }, totalRevenue: { $sum: "$totalPrice" } } }
       ]),
-      Loan.aggregate([
-        { $group: { _id: null, totalExposure: { $sum: "$eligibleAmount" } } }
-      ]),
+      Promise.resolve([{ totalExposure: 0 }]),
       Bid.countDocuments()
     ]);
 
