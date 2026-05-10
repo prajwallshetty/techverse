@@ -19,6 +19,10 @@ export default async function DashboardLayout({
 
   const role = session.user.role;
 
+  if (!role) {
+    redirect("/onboarding");
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground flex">
       {/* Desktop Sidebar */}

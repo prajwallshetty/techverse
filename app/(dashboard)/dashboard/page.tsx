@@ -10,8 +10,12 @@ export const metadata = {
 export default async function DashboardIndexPage() {
   const session = await auth();
 
-  if (!session?.user?.role) {
+  if (!session?.user) {
     redirect("/signin");
+  }
+
+  if (!session.user.role) {
+    redirect("/onboarding");
   }
 
   const dashboard =

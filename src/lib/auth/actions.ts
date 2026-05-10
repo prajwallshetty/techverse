@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn, signOut } from "@/lib/auth";
+import { signIn, signOut, auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { ROLE_DASHBOARD } from "@/types/domain";
@@ -162,3 +162,31 @@ export async function verifyEmailAction(token: string) {
     return { error: "Failed to verify email. Please try again." };
   }
 }
+
+export async function selectRoleAction(role: UserRole) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return { error: "Unauthorized" };
+  }
+
+  const users = await usersCollection();
+  try {
+    await users.updateOne(
+      { email: session.user.email.toLowerCase().trim() },
+      { 
+        $set: { 
+          role, 
+          isActive: true, // OAuth users are active immediately
+          updatedAt: new Date() 
+        } 
+      }
+    );
+  } catch (error) {
+    console.error("Role selection error:", error);
+    return { error: "Failed to update role. Please try again." };
+  }
+
+  const dashboard = ROLE_DASHBOARD[role] ?? "/dashboard";
+  redirect(dashboard);
+}
+
