@@ -41,6 +41,7 @@ import { useTranslation } from "@/lib/i18n/context";
 import { motion, AnimatePresence } from "framer-motion";
 import { WarehouseOwnerMap } from "./warehouse-owner-map";
 import { useSearchParams, useRouter } from "next/navigation";
+import { WarehouseTrustCard } from "./warehouse-trust-card";
 
 const COLORS = ["#00C49F", "#FFBB28", "#FF8042", "#0088FE", "#8884d8"];
 
@@ -112,6 +113,12 @@ export function WarehouseOwnerClient() {
 
   useEffect(() => {
     fetchData();
+    // Log owner activity for streak tracking
+    fetch("/api/farmer/activity", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "login" })
+    }).catch(console.error);
   }, []);
 
   const handleUpdateStatus = async (bookingId: string, status: string) => {
@@ -179,17 +186,17 @@ export function WarehouseOwnerClient() {
       {/* Dynamic Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h2 className="text-4xl font-black tracking-tight text-foreground">{t('dashboard.warehouse.owner_dashboard')} <span className="text-primary">.</span></h2>
-          <p className="text-muted text-sm mt-2 font-medium flex items-center gap-2">
-             <MapPin className="size-4" /> {stats?.warehouseName || t('dashboard.warehouse.facility_name')} • {t('common.status.active')}
+          <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">{t('dashboard.warehouse.owner_dashboard')} <span className="text-primary">.</span></h2>
+          <p className="text-muted text-xs md:text-sm mt-2 font-medium flex items-center gap-2">
+             <MapPin className="size-4 shrink-0" /> {stats?.warehouseName || t('dashboard.warehouse.facility_name')} • {t('common.status.active')}
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="secondary" className="px-6 py-6 rounded-2xl font-black text-xs uppercase tracking-widest border-border/60">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <Button variant="secondary" className="w-full sm:w-auto px-6 py-6 rounded-2xl font-black text-xs uppercase tracking-widest border-border/60">
             {t('common.actions.export')}
           </Button>
           <Button
-            className="px-8 py-6 rounded-2xl bg-primary text-white shadow-2xl shadow-primary/20 font-black text-xs uppercase tracking-widest flex items-center gap-2"
+            className="w-full sm:w-auto px-8 py-6 rounded-2xl bg-primary text-white shadow-xl shadow-primary/20 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2"
             onClick={() => { setShowAddModal(true); setFormError(null); setSuccessMsg(null); }}
           >
             <Plus className="size-4" /> {t('dashboard.warehouse.add_new')}
@@ -197,26 +204,11 @@ export function WarehouseOwnerClient() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <TabsList className="bg-surface-muted/50 p-1.5 rounded-[2rem] border border-border/40 w-fit mb-10">
-          <TabsTrigger value="overview" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
-             <LayoutDashboard className="size-4 mr-2" /> {t('common.tabs.overview')}
-          </TabsTrigger>
-          <TabsTrigger value="bookings" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
-             <Clock className="size-4 mr-2" /> {t('dashboard.warehouse.recent_bookings')}
-          </TabsTrigger>
-          <TabsTrigger value="map" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
-             <Map className="size-4 mr-2" /> {t('common.tabs.map')}
-          </TabsTrigger>
-          <TabsTrigger value="inventory" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
-             <Box className="size-4 mr-2" /> {t('common.nav.inventory')}
-          </TabsTrigger>
-          <TabsTrigger value="settings" className="rounded-2xl px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-lg font-black text-xs uppercase tracking-widest">
-             <Settings className="size-4 mr-2" /> {t('common.nav.settings')}
-          </TabsTrigger>
-        </TabsList>
-
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsContent value="overview" className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          {/* Trust Score Card */}
+          <WarehouseTrustCard />
+
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -263,9 +255,9 @@ export function WarehouseOwnerClient() {
           {/* Charts Row */}
           <div className="grid lg:grid-cols-3 gap-8">
             <Card className="lg:col-span-2 border-border/40 rounded-[3rem] shadow-sm overflow-hidden bg-surface">
-              <CardContent className="p-10">
-                <div className="flex items-center justify-between mb-10">
-                  <h3 className="font-black text-xl flex items-center gap-3"><TrendingUp className="size-6 text-primary" /> {t("common.dashboard.stock_distribution")}</h3>
+              <CardContent className="p-6 md:p-10">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+                  <h3 className="font-black text-lg md:text-xl flex items-center gap-3"><TrendingUp className="size-5 md:size-6 text-primary shrink-0" /> {t("common.dashboard.stock_distribution")}</h3>
                   <Badge intent="low" className="font-bold">MT / Crop Type</Badge>
                 </div>
                 <div className="h-[350px] w-full">
@@ -290,8 +282,8 @@ export function WarehouseOwnerClient() {
             </Card>
 
             <Card className="border-border/40 rounded-[3rem] shadow-sm overflow-hidden bg-surface">
-              <CardContent className="p-10">
-                <h3 className="font-black text-xl mb-10 tracking-tight text-center">{t('dashboard.warehouse.capacity_allocation')}</h3>
+              <CardContent className="p-6 md:p-10">
+                <h3 className="font-black text-lg md:text-xl mb-10 tracking-tight text-center">{t('dashboard.warehouse.capacity_allocation')}</h3>
                 <div className="h-[300px] w-full relative">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>

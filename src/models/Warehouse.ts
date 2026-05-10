@@ -20,6 +20,9 @@ export interface IWarehouse extends Document {
     cols: number;
   }[];
   isActive: boolean;
+  trustScore: number;
+  trustTier: "Bronze" | "Silver" | "Gold" | "Platinum";
+  trustUpdatedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -60,6 +63,9 @@ const WarehouseSchema: Schema<IWarehouse> = new Schema(
       cols: { type: Number, default: 10 }
     }],
     isActive: { type: Boolean, default: true },
+    trustScore: { type: Number, default: 50, min: 0, max: 100 },
+    trustTier: { type: String, enum: ["Bronze", "Silver", "Gold", "Platinum"], default: "Bronze" },
+    trustUpdatedAt: { type: Date },
   },
   { 
     timestamps: true,

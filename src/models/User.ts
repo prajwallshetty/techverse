@@ -23,6 +23,19 @@ export interface IUser extends Document {
     licenseNumber?: string;
     tradingRegions?: string[];
   };
+  kyc?: {
+    aadhaarVerified: boolean;
+    bankLinked: boolean;
+    upiLinked: boolean;
+    panLinked: boolean;
+    landRecordVerified: boolean;
+    pmKisanVerified: boolean;
+  };
+  engagement?: {
+    fpoMember: boolean;
+    priceAlertsSet: boolean;
+    referralsCount: number;
+  };
   emailVerified?: Date;
   verificationToken?: string;
   createdAt: Date;
@@ -67,6 +80,19 @@ const UserSchema: Schema<IUser> = new Schema(
     traderDetails: {
       licenseNumber: String,
       tradingRegions: [String],
+    },
+    kyc: {
+      aadhaarVerified: { type: Boolean, default: false },
+      bankLinked: { type: Boolean, default: false },
+      upiLinked: { type: Boolean, default: false },
+      panLinked: { type: Boolean, default: false },
+      landRecordVerified: { type: Boolean, default: false },
+      pmKisanVerified: { type: Boolean, default: false },
+    },
+    engagement: {
+      fpoMember: { type: Boolean, default: false },
+      priceAlertsSet: { type: Boolean, default: false },
+      referralsCount: { type: Number, default: 0 },
     },
     emailVerified: { type: Date },
     verificationToken: { type: String },
