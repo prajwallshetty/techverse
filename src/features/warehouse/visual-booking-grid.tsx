@@ -121,7 +121,7 @@ export function VisualBookingGrid({ warehouseId }: { warehouseId: string }) {
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden max-w-[1800px] mx-auto w-full">
         
         {/* Left: Interactive Grid Canvas */}
-        <div className="flex-1 overflow-y-auto px-8 py-10 custom-scrollbar relative">
+        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6 md:py-10 custom-scrollbar relative">
           
           {slots.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-10 max-w-md mx-auto space-y-6">
@@ -211,8 +211,8 @@ export function VisualBookingGrid({ warehouseId }: { warehouseId: string }) {
 
         {/* Right: Floating Summary Panel */}
         <aside className="w-full lg:w-[450px] bg-surface border-t lg:border-t-0 lg:border-l border-border/40 flex flex-col z-20 shadow-[0_-20px_50px_-12px_rgba(0,0,0,0.1)]">
-          <div className="p-10 flex-1 flex flex-col">
-            <div className="space-y-2 mb-10">
+          <div className="p-6 md:p-10 flex-1 flex flex-col">
+            <div className="space-y-2 mb-8 md:mb-10">
               <h3 className="text-2xl font-black tracking-tight text-foreground">Booking Summary</h3>
               <p className="text-sm text-muted font-medium">Review your unit selection and total costs.</p>
             </div>

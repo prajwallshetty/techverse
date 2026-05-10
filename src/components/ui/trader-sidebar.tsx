@@ -3,16 +3,18 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOutAction } from '@/lib/auth/actions';
-
-const navItems = [
-  { label: 'Overview', icon: 'dashboard', href: '/dashboard/trader' },
-  { label: 'Marketplace', icon: 'storefront', href: '/dashboard/trader/marketplace' },
-  { label: 'My Bids', icon: 'gavel', href: '/dashboard/trader/bids' },
-  { label: 'Purchases', icon: 'shopping_cart', href: '/dashboard/trader/purchases' },
-];
+import { useTranslation } from '@/lib/i18n/context';
 
 export function TraderSidebar() {
   const pathname = usePathname();
+  const { t, language, setLanguage } = useTranslation();
+
+  const navItems = [
+    { label: t('dashboard.sidebar.dashboard'),     icon: 'dashboard', href: '/dashboard/trader' },
+    { label: t('dashboard.sidebar.marketplace'),   icon: 'storefront', href: '/dashboard/trader/marketplace' },
+    { label: t('dashboard.sidebar.active_trades'), icon: 'gavel', href: '/dashboard/trader/bids' },
+    { label: t('dashboard.sidebar.inventory'),     icon: 'shopping_cart', href: '/dashboard/trader/purchases' },
+  ];
 
   return (
     <aside className="hidden lg:flex flex-col w-72 bg-surface border-r border-outline-variant h-screen sticky top-0">
@@ -25,7 +27,10 @@ export function TraderSidebar() {
               className="size-full object-contain group-hover:scale-110 transition-transform"
             />
           </div>
-          <span className="text-xl font-black text-primary tracking-tight">Trader Hub</span>
+          <div>
+            <span className="text-xl font-black text-primary tracking-tight block leading-none">{t('dashboard.title')}</span>
+            <span className="text-[10px] font-bold text-muted uppercase tracking-widest">{t('dashboard.portals.trader')}</span>
+          </div>
         </Link>
 
         <nav className="space-y-2">
@@ -51,14 +56,14 @@ export function TraderSidebar() {
         </nav>
       </div>
 
-      <div className="mt-auto p-8 border-t border-outline-variant">
+      <div className="mt-auto p-8 border-t border-outline-variant space-y-6">
         <form action={signOutAction}>
           <button
             type="submit"
             className="flex items-center gap-4 px-4 py-3 w-full rounded-2xl font-bold text-error hover:bg-error/10 transition-all"
           >
             <span className="material-symbols-outlined">logout</span>
-            Sign Out
+            {t('auth.logout')}
           </button>
         </form>
       </div>

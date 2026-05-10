@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, Loader2, CheckCircle2, ShieldCheck } from "lucide-react";
+import { Zap, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/antigravity/button";
-import { Input } from "@/components/antigravity/input";
+import { useTranslation } from "@/lib/i18n/context";
 
 export function AutoSellSettings({ 
   bookingId, 
@@ -14,6 +14,7 @@ export function AutoSellSettings({
   initialEnabled: boolean; 
   initialTarget?: number;
 }) {
+  const { t } = useTranslation();
   const [isEnabled, setIsEnabled] = useState(initialEnabled);
   const [targetPrice, setTargetPrice] = useState<number | "">(initialTarget || "");
   const [loading, setLoading] = useState(false);
@@ -48,7 +49,7 @@ export function AutoSellSettings({
       <div className="flex-1">
         <label className="text-[10px] font-black uppercase text-muted mb-2 block tracking-widest flex items-center gap-1.5">
           <Zap className={`size-3 ${isEnabled ? "text-primary fill-primary" : ""}`} /> 
-          Smart Auto-Sell {isEnabled ? "Active" : "Disabled"}
+          {isEnabled ? t('dashboard.marketplace.auto_sell.smart_active') : t('dashboard.marketplace.auto_sell.smart_disabled')}
         </label>
         <div className="flex items-center gap-3">
           <button 
@@ -66,7 +67,7 @@ export function AutoSellSettings({
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted">₹</span>
             <input 
               type="number"
-              placeholder="Target Price / MT"
+              placeholder={t('dashboard.marketplace.auto_sell.target_price')} 
               value={targetPrice}
               onChange={(e) => setTargetPrice(e.target.value === "" ? "" : Number(e.target.value))}
               disabled={!isEnabled}
@@ -83,7 +84,7 @@ export function AutoSellSettings({
         disabled={loading}
       >
         {loading ? <Loader2 className="size-3 animate-spin" /> : (
-          success ? <CheckCircle2 className="size-3" /> : "Save Logic"
+          success ? <CheckCircle2 className="size-3" /> : t('dashboard.marketplace.auto_sell.save_logic')
         )}
       </Button>
     </div>

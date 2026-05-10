@@ -6,7 +6,10 @@ import { auth } from "@/lib/auth";
 export async function GET() {
   try {
     await dbConnect();
-    const warehouses = await Warehouse.find({ isActive: true }).lean();
+    // Sort by trustScore descending so highest-trust warehouses appear first for farmers
+    const warehouses = await Warehouse.find({ isActive: true })
+      .sort({ trustScore: -1 })
+      .lean();
     return NextResponse.json({ warehouses });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

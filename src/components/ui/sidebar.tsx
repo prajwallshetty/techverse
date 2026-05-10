@@ -6,64 +6,59 @@ import { signOutAction } from '@/lib/auth/actions';
 import { useSession } from 'next-auth/react';
 import type { UserRole } from '@/types/domain';
 
-/* ── Per-role nav configs ─────────────────────────────────────────── */
-const navByRole: Record<
-  UserRole,
-  { label: string; icon: string; href: string }[]
-> = {
-  farmer: [
-    { label: 'Dashboard',     icon: 'home',           href: '/dashboard/farmer' },
-    { label: 'Warehouses',    icon: 'warehouse',      href: '/dashboard/farmer/warehouses' },
-    { label: 'Apply for Loan',icon: 'payments',       href: '/dashboard/farmer/loans' },
-    { label: 'My Bookings',   icon: 'calendar_month', href: '/dashboard/farmer/bookings' },
-  ],
-  warehouse_owner: [
-    { label: 'Dashboard',     icon: 'home',          href: '/dashboard/warehouse' },
-    { label: 'Bookings',      icon: 'calendar_month',href: '/dashboard/warehouse?tab=bookings' },
-    { label: 'Map View',      icon: 'map',           href: '/dashboard/warehouse?tab=map' },
-    { label: 'Inventory',     icon: 'inventory_2',   href: '/dashboard/warehouse?tab=inventory' },
-  ],
-  trader: [
-    { label: 'Dashboard',     icon: 'home',          href: '/dashboard/trader' },
-    { label: 'Marketplace',   icon: 'storefront',    href: '/dashboard/trader/marketplace' },
-    { label: 'Market Prices', icon: 'trending_up',   href: '/dashboard/trader?tab=prices' },
-    { label: 'Active Trades', icon: 'swap_horiz',    href: '/dashboard/trader?tab=trades' },
-  ],
-  admin: [
-    { label: 'Dashboard',     icon: 'home',          href: '/dashboard/admin' },
-    { label: 'IVR Analytics', icon: 'phone_in_talk', href: '/dashboard/admin/ivr' },
-    { label: 'Users',         icon: 'group',         href: '/dashboard/admin?tab=users' },
-    { label: 'Analytics',     icon: 'bar_chart',     href: '/dashboard/admin?tab=analytics' },
-    { label: 'Settings',      icon: 'settings',      href: '/dashboard/admin?tab=settings' },
-  ],
-};
-
-const portalLabel: Record<UserRole, string> = {
-  farmer:          'Farmer Portal',
-  warehouse_owner: 'Warehouse Portal',
-  trader:          'Trader Portal',
-  admin:           'Admin Portal',
-};
-
-const homeHref: Record<UserRole, string> = {
-  farmer:          '/dashboard/farmer',
-  warehouse_owner: '/dashboard/warehouse',
-  trader:          '/dashboard/trader',
-  admin:           '/dashboard/admin',
-};
+import { useTranslation } from '@/lib/i18n/context';
 
 export function Sidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
+  const { t, language, setLanguage } = useTranslation();
+  
   const user = session?.user;
   const role = (user?.role as UserRole) ?? 'farmer';
   const initials = user?.name
     ? user.name.split(' ').filter(Boolean).map((n) => n[0]).join('').toUpperCase().slice(0, 2)
     : 'KH';
 
+  const navByRole: Record<
+    UserRole,
+    { label: string; icon: string; href: string }[]
+  > = {
+    farmer: [
+      { label: t('dashboard.sidebar.dashboard'),     icon: 'home',           href: '/dashboard/farmer' },
+      { label: t('dashboard.sidebar.warehouses'),    icon: 'warehouse',      href: '/dashboard/farmer/warehouses' },
+      { label: t('dashboard.sidebar.apply_loan'),    icon: 'payments',       href: '/dashboard/farmer/loans' },
+      { label: t('dashboard.sidebar.my_bookings'),   icon: 'calendar_month', href: '/dashboard/farmer/bookings' },
+    ],
+    warehouse_owner: [
+      { label: t('dashboard.sidebar.dashboard'),     icon: 'home',          href: '/dashboard/warehouse' },
+      { label: t('dashboard.sidebar.bookings'),      icon: 'calendar_month',href: '/dashboard/warehouse?tab=bookings' },
+      { label: t('dashboard.sidebar.map_view'),      icon: 'map',           href: '/dashboard/warehouse?tab=map' },
+      { label: t('dashboard.sidebar.inventory'),     icon: 'inventory_2',   href: '/dashboard/warehouse?tab=inventory' },
+    ],
+    trader: [
+      { label: t('dashboard.sidebar.dashboard'),     icon: 'home',          href: '/dashboard/trader' },
+      { label: t('dashboard.sidebar.marketplace'),   icon: 'storefront',    href: '/dashboard/trader/marketplace' },
+      { label: t('dashboard.sidebar.market_prices'), icon: 'trending_up',   href: '/dashboard/trader?tab=prices' },
+      { label: t('dashboard.sidebar.active_trades'), icon: 'swap_horiz',    href: '/dashboard/trader?tab=trades' },
+    ],
+    admin: [
+      { label: t('dashboard.sidebar.dashboard'),     icon: 'home',          href: '/dashboard/admin' },
+      { label: t('dashboard.sidebar.ivr_analytics'), icon: 'phone_in_talk', href: '/dashboard/admin/ivr' },
+      { label: t('dashboard.sidebar.users'),         icon: 'group',         href: '/dashboard/admin?tab=users' },
+      { label: t('dashboard.sidebar.analytics'),     icon: 'bar_chart',     href: '/dashboard/admin?tab=analytics' },
+      { label: t('dashboard.sidebar.settings'),      icon: 'settings',      href: '/dashboard/admin?tab=settings' },
+    ],
+  };
+
+  const portalLabel: Record<UserRole, string> = {
+    farmer:          t('dashboard.portals.farmer'),
+    warehouse_owner: t('dashboard.portals.warehouse_owner'),
+    trader:          t('dashboard.portals.trader'),
+    admin:           t('dashboard.portals.admin'),
+  };
+
   const navItems = navByRole[role] ?? navByRole.farmer;
-  const rootHref = homeHref[role];
 
   return (
     <aside className="hidden lg:flex flex-col w-64 bg-surface border-r border-border h-screen sticky top-0">
@@ -78,7 +73,7 @@ export function Sidebar() {
           </div>
           <div>
             <span className="text-lg font-black text-foreground tracking-tight block leading-none">
-              Krishi Hub
+              {t('dashboard.title')}
             </span>
             <span className="text-[10px] font-bold text-muted uppercase tracking-widest">
               {portalLabel[role]}
@@ -90,7 +85,7 @@ export function Sidebar() {
       {/* Nav */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         <p className="text-[10px] font-black uppercase tracking-widest text-muted px-3 pt-2 pb-3">
-          Navigation
+          {t('dashboard.sidebar.navigation')}
         </p>
         {navItems.map((item) => {
           const itemUrl = new URL(item.href, 'http://localhost:3000');
@@ -139,7 +134,7 @@ export function Sidebar() {
             className="flex items-center gap-3 px-3 py-2.5 w-full rounded-xl font-semibold text-sm text-danger hover:bg-danger/10 transition-all"
           >
             <span className="material-symbols-outlined text-xl">logout</span>
-            Sign Out
+            {t('auth.logout')}
           </button>
         </form>
       </div>
