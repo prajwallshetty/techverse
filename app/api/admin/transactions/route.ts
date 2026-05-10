@@ -14,9 +14,8 @@ export async function GET() {
     await dbConnect();
 
     // Fetch recent activity across all critical streams
-    const [bookings, loans, bids] = await Promise.all([
+    const [bookings, bids] = await Promise.all([
       Booking.find().sort({ createdAt: -1 }).limit(10).populate("farmerId", "name"),
-      Promise.resolve([]),
       Bid.find().sort({ createdAt: -1 }).limit(10).populate("traderId", "name")
     ]);
 

@@ -1,5 +1,4 @@
 import type { NextAuthConfig } from "next-auth";
-import type { UserRole } from "@/types/domain";
 
 export const authConfig = {
   providers: [], // Providers are defined in index.ts to avoid Edge runtime issues
@@ -12,16 +11,16 @@ export const authConfig = {
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.role = (user.role || "farmer") as UserRole;
-        token.phone = user.phone ?? null;
+        token.role = (user as any).role || null;
+        token.phone = (user as any).phone || null;
       }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub ?? "";
-        session.user.role = token.role as UserRole;
-        session.user.phone = (token.phone as string) ?? null;
+        session.user.role = token.role as any;
+        session.user.id = token.sub as string;
+        session.user.phone = token.phone as string;
       }
       return session;
     },

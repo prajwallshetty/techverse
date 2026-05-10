@@ -31,6 +31,7 @@ const navByRole: Record<
   ],
   admin: [
     { label: 'Dashboard',     icon: 'home',          href: '/dashboard/admin' },
+    { label: 'IVR Analytics', icon: 'phone_in_talk', href: '/dashboard/admin/ivr' },
     { label: 'Users',         icon: 'group',         href: '/dashboard/admin?tab=users' },
     { label: 'Analytics',     icon: 'bar_chart',     href: '/dashboard/admin?tab=analytics' },
     { label: 'Settings',      icon: 'settings',      href: '/dashboard/admin?tab=settings' },
@@ -66,9 +67,8 @@ export function Sidebar() {
 
   return (
     <aside className="hidden lg:flex flex-col w-64 bg-surface border-r border-border h-screen sticky top-0">
-      {/* Logo */}
       <div className="p-6 border-b border-border">
-        <Link href={rootHref} className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <div className="bg-primary rounded-xl p-2 shadow-lg shadow-primary/20">
             <span
               className="material-symbols-outlined text-white text-xl"

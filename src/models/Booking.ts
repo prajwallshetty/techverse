@@ -11,6 +11,7 @@ export interface IBooking extends Document {
   marketplaceStatus: "none" | "listed" | "sold";
   autoSellTargetPrice?: number;
   isAutoSellEnabled: boolean;
+  source?: "web" | "ivr";
   auctionEndsAt?: Date;
   startingBid?: number;
   basePrice?: number;
@@ -41,6 +42,7 @@ const BookingSchema: Schema<IBooking> = new Schema(
     },
     autoSellTargetPrice: { type: Number },
     isAutoSellEnabled: { type: Boolean, default: false },
+    source: { type: String, enum: ["web", "ivr"], default: "web" },
     auctionEndsAt: { type: Date },
     startingBid: { type: Number },
     basePrice: { type: Number },

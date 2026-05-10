@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn, signOut } from "@/lib/auth";
+import { signIn, signOut, auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { ROLE_DASHBOARD } from "@/types/domain";
@@ -26,11 +26,16 @@ export async function signInWithCredentials(formData: FormData) {
     return { error: "Please fill in all fields." };
   }
 
+  // Fetch user role for role-based redirect
+  const users = await usersCollection();
+  const user = await users.findOne({ email: email.toLowerCase().trim() });
+  const dashboard = user ? (ROLE_DASHBOARD[user.role as UserRole] ?? "/dashboard") : "/dashboard";
+
   try {
     await signIn("credentials", {
       email,
       password,
-      redirect: false,
+      redirectTo: dashboard,
     });
   } catch (error) {
     // NextAuth v5 throws NEXT_REDIRECT on successful redirect — re-throw that
@@ -47,17 +52,6 @@ export async function signInWithCredentials(formData: FormData) {
     }
     return { error: "Invalid email or password. Please try again." };
   }
-
-  // Fetch user role for role-based redirect
-  const users = await usersCollection();
-  const user = await users.findOne({ email: email.toLowerCase().trim() });
-
-  if (user) {
-    const dashboard = ROLE_DASHBOARD[user.role as UserRole] ?? "/dashboard";
-    redirect(dashboard);
-  }
-
-  redirect("/dashboard");
 }
 
 export async function signOutAction() {
@@ -121,11 +115,13 @@ export async function signUpAction(formData: FormData) {
     return { success: "Account created! Email verification could not be sent — please contact support." };
   }
 
+  const dashboard = ROLE_DASHBOARD[role as UserRole] ?? "/dashboard";
+
   try {
     await signIn("credentials", {
       email,
       password,
-      redirect: false,
+      redirectTo: dashboard,
     });
   } catch (error) {
     if (error instanceof Error && error.message === "NEXT_REDIRECT") {
@@ -133,9 +129,6 @@ export async function signUpAction(formData: FormData) {
     }
     console.error("Auto-login error:", error);
   }
-
-  const dashboard = ROLE_DASHBOARD[role as UserRole] ?? "/dashboard";
-  redirect(dashboard);
 }
 
 export async function verifyEmailAction(token: string) {
@@ -169,3 +162,31 @@ export async function verifyEmailAction(token: string) {
     return { error: "Failed to verify email. Please try again." };
   }
 }
+
+export async function selectRoleAction(role: UserRole) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return { error: "Unauthorized" };
+  }
+
+  const users = await usersCollection();
+  try {
+    await users.updateOne(
+      { email: session.user.email.toLowerCase().trim() },
+      { 
+        $set: { 
+          role, 
+          isActive: true, // OAuth users are active immediately
+          updatedAt: new Date() 
+        } 
+      }
+    );
+  } catch (error) {
+    console.error("Role selection error:", error);
+    return { error: "Failed to update role. Please try again." };
+  }
+
+  const dashboard = ROLE_DASHBOARD[role] ?? "/dashboard";
+  redirect(dashboard);
+}
+

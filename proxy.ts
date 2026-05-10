@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import type { UserRole } from "@/types/domain";
 import { ROLE_DASHBOARD } from "@/types/domain";
 
-const publicPaths = ["/", "/signin", "/signup", "/verify", "/api/auth", "/api/health", "/api/i18n"];
+const publicPaths = ["/", "/signin", "/signup", "/verify", "/onboarding", "/api/auth", "/api/health", "/api/i18n", "/api/twilio", "/api/marketplace/seed"];
 
 
 const roleToDashboard: Record<string, UserRole> = {
@@ -42,10 +42,10 @@ export default auth((req) => {
     return NextResponse.redirect(signinUrl);
   }
 
-  const userRole = session.user.role as UserRole | undefined;
+  const userRole = session.user.role as UserRole | undefined | null;
 
   // Check role-based dashboard access
-  if (pathname.startsWith("/dashboard")) {
+  if (pathname.startsWith("/dashboard") && userRole) {
     // Find matching dashboard path
     const matchedEntry = Object.entries(roleToDashboard).find(([path]) =>
       pathname.startsWith(path),

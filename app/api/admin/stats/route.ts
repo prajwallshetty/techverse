@@ -16,13 +16,12 @@ export async function GET() {
     await dbConnect();
 
     // 1. Aggregated Platform KPIs
-    const [userCount, warehouseCount, bookingStats, loanStats, bidCount] = await Promise.all([
+    const [userCount, warehouseCount, bookingStats, bidCount] = await Promise.all([
       User.countDocuments(),
       Warehouse.countDocuments(),
       Booking.aggregate([
         { $group: { _id: null, totalTonnage: { $sum: "$quantityTons" }, totalRevenue: { $sum: "$totalPrice" } } }
       ]),
-      Promise.resolve([{ totalExposure: 0 }]),
       Bid.countDocuments()
     ]);
 
@@ -31,7 +30,6 @@ export async function GET() {
       totalWarehouses: warehouseCount,
       totalTonnage: bookingStats[0]?.totalTonnage || 0,
       totalVolume: bookingStats[0]?.totalRevenue || 0,
-      loanExposure: loanStats[0]?.totalExposure || 0,
       totalBids: bidCount,
     };
 

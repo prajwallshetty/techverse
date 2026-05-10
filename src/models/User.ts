@@ -5,7 +5,7 @@ export interface IUser extends Document {
   email?: string;
   phone?: string;
   passwordHash?: string;
-  role: "farmer" | "warehouse_owner" | "trader" | "admin";
+  role?: "farmer" | "warehouse_owner" | "trader" | "admin";
   isActive: boolean;
   trustScore: number;
   location?: string;
@@ -49,7 +49,6 @@ const UserSchema: Schema<IUser> = new Schema(
     role: {
       type: String,
       enum: ["farmer", "warehouse_owner", "trader", "admin"],
-      required: true,
       index: true,
     },
     isActive: { type: Boolean, default: true },

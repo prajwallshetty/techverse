@@ -27,9 +27,10 @@ export type User = {
   _id?: string;
   name: string;
   email?: string;
+  image?: string;
   phone?: string;
   passwordHash?: string;
-  role: UserRole;
+  role?: UserRole;
   isActive: boolean;
   /* Role-specific metadata – scalable via optional sub-documents */
   farmDetails?: {
