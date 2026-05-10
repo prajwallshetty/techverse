@@ -15,9 +15,11 @@ export function TopAppBar() {
   return (
     <header className="bg-surface dark:bg-background border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-4 h-14 sticky top-0 z-50">
       <Link href="/" className="flex items-center gap-2">
-        <span className="material-symbols-outlined text-primary dark:text-primary-fixed-dim">
-          agriculture
-        </span>
+        <img 
+          src="/krishihub.png" 
+          alt="Krishi Hub Logo" 
+          className="size-8 object-contain"
+        />
         <h1 className="font-h1-mobile text-h1-mobile font-bold text-primary dark:text-primary-fixed-dim tracking-tight">
           Krishi Hub
         </h1>

@@ -17,8 +17,14 @@ export function TraderSidebar() {
   return (
     <aside className="hidden lg:flex flex-col w-72 bg-surface border-r border-outline-variant h-screen sticky top-0">
       <div className="p-8">
-        <Link href="/" className="flex items-center gap-2 mb-10 group">
-          <span className="material-symbols-outlined text-primary text-3xl group-hover:scale-110 transition-transform">agriculture</span>
+        <Link href="/" className="flex items-center gap-3 mb-10 group">
+          <div className="size-10 flex items-center justify-center">
+            <img 
+              src="/krishihub.png" 
+              alt="Krishi Hub Logo" 
+              className="size-full object-contain group-hover:scale-110 transition-transform"
+            />
+          </div>
           <span className="text-xl font-black text-primary tracking-tight">Trader Hub</span>
         </Link>
 

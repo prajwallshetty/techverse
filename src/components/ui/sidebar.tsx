@@ -69,13 +69,12 @@ export function Sidebar() {
     <aside className="hidden lg:flex flex-col w-64 bg-surface border-r border-border h-screen sticky top-0">
       <div className="p-6 border-b border-border">
         <Link href="/" className="flex items-center gap-3">
-          <div className="bg-primary rounded-xl p-2 shadow-lg shadow-primary/20">
-            <span
-              className="material-symbols-outlined text-white text-xl"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              agriculture
-            </span>
+          <div className="size-10 flex items-center justify-center">
+            <img 
+              src="/krishihub.png" 
+              alt="Krishi Hub Logo" 
+              className="size-full object-contain"
+            />
           </div>
           <div>
             <span className="text-lg font-black text-foreground tracking-tight block leading-none">

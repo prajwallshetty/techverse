@@ -15,8 +15,12 @@ export default function SignUpPage() {
         <div className="absolute -left-[10%] -top-[10%] w-[40%] h-[40%] rounded-full bg-white/10 blur-[120px]" />
         
         <Link href="/" className="relative z-10 flex items-center gap-3 group">
-          <div className="bg-white rounded-xl p-2 shadow-lg group-hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-secondary text-2xl">agriculture</span>
+          <div className="size-12 flex items-center justify-center">
+            <img 
+              src="/krishihub.png" 
+              alt="Krishi Hub Logo" 
+              className="size-full object-contain group-hover:scale-110 transition-transform"
+            />
           </div>
           <span className="text-2xl font-black text-white tracking-tight uppercase">Krishi Hub</span>
         </Link>
@@ -35,8 +39,12 @@ export default function SignUpPage() {
       <div className="flex-1 flex flex-col items-center justify-center p-6 bg-background overflow-y-auto">
         <div className="w-full max-w-sm space-y-6">
           <div className="text-center lg:text-left">
-            <Link href="/" className="lg:hidden inline-flex bg-primary rounded-xl p-2.5 shadow-xl shadow-primary/20 mb-6 active:scale-95 transition-transform">
-              <span className="material-symbols-outlined text-white text-3xl">agriculture</span>
+            <Link href="/" className="lg:hidden inline-flex mb-6 active:scale-95 transition-transform">
+              <img 
+                src="/krishihub.png" 
+                alt="Krishi Hub Logo" 
+                className="size-12 object-contain"
+              />
             </Link>
             <h2 className="text-3xl font-black text-on-surface tracking-tight">Create Account</h2>
             <p className="text-on-surface-variant font-medium mt-1">Get started with secure storage and credit</p>

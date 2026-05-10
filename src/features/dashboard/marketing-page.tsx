@@ -58,10 +58,13 @@ export function MarketingPage() {
       <nav className="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-xl border-b border-black/[0.03]">
         <div className="container mx-auto flex h-20 items-center justify-between px-6 lg:px-12">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="bg-primary size-10 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined text-white text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>agriculture</span>
+            <div className="size-20 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <img 
+                src="/krishihub.png" 
+                alt="Krishi Hub Logo" 
+                className="size-full object-contain"
+              />
             </div>
-            <span className="text-xl font-black tracking-tighter uppercase text-primary">Krishi Hub</span>
           </Link>
           
           <div className="hidden lg:flex items-center gap-10">
@@ -345,10 +348,13 @@ export function MarketingPage() {
           <div className="grid md:grid-cols-4 gap-16">
             <div className="space-y-6">
               <Link href="/" className="flex items-center gap-3 group">
-                <div className="bg-primary size-8 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
-                  <span className="material-symbols-outlined text-white text-lg">agriculture</span>
+                <div className="size-16 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <img 
+                    src="/krishihub.png" 
+                    alt="Krishi Hub Logo" 
+                    className="size-full object-contain"
+                  />
                 </div>
-                <span className="text-lg font-black tracking-tighter uppercase text-primary">Krishi Hub</span>
               </Link>
               <p className="text-muted text-sm font-medium leading-relaxed">
                 Empowering Bharat&apos;s agricultural ecosystem with secure technology and financial inclusion.
