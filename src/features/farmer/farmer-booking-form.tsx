@@ -63,7 +63,7 @@ export function FarmerBookingForm({ warehouseId }: { warehouseId: string }) {
   if (error || !warehouse) return (
     <div className="flex-1 flex flex-col items-center justify-center p-10 min-h-[60vh]">
       <p className="text-danger font-bold">{error || "Warehouse not found"}</p>
-      <Button variant="outline" className="mt-4" onClick={() => router.back()}>Go Back</Button>
+      <Button variant="secondary" className="mt-4" onClick={() => router.back()}>Go Back</Button>
     </div>
   );
 
