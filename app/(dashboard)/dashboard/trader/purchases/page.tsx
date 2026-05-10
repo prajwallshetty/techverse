@@ -59,11 +59,7 @@ export default async function TraderPurchasesPage() {
                     <p className="text-[10px] font-black uppercase text-muted tracking-widest">Final Price</p>
                     <p className="text-2xl font-black text-emerald-600">₹{purchase.amount.toLocaleString()}</p>
                   </div>
-                  
-                  <button className="flex items-center gap-2 px-4 py-2 bg-surface border border-border/60 rounded-xl hover:bg-surface-muted transition-colors font-bold text-sm text-foreground">
-                    <Truck className="size-4" /> Track Shipment
-                  </button>
-                </div>
+                  </div>
               </CardContent>
             </Card>
           ))

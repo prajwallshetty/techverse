@@ -1,17 +1,8 @@
 'use client';
 
-import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export function TopAppBar() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => setMounted(true), 0);
-  }, []);
-
   return (
     <header className="bg-surface dark:bg-background border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-4 h-14 sticky top-0 z-50">
       <Link href="/" className="flex items-center gap-2">
@@ -26,7 +17,6 @@ export function TopAppBar() {
       </Link>
       
       <div className="flex items-center gap-2">
-        
         <button className="text-primary dark:text-primary-fixed-dim font-bold text-lg hover:bg-surface-container-low transition-colors px-2 py-1 rounded-lg active:scale-95 duration-150">
           English
         </button>

@@ -23,7 +23,7 @@ export default async function TraderBidsPage() {
     .lean();
 
   return (
-    <div className="p-6 lg:p-10 max-w-5xl mx-auto space-y-8">
+    <div className="p-6 lg:p-10 pb-32 lg:pb-10 max-w-5xl mx-auto space-y-8">
       <div>
         <h2 className="text-3xl font-black flex items-center gap-3">
           <Gavel className="size-8 text-primary" /> My Active Bids

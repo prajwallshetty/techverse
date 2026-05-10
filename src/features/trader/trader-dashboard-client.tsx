@@ -52,10 +52,10 @@ export function TraderDashboardClient({ sessionUser }: { sessionUser: any }) {
   );
 
   const stats = [
-    { label: "Portfolio Value", value: `₹${((data?.stats?.portfolioValue || 42000000) / 10000000).toFixed(1)} Cr`, note: "↑ 8.3% this month", icon: Banknote, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { label: "Active Bids", value: data?.stats?.activeTrades || 0, note: "Pending response", icon: Activity, color: "text-primary", bg: "bg-primary/10" },
-    { label: "Win Rate", value: `${data?.stats?.winRate || 0}%`, note: "Last 90 days", icon: TrendingUp, color: "text-amber-500", bg: "bg-amber-500/10" },
-    { label: "Monthly P&L", value: `+₹${((data?.stats?.monthlyPnL || 184000) / 1000).toFixed(1)}K`, note: "Net realized", icon: LineChart, color: "text-indigo-500", bg: "bg-indigo-500/10" },
+    { label: "Portfolio Value", value: `₹${(data?.stats?.portfolioValue ?? 0).toLocaleString()}`, note: "Total won auctions", icon: Banknote, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    { label: "Active Bids", value: data?.stats?.activeTrades ?? 0, note: "Pending response", icon: Activity, color: "text-primary", bg: "bg-primary/10" },
+    { label: "Win Rate", value: `${data?.stats?.winRate ?? 0}%`, note: "All time", icon: TrendingUp, color: "text-amber-500", bg: "bg-amber-500/10" },
+    { label: "Est. ROI", value: `₹${(data?.stats?.monthlyPnL ?? 0).toLocaleString()}`, note: "15% projected", icon: LineChart, color: "text-indigo-500", bg: "bg-indigo-500/10" },
   ];
 
   return (
@@ -98,23 +98,23 @@ export function TraderDashboardClient({ sessionUser }: { sessionUser: any }) {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-2 gap-8">
         
         {/* Live Market Card */}
-        <Card className="lg:col-span-2 border-border/40 rounded-[3rem] shadow-sm overflow-hidden bg-surface">
-          <CardContent className="p-10">
-            <div className="flex items-center justify-between mb-10">
-              <h3 className="font-black text-xl flex items-center gap-3"><TrendingUp className="size-6 text-primary" /> APMC Mandi Rates</h3>
-              <Badge intent="low" className="font-bold">Real-time (Agmarknet)</Badge>
+        <Card className="border-border/40 rounded-[3rem] shadow-sm overflow-hidden bg-surface flex flex-col">
+          <CardContent className="p-10 flex flex-col h-full">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+              <h3 className="font-black text-xl flex items-center gap-3"><TrendingUp className="size-6 text-primary shrink-0" /> APMC Mandi Rates</h3>
+              <Badge intent="low" className="font-bold self-start sm:self-auto">Real-time (Agmarknet)</Badge>
             </div>
-            <div className="grid gap-4">
+            <div className="grid gap-4 flex-1 content-start overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
               {(data?.marketPrices || []).map((m: any) => (
-                <div key={m.commodity} className="flex items-center justify-between p-5 rounded-3xl border border-border/40 bg-surface-muted/10 group hover:bg-surface-muted/30 transition-colors">
+                <div key={m.commodity} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 rounded-3xl border border-border/40 bg-surface-muted/10 group hover:bg-surface-muted/30 transition-colors">
                   <span className="font-black text-sm text-foreground/80">{m.commodity}</span>
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
                     <span className="font-mono font-bold text-sm">{m.price}</span>
                     <span className={`flex items-center gap-1 text-xs font-black px-3 py-1 rounded-full ${m.up ? 'bg-emerald-500/10 text-emerald-600' : 'bg-danger/10 text-danger'}`}>
-                      {m.up ? <ArrowUpRight className="size-3" /> : <ArrowDownRight className="size-3" />}
+                      {m.up ? <ArrowUpRight className="size-3 shrink-0" /> : <ArrowDownRight className="size-3 shrink-0" />}
                       {m.change}
                     </span>
                   </div>
@@ -133,7 +133,7 @@ export function TraderDashboardClient({ sessionUser }: { sessionUser: any }) {
         <Card className="border-border/40 rounded-[3rem] shadow-sm overflow-hidden bg-surface flex flex-col">
           <CardContent className="p-10 flex flex-col h-full">
             <h3 className="font-black text-xl mb-10 flex items-center gap-3"><History className="size-6 text-primary" /> Active Activity</h3>
-            <div className="space-y-4 flex-1">
+            <div className="space-y-4 flex-1 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
               {data?.recentBids?.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-border/40 rounded-[2rem]">
                   <Clock className="size-10 text-muted opacity-20 mb-4" />
