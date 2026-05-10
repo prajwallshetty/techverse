@@ -19,6 +19,7 @@ import Link from "next/link";
 import { LinkButton } from "@/components/antigravity/button";
 import { useRef } from "react";
 import { useTranslation } from "@/lib/i18n/context";
+import { LanguageSwitcher } from "@/features/i18n/language-switcher";
 
 const statsConfig = [
   { key: "farmers", icon: Users, color: "text-blue-500" },
@@ -84,8 +85,10 @@ export function MarketingPage() {
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
-            <Link href="/signin" className="text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-colors mr-2">
+          <div className="flex items-center gap-6">
+            <LanguageSwitcher />
+            <div className="h-4 w-px bg-black/5 mx-2 hidden sm:block" />
+            <Link href="/signin" className="text-xs font-black uppercase tracking-widest text-muted hover:text-foreground transition-colors">
               {t('marketing.nav.sign_in')}
             </Link>
             <LinkButton href="/signup" className="rounded-2xl px-8 h-12 bg-primary text-white shadow-xl shadow-primary/20 font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform">
